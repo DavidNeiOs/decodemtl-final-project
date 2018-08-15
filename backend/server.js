@@ -175,3 +175,26 @@ app.post("/signUp", (req, res) => {
         });
     }
 }); 
+
+/*app.post('/login', (req, res) => {
+    let mesBody = JSON.parse(req.body.toString());
+    let nickname = mesBody.username;
+    let password = mesBody.password;
+    
+    //search if user exist in orgs
+
+    //search if user exist in users
+    if (getUserInfoFromFile(mesBody)) {    
+        //register session 
+        let token = Math.floor(Math.random() * 1000000) + "";
+        serverState.sessions.push({ nickname: nickname, token: token });
+        //notify to all new user connected
+        serverState.messages.push({ nickname: '', message: 'user "' + nickname + '" has entered' });
+        //send cookie and response
+        res.cookie('cookieLinda', token);
+        res.send("true"); //true token
+    } else {
+        res.send("false"); //false
+    }
+})*/
+
