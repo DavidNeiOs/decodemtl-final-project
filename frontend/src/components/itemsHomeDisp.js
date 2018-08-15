@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Card, Icon, Image,Grid } from 'semantic-ui-react'
+import { connect } from 'react-redux'
 
 class HomeItemDisp extends Component {
     constructor() {
@@ -13,7 +14,12 @@ class HomeItemDisp extends Component {
           .then(responseBody => {
             let parsedBody = JSON.parse(responseBody);
             let itemList = parsedBody.items;
-            let itemsFiltred = itemList.filter(item => item.state === "TO_AUCTION");
+            this.props.dispatch({
+                type: 'getItems',
+                content: itemList
+            })
+
+            let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION");
             this.setState({ items:itemList, randomItems: itemsFiltred });     
           })        
     }
@@ -53,4 +59,9 @@ class HomeItemDisp extends Component {
     }
 }
 
-export default HomeItemDisp;
+function mapStateToProps(state) {
+    return {
+        items: state.items
+    }
+}
+export default connect(mapStateToProps)(HomeItemDisp);

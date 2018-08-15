@@ -4,14 +4,20 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
 const reducer = function(state, action) {
-  if(action.type === 'homepage'){
-    return {...state, showHomepage: action.content}
-  }
-  if(action.type === 'orgSignUp'){
-    return { ...state, showOrgSignUp: action.content, showHomepage: false}
-  }
-  if(action.type === 'logIn'){
-    return { ...state, showLogIn: action.content, showHomepage: false}
+
+  switch(action.type) {
+    case 'homepage': 
+      return {...state, showHomepage: action.content};
+
+    case 'orgSignUp':
+      return {...state, showLogIn: action.content, showHomepage: false};
+
+    case 'logIn':
+      return { ...state, showLogIn: action.content, showHomepage: false};
+
+    case 'getItems':
+      return {...state, items: action.content}
+
   }
   return state;
 }

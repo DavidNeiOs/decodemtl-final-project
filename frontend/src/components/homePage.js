@@ -25,7 +25,7 @@ class HomePage extends Component {
           <br/>
           </div>
           <Grid relaxed columns={4}>
-          <HomeItemDisp/>
+          <HomeItemDisp />
           </Grid>
           <br/>
           <br/>
