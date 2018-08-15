@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Input, Menu, Button } from 'semantic-ui-react'
 import SignUp from './signUp.js'
+import { connect } from 'react-redux'
 
 class NavBar extends Component {
   constructor() {
     super();
     this.state = { activeItem : 'home', signUpClick: false} 
     this.handleSignUpClick = this.handleSignUpClick.bind(this);
+    this.handleLogIn = this.handleLogIn.bind(this);
   }
 
   handleItemClick = (e, { name }) => {
@@ -17,6 +19,12 @@ class NavBar extends Component {
     this.setState({signUpClick:!this.state.signUpClick})
   }
 
+  handleLogIn() {
+    this.props.dispatch({
+      type: 'logIn',
+      content: true
+    })
+  }
   render() {
     const { activeItem } = this.state
 
@@ -39,7 +47,7 @@ class NavBar extends Component {
             position='right'>Sign Up</Button>
             <Button secondary
             active={activeItem === 'login'}
-            onClick={this.handleItemClick}
+            onClick={this.handleLogIn}
             position='right'>Login</Button>
         </Menu>
       </div>
@@ -49,4 +57,6 @@ class NavBar extends Component {
   }
 }
 
-export default NavBar;
+let connectedNavBar = connect()(NavBar)
+
+export default connectedNavBar;

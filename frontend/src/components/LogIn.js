@@ -2,13 +2,15 @@ import React, { Component } from 'react'
 import { Form } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
-class OrgLogIn extends Component {
+class LogIn extends Component {
     constructor() {
         super();
         this.state = {
             username: '',
             password: ''
         }
+        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     handleChange (evt, {name, value}) {
@@ -19,25 +21,28 @@ class OrgLogIn extends Component {
         const state = Object.assign({}, this.state);
         fetch('/logIn', 
             {
-                method='POST',
-                mode='same-origin',
-                credentials='include',
-                body=JSON.stringify(state)
+                method:'POST',
+                mode:'same-origin',
+                credentials:'include',
+                body: JSON.stringify(state)
             })
             .then(response => response.text())
             .then(res => {
                 let body = JSON.parse(res);
+                console.log(body)
                 if(body.success && body.userType === 'org') {
-                    this.props.dispatch({
+                    
+                    /*this.props.dispatch({
                         // change the store variable that will 
                         // render personalized page of org
-                    })
+                    
+                    })*/
                 }
                 else if (body.success && body.userType === 'buyer') {
-                    this.props.dispatch({
+                    /*this.props.dispatch({
                         // change the store variable that will
                         // render personalized page of buyer
-                    })
+                    })*/
                 }
             })
             .catch(err => {
@@ -73,6 +78,6 @@ class OrgLogIn extends Component {
     }
 }
 
-let connectedOrgLogIn = connect()(OrgLogIn)
+let connectedLogIn = connect()(LogIn)
 
-export default connectedOrgLogIn;
+export default connectedLogIn;

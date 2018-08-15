@@ -8,10 +8,10 @@ const reducer = function(state, action) {
     return {...state, showHomepage: action.content}
   }
   if(action.type === 'orgSignUp'){
-    return { ...state, showOrgSignUp: action.content}
+    return { ...state, showOrgSignUp: action.content, showHomepage: false}
   }
   if(action.type === 'logIn'){
-    return { ...state, showLogIn: action.content}
+    return { ...state, showLogIn: action.content, showHomepage: false}
   }
   return state;
 }

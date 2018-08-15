@@ -37,7 +37,7 @@ class OrgSignUp extends Component {
           return;
       }
       const state = Object.assign({}, this.state);
-      
+      delete state['confirmPassword'];
       fetch('/signUp', {
         method: 'POST',
         body: JSON.stringify(state)
