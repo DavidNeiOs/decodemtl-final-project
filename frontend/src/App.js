@@ -1,19 +1,38 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import MainContainner from './components/MainContainner.js'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+
+const reducer = function(state, action) {
+  if(action.type === 'homepage'){
+    return {...state, showHomepage: action.content}
+  }
+  if(action.type === 'orgSignUp'){
+    return { ...state, showOrgSignUp: action.content}
+  }
+  if(action.type === 'logIn'){
+    return { ...state, showLogIn: action.content}
+  }
+  return state;
+}
+
+let myStore = createStore(
+  reducer,
+  {
+    showHomepage: true,
+    showOrgSignUp: false,
+    showLogIn: false,
+  },
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
 
 class App extends Component {
   render() {
+    console.log(myStore.getState())
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <Provider store={myStore}>
+        <MainContainner />
+      </Provider>
     );
   }
 }
