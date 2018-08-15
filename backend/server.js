@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const sha256 = require('sha256');
 const app = express();
 app.use(bodyParser.raw({ type: "*/*" }));
 
@@ -10,9 +11,11 @@ const collCountries = "countries";
 const collItemState = "itemState";
 const collOrganizations = "organizations";
 const collItems = "items";
+const collSessions = "sessions";
 
 const USER_TYPE_BUYER = "buyer";
 const USER_TYPE_ORG = "org";
+const COOKIE_NAME = "sessionID";
 
 let serverState = {
     categoriesList: [],
@@ -162,6 +165,8 @@ app.post("/signUp", (req, res) => {
                         delete bodyParam['userType'];
                         //send to db to insert
                         bodyParam.orgId = Math.floor(Math.random() * 1000) + "";
+                        bodyParam.password = sha256(bodyParam.password);
+
                         collOrg.insertOne(bodyParam, function (err, result) {
                             if (err) {
                                 res.send(JSON.stringify({ status: false, message: "error in account creation" }))
@@ -174,27 +179,67 @@ app.post("/signUp", (req, res) => {
             }
         });
     }
-}); 
+});
 
-/*app.post('/login', (req, res) => {
-    let mesBody = JSON.parse(req.body.toString());
-    let nickname = mesBody.username;
-    let password = mesBody.password;
-    
+/**
+ * Endpoint to do log In 
+ */
+app.post('/login', (req, res) => {
+    let bodyParam = JSON.parse(req.body.toString());
+
     //search if user exist in orgs
+    let datab = getDatabase();
+    var collOrg = datab.collection(collOrganizations);
+    var collSess = datab.collection(collSessions);
 
-    //search if user exist in users
-    if (getUserInfoFromFile(mesBody)) {    
-        //register session 
-        let token = Math.floor(Math.random() * 1000000) + "";
-        serverState.sessions.push({ nickname: nickname, token: token });
-        //notify to all new user connected
-        serverState.messages.push({ nickname: '', message: 'user "' + nickname + '" has entered' });
-        //send cookie and response
-        res.cookie('cookieLinda', token);
-        res.send("true"); //true token
-    } else {
-        res.send("false"); //false
-    }
-})*/
+    collOrg.find({ username: bodyParam.username, password: sha256(bodyParam.password) }).toArray(function (err, result) {
+        if (err) { throw err; }
+        if (result.length > 0) {
+            let token = Math.floor(Math.random() * 100000000000) + "";
+            
+            //save session in bd
+            let objSess = { username: bodyParam.username, token: token, active: true };
+            collSess.insertOne(objSess, function (err, result) {
+                if (err) {throw err;}                
+            });
+
+            //set cookie and send response
+            res.cookie(COOKIE_NAME, token);
+            res.send(JSON.stringify({ status: true, message: "", userType: "org", orgId: result[0].orgId }))
+        } else {
+            //TODO: search in user collection when login buyer for user login story
+            res.send(JSON.stringify({ status: false, message: "invalid username or password" }))
+        }
+
+    });
+});
+
+app.post('/logout', (req, res) => {
+    let bodyParam = JSON.parse(req.body.toString());
+    let currentSession = getSessionIdFromCookie(req);    
+
+    let datab = getDatabase();
+    var collSess = datab.collection(collSessions);
+    let query = { username: bodyParam.username, token: currentSession, active: true };
+    let newValues = { $set: {username: bodyParam.username, token: currentSession, active: false} };
+
+    collSess.find(query).toArray(function (err, result) {
+        if (err) { throw err; }
+        if (result.length > 0) {
+            collSess.updateOne(query, newValues, function(err, result) {
+                if (err) throw err;  
+                res.clearCookie(COOKIE_NAME);
+                res.send(JSON.stringify({ status: true, message: ""}))              
+              });
+        } else {           
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+
+    });
+});
+
+function getSessionIdFromCookie(req) {
+    let sessionID = req.headers.cookie != undefined ? req.headers.cookie.split("=")[1] : "";
+    return sessionID;
+}
 
