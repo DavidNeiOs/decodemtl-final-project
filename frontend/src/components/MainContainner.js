@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import OrgSignUp from './OrgSignUp.js'
 import { connect } from 'react-redux'
+import HomePage from './homePage.js'
 
 
 
@@ -8,7 +9,7 @@ class MainContainner extends Component {
   render() {
     return (
         <div>
-            {this.props.shHomepage ? (<div></div>) : (<div></div>)}
+            {this.props.shHomepage ? (<HomePage />) : (<div></div>)}
             {this.props.shOrgSignUp ? (<OrgSignUp />) : (<div></div>)}
         </div>
     );

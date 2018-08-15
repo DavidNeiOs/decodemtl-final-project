@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import NavBar from './components/navBar.js'
-import HeroSlider from './components/heroSlider.js'
-import Footer from './components/footer.js'
-import HomeItemDisp from './components/itemsHomeDisp.js'
+import NavBar from './navBar.js'
+import HeroSlider from './heroSlider.js'
+import Footer from './footer.js'
+import HomeItemDisp from './itemsHomeDisp.js'
 import { Grid, Header } from 'semantic-ui-react'
 
 
