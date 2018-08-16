@@ -1,10 +1,8 @@
-import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button } from 'semantic-ui-react'
-import { connect } from 'react-redux'
+import React, {Component} from 'react'
 
-class HomeItemDisp extends Component {
-    constructor() {
-        super();
+class ItemCard extends Component {
+    constructor(props) {
+        super(props);
         this.state = {items:[],randomItems:[]}
         this.getItems = this.getItems.bind(this)
     }
@@ -19,7 +17,7 @@ class HomeItemDisp extends Component {
                 content: itemList
             })
 
-            let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION");
+            let itemsFiltred = this.props.items.filter(item => item.orgId === this.props.orgId);
             this.setState({ items:itemList, randomItems: itemsFiltred });     
           })        
     }
@@ -27,7 +25,8 @@ class HomeItemDisp extends Component {
         let firstList = this.state.randomItems
         let filteredList = firstList.map((i) => {
             return (
-                
+                <div>
+                <Grid.Column>
                 <Card>
                     <Image src={i.images[0]} />
                     <Card.Content>
@@ -43,15 +42,11 @@ class HomeItemDisp extends Component {
                         <Button fluid> Bid NOW! </Button>
                     </Card.Content>
                 </Card>
-                
+                </Grid.Column>
+                </div>
             )
         })
-        let rItems = [];
-        for (let i = 0; i < 4; i++) {
-            let index = Math.floor(Math.random() * filteredList.length);
-            rItems.push(<Grid.Column>{filteredList[index]}</Grid.Column>);
-        }
-        return rItems;
+        return filteredList;
     }
     componentDidMount() {
         this.getItems();
@@ -59,17 +54,15 @@ class HomeItemDisp extends Component {
     render() {
         return(
             <div>
-                <Grid relaxed='very' columns={4}>
                 {this.formatItems()}
-                </Grid>
             </div>
         )
     }
 }
-
 function mapStateToProps(state) {
     return {
-        items: state.items
+        items: state.items,
+        orgId: state.orgId
     }
 }
-export default connect(mapStateToProps)(HomeItemDisp);
+export default connect(mapStateToProps)(ItemCard);
