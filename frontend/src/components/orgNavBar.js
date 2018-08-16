@@ -63,7 +63,8 @@ class OrgNavBar extends Component {
 
 function mapStateToProps(state) {
     return {
-        orgId: state.orgId
+        orgId: state.orgId,
+        allItems: state.items,
     }
 }
 let ConnectedOrgNavBar = connect(mapStateToProps)(OrgNavBar)

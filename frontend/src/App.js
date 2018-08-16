@@ -21,9 +21,6 @@ const reducer = function(state, action) {
     case 'showOrgPage':
       return { ...state, showLogIn: false, orgId: action.content}
 
-    case 'getorgs' :
-      return {...state, orgId:action.content}
-
     case 'showCreateL':
       return { ...state, showCreateListing: action.content}
   }
@@ -38,7 +35,7 @@ let myStore = createStore(
     showLogIn: false,
     showCreateListing: false,
     items: [],
-    orgId: "3"
+    orgId: ""
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )
