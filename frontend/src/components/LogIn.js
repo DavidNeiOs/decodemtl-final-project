@@ -30,13 +30,14 @@ class LogIn extends Component {
             .then(res => {
                 let body = JSON.parse(res);
                 console.log(body)
-                if(body.success && body.userType === 'org') {
-                    
-                    /*this.props.dispatch({
+                if(body.status && body.userType === 'org') {
+                    this.props.dispatch({
                         // change the store variable that will 
                         // render personalized page of org
+                        type: 'showOrgPage',
+                        content: body.orgId
                     
-                    })*/
+                    })
                 }
                 else if (body.success && body.userType === 'buyer') {
                     /*this.props.dispatch({

@@ -12,6 +12,7 @@ class MainContainner extends Component {
             {this.props.shHomepage ? (<HomePage />) : (<div></div>)}
             {this.props.shOrgSignUp ? (<OrgSignUp />) : (<div></div>)}
             {this.props.shLogIn ? (<LogIn />) : (<div></div>)}
+            {this.props.shOrgPage ? (<div></div>/*<OrgHomePage />*/) : (<div></div>)}
         </div>
     );
   }
@@ -21,6 +22,7 @@ let mapStatetoProps = function (state) {
     shOrgSignUp: state.showOrgSignUp,
     shHomepage: state.showHomepage,
     shLogIn: state.showLogIn,
+    shOrgPage: state.orgId,
   }
 }
 
