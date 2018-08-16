@@ -12,7 +12,6 @@ class OrgHomePage extends Component {
         <ConnectedOrgNavBar/>
         </div>
         <div>
-       
           <OrgHomeItemDisp />
           <br/>
           <br/>
