@@ -3,7 +3,7 @@ import NavBar from './navBar.js'
 import HeroSlider from './heroSlider.js'
 import Footer from './footer.js'
 import HomeItemDisp from './itemsHomeDisp.js'
-import { Grid, Header } from 'semantic-ui-react'
+import { Header } from 'semantic-ui-react'
 
 
 class HomePage extends Component {
@@ -24,9 +24,9 @@ class HomePage extends Component {
           <br/>
           <br/>
           </div>
-          <Grid relaxed columns={4}>
+          
           <HomeItemDisp />
-          </Grid>
+          
           <br/>
           <br/>
         </div>
