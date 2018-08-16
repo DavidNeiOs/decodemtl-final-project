@@ -8,11 +8,12 @@ const options = [
   ]
 
 class OrgNavBar extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = { org : '', signUpClick: false} 
+    this.getOrgs = this.getOrgs.bind(this)
   }
-  getOrgs = () => {
+  getOrgs() {
     fetch('/getOrgs')
       .then(response => response.text())
       .then(responseBody => {
@@ -22,10 +23,8 @@ class OrgNavBar extends Component {
             type: 'getorgs',
             content: orgLoggedIn.orgId
         })
-        this.setState({ org: orgLoggedIn[0] });     
-        console.log(this.state);
-        console.log(orgLoggedIn);
-        console.log(this.state.org.username)
+        let singleOrgLogged = orgLoggedIn[0]
+        this.setState({ org: singleOrgLogged });     
       })        
     }
     handleListingClick = () => {

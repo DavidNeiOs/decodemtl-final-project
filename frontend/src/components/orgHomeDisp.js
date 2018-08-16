@@ -5,24 +5,12 @@ import { connect } from 'react-redux'
 class OrgHomeItemDisp extends Component {
     constructor() {
         super();
-        this.state = {items:[],toAuction:[], auctioned:[]}
-        this.getItems = this.getItems.bind(this)
+        this.state = {toAuction:[], auctioned:[]}
     }
-    getItems() {
-        fetch('/getItems')
-          .then(response => response.text())
-          .then(responseBody => {
-            let parsedBody = JSON.parse(responseBody);
-            let itemList = parsedBody.items;
-            this.props.dispatch({
-                type: 'getItems',
-                content: itemList
-            })
-
-            let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION");
-            let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED")
-            this.setState({ items:itemList, toAuction: itemsFiltred, auctioned: itemsAuctioned });     
-          })        
+    filterItemsByOrgId = () => {
+        let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
+        let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
+        this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
     }
     formatItems = (x) => {
         if (x === 1) {
@@ -86,10 +74,8 @@ class OrgHomeItemDisp extends Component {
         }
        
     }
-    componentDidMount() {
-        this.getItems();
-    }
     render() {
+        {this.filterItemsByOrgId}
         return(
         <div>
           <div>
@@ -133,7 +119,8 @@ class OrgHomeItemDisp extends Component {
 
 function mapStateToProps(state) {
     return {
-        items: state.items
+        items: state.items,
+        currOrg : state.orgId
     }
 }
 export default connect(mapStateToProps)(OrgHomeItemDisp);
