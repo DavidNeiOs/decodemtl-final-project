@@ -17,6 +17,10 @@ const USER_TYPE_BUYER = "buyer";
 const USER_TYPE_ORG = "org";
 const COOKIE_NAME = "sessionID";
 
+const ITEM_STATE_TO_AUCTION = "TO_AUCTION";
+const ITEM_STATE_AUCTIONED = "AUCTIONED";
+const ITEM_STATE_CANCELED = "CANCELED";
+
 let serverState = {
     categoriesList: [],
     countriesList: [],
@@ -137,6 +141,28 @@ app.get("/getItems", (req, res) => {
 });
 
 /**
+ * Endpoint that return the listing (items) 
+ */
+app.get("/getItem", (req, res) => {
+
+    let itemIdParam = req.query.itemId;
+
+    let datab = getDatabase();
+    let collItm = datab.collection(collItems);
+
+    //get item
+    collItm.find({ itemId: itemIdParam }).toArray(function (err, result) {
+        if (err) { throw err }
+        else if (result.length > 0) {
+            res.send(JSON.stringify({ status: true, message: "", item: result }));
+        } else {
+            res.send(JSON.stringify({ status: false, message: "item not found", item: result }));
+        }
+    });
+});
+
+
+/**
  * Endpoint to do sign Up 
  */
 app.post("/signUp", (req, res) => {
@@ -196,11 +222,11 @@ app.post('/login', (req, res) => {
         if (err) { throw err; }
         if (result.length > 0) {
             let token = Math.floor(Math.random() * 100000000000) + "";
-            
+
             //save session in bd
             let objSess = { username: bodyParam.username, token: token, active: true };
             collSess.insertOne(objSess, function (err, result) {
-                if (err) {throw err;}                
+                if (err) { throw err; }
             });
 
             //set cookie and send response
@@ -216,22 +242,148 @@ app.post('/login', (req, res) => {
 
 app.post('/logout', (req, res) => {
     let bodyParam = JSON.parse(req.body.toString());
-    let currentSession = getSessionIdFromCookie(req);    
+    let currentSession = getSessionIdFromCookie(req);
 
     let datab = getDatabase();
     var collSess = datab.collection(collSessions);
     let query = { username: bodyParam.username, token: currentSession, active: true };
-    let newValues = { $set: {username: bodyParam.username, token: currentSession, active: false} };
+    let newValues = { $set: { username: bodyParam.username, token: currentSession, active: false } };
 
     collSess.find(query).toArray(function (err, result) {
         if (err) { throw err; }
         if (result.length > 0) {
-            collSess.updateOne(query, newValues, function(err, result) {
-                if (err) throw err;  
+            collSess.updateOne(query, newValues, function (err, result) {
+                if (err) throw err;
                 res.clearCookie(COOKIE_NAME);
-                res.send(JSON.stringify({ status: true, message: ""}))              
-              });
-        } else {           
+                res.send(JSON.stringify({ status: true, message: "" }))
+            });
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+
+    });
+});
+
+
+/**
+ * Endpoint to create item 
+ */
+app.post("/addItem", (req, res) => {
+
+    let datab = getDatabase();
+    var collItem = datab.collection(collItems);
+    let bodyParam = JSON.parse(req.body.toString());
+
+    var collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req);
+
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //if session exist and is active create item
+            bodyParam.itemId = "";
+            bodyParam.lastPrice = bodyParam.initialPrice;
+            bodyParam.creationDate = new Date().toISOString();
+            bodyParam.bidCancelDate = "";
+            bodyParam.bidClosedDate = "";
+            bodyParam.state = ITEM_STATE_TO_AUCTION;
+            bodyParam.winnerUserId = "";
+
+            collItem.insertOne(bodyParam, function (err, result) {
+                if (err) throw err;
+
+                let id = result.ops[0]._id.toString();
+                var myquery = result.ops[0];
+                var newvalues = { $set: { itemId: id } };
+                //if insertion was ok, read and update item.
+                collItem.updateOne(myquery, newvalues, function (err, result) {
+                    if (err) throw err;
+                    res.send(JSON.stringify({ status: true, message: "", itemId: id }));
+                });
+
+            });
+
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+
+    });
+});
+
+
+/**
+ * Endpoint to create item 
+ */
+app.put("/updateItem", (req, res) => {
+
+    let datab = getDatabase();
+    var collItem = datab.collection(collItems);
+    let bodyParam = JSON.parse(req.body.toString());
+
+    //check if user 
+    var collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req);
+
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //if session exist and is active create item
+            var myquery = { itemId: bodyParam.itemId };
+            bodyParam.updateDate = new Date().toISOString();
+            var newvalues = { $set: bodyParam };
+            //update Item
+            collItem.updateOne(myquery, newvalues, function (err, result) {
+                if (err) throw err;
+                res.send(JSON.stringify({ status: true, message: "" }));
+            });
+
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+
+    });
+});
+
+/**
+ * Endpoint to cancel item 
+ */
+app.post("/cancelItem", (req, res) => {
+
+    let datab = getDatabase();
+    var collItem = datab.collection(collItems);
+    let bodyParam = JSON.parse(req.body.toString());
+
+    //check if user session exist
+    var collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req);
+
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //if session exist and is active create item
+            var myquery = { itemId: bodyParam.itemId };
+            var newvalues = { $set: { bidCancelDate: new Date().toISOString(), state: ITEM_STATE_CANCELED } };
+            //update Item
+            collItem.updateOne(myquery, newvalues, function (err, result) {
+                if (err) {
+                    throw err;
+                } else if (result.result.nModified > 0) {
+                    res.send(JSON.stringify({ status: true, message: "" }));
+                } else {
+                    res.send(JSON.stringify({ status: false, message: "error trying to cancel the item" }));
+                }
+            });
+
+        } else {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
 
