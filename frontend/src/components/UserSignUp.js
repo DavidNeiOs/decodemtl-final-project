@@ -1,21 +1,19 @@
 import React, { Component } from 'react'
 import { Form, Container } from "semantic-ui-react";
 
-class OrgSignUp extends Component {
+class UserSignUp extends Component {
     constructor () {
         super();
         this.state = {
-            orgName: '',
-            website: '',
-            logo: '',
-            email: '',
             username: '',
+            email: '',
             password: '',
             confirmPassword: '',
+            firstName: '',
+            lastName: '',
             country: '',
             postalCode: '',
-            description: '',
-            userType: 'org'
+            userType: 'buyer'
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -23,10 +21,6 @@ class OrgSignUp extends Component {
 
     // on change of any field (found at semantic ui Form documentation)
     handleChange (evt, {name, value}) {
-        if( name === 'logo') {
-          this.setState({ logo: evt.target.files[0].name});
-          return;
-        }
         this.setState({ [name]: value })
     }
 
@@ -53,48 +47,29 @@ class OrgSignUp extends Component {
         })
         
       // set The state back to empty
-      this.setState({
-          orgName: '',
-          website: '',
-          logo: '',
-          email: '',
+      /*this.setState({
           username: '',
+          email: '',
           password: '',
           confirmPassword: '',
+          firstName: '',
+          lastName: '',
           country: '',
           postalCode: '',
-          description: ''
-      })
+      })*/
     }
 
     render() {
         return (
         <Container textAlign='center'>
-          <Form onSubmit={this.handleSubmit} size='large'>
+          <Form onSubmit={this.handleSubmit} size='large'> 
             <Form.Group inline>
               <Form.Input
-                name='orgName'
-                label='Organization Name:' 
-                placeholder='Organization'
+                name='username'
+                label='Username:'
+                placeholder='username'
                 onChange={this.handleChange}
-                value={this.state.orgName}  
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='website'
-                label='Website:'
-                placeholder='Url'
-                onChange={this.handleChange}
-                value={this.state.website}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                type='file'
-                name='logo'
-                label='Upload logo:'
-                onChange={this.handleChange}
+                value={this.state.username}
               />
             </Form.Group>
             <Form.Group inline>
@@ -104,15 +79,6 @@ class OrgSignUp extends Component {
                 placeholder='Email'
                 onChange={this.handleChange}
                 value={this.state.email}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='username'
-                label='Username:'
-                placeholder='username'
-                onChange={this.handleChange}
-                value={this.state.username}
               />
             </Form.Group>
             <Form.Group inline>
@@ -137,6 +103,24 @@ class OrgSignUp extends Component {
             </Form.Group>
             <Form.Group inline>
               <Form.Input
+                name='firstName'
+                label='First name:'
+                placeholder='first name'
+                onChange={this.handleChange}
+                value={this.state.fisrstName}
+              />
+            </Form.Group>
+            <Form.Group inline>
+              <Form.Input
+                name='lastName'
+                label='Last name:'
+                placeholder='last name'
+                onChange={this.handleChange}
+                value={this.state.lastName}
+              />
+            </Form.Group>
+            <Form.Group inline>
+              <Form.Input
                 name='country'
                 label='Country:'
                 placeholder='Country'
@@ -153,15 +137,6 @@ class OrgSignUp extends Component {
                 value={this.state.postalCode}
               />
             </Form.Group>
-            <Form.Group inline>
-              <Form.TextArea
-                name='description'
-                label='Description:'
-                placeholder='Decription...'
-                onChange={this.handleChange}
-                value={this.state.description}
-              />
-            </Form.Group>
             <Form.Button content='submit' />
           </Form>
         </Container>
@@ -169,4 +144,4 @@ class OrgSignUp extends Component {
     }
 }
 
-export default OrgSignUp;
+export default UserSignUp;

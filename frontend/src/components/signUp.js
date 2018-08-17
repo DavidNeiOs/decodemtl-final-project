@@ -6,6 +6,7 @@ class SignUp extends Component {
   constructor () {
     super();
     this.handleNP = this.handleNP.bind(this)
+    this.handleBuyer = this.handleBuyer.bind(this)
   }
 
   handleNP () {
@@ -14,10 +15,17 @@ class SignUp extends Component {
       content: true
     })
   }
+
+  handleBuyer() {
+    this.props.dispatch({
+      type: 'buyerSignUp',
+      content: true
+    })
+  }
   render() {
     return (
       <Segment padded>
-        <Button primary fluid>
+        <Button primary fluid onClick={this.handleBuyer}>
           User Sign Up
         </Button>
         <Divider horizontal>Or</Divider>

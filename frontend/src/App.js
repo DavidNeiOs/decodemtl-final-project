@@ -14,6 +14,9 @@ const reducer = function(state, action) {
 
     case 'orgSignUp':
       return {...state, showOrgSignUp: action.content, showHomepage: false};
+    
+    case 'buyerSignUp' :
+      return { ...state, showBuyerSignUp: action.content, showHomepage: false}
 
     case 'logIn':
       return { ...state, showLogIn: action.content, showHomepage: false};
@@ -36,6 +39,7 @@ let myStore = createStore(
   {
     showHomepage: true,
     showOrgSignUp: false,
+    showBuyerSignUp: false,
     showLogIn: false,
     showCreateListing: false,
     items: [],
