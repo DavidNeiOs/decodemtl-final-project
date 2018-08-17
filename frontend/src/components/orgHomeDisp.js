@@ -85,6 +85,9 @@ class OrgHomeItemDisp extends Component {
         }
        
     }
+    componentDidMount() {
+        this.filterItemsByOrgId();
+    }
     render() {
         //{this.filterItemsByOrgId}
         return(
