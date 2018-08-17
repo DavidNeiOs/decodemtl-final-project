@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button,Header } from 'semantic-ui-react'
+import { Card, Icon, Image,Grid, Button,Modal, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
+import OrgBidOptions from './orgBidOptions.js'
 
 class OrgHomeItemDisp extends Component {
     constructor() {
@@ -22,7 +23,12 @@ class OrgHomeItemDisp extends Component {
         let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
         this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
     }
-
+    handleBidClick = (item) => {
+        this.props.dispatch({
+            type: 'seeItemDetails',
+            content: item
+        })
+    }
     formatItems = (x) => {
         if (x === 1) {
             let firstList = this.state.toAuction
@@ -41,7 +47,20 @@ class OrgHomeItemDisp extends Component {
                             {i.lastPrice}
                         </Card.Content>
                         <Card.Content extra>
-                            <Button fluid> Bid NOW! </Button>
+                            <Modal trigger={<Button fluid onClick={this.handleBidClick(i)}> SEE DETAILS </Button>} closeIcon>
+                                <Modal.Header>{i.title}</Modal.Header>
+                                <Modal.Content image scrolling>
+                                    <Image wrapped size='medium' src={i.images[0]}/>
+                                    <Modal.Description>
+                                        <Header>Item ID : {i.itemId}</Header>
+                                        <h3>Category : {i.category}</h3>
+                                        <p>{i.description}</p>
+                                        <h2>{i.bidFinDate}</h2>
+                                        <OrgBidOptions/>
+                                    </Modal.Description>
+
+                                </Modal.Content>
+                            </Modal>
                         </Card.Content>
                     </Card>
                     
@@ -70,7 +89,18 @@ class OrgHomeItemDisp extends Component {
                             {i.lastPrice}
                         </Card.Content>
                         <Card.Content extra>
-                            <Button fluid> Bid NOW! </Button>
+                            <Modal trigger={<Button fluid> See Details </Button>} closeIcon>
+                                <Modal.Header>{i.title}</Modal.Header>
+                                <Modal.Content image>
+                                    <Image wrapped size='medium' src={i.images[0]}/>
+                                    <Modal.Description>
+                                        <Header>Item ID : {i.itemId}</Header>
+                                        <h3>Category : {i.category}</h3>
+                                        <p>{i.description}</p>
+                                        <h2>{i.bidFinDate}</h2>
+                                    </Modal.Description>
+                                </Modal.Content>
+                            </Modal>
                         </Card.Content>
                     </Card>
                     
