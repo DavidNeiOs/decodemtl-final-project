@@ -1,5 +1,5 @@
 import React, { Component} from 'react'
-import {Form, Input, Label, Button, Dropdown} from 'semantic-ui-react'
+import {Container, Form, Input, Label, Button, Dropdown} from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 class CreateListing extends Component {
@@ -116,6 +116,7 @@ class CreateListing extends Component {
 
     render() {
         return (
+          <Container textAlign='center'>
             <Form onSubmit={this.handleSubmit}>
                 <h2>CREATE ITEM</h2>
                 <Form.Field inline>
@@ -127,11 +128,11 @@ class CreateListing extends Component {
                         required
                      />
                 </Form.Field>
-                <Form.Field inline>
+                <Form.Field>
                     <label>Description:</label>
                     <Form.TextArea
-                        name='description' 
-                        width={3}
+                        margin-left='20px'
+                        name='description'
                         onChange={this.handleChange}
                         required
                     />
@@ -192,6 +193,7 @@ class CreateListing extends Component {
                 </Form.Field>
                 <Button>CREATE</Button>
             </Form>
+          </Container>
         );
     }
 }

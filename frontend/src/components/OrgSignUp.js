@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form } from "semantic-ui-react";
+import { Form, Container } from "semantic-ui-react";
 
 class OrgSignUp extends Component {
     constructor () {
@@ -69,8 +69,9 @@ class OrgSignUp extends Component {
 
     render() {
         return (
+        <Container textAlign='center'>
           <Form onSubmit={this.handleSubmit} size='large'>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 name='orgName'
                 label='Organization Name:' 
@@ -79,7 +80,7 @@ class OrgSignUp extends Component {
                 value={this.state.orgName}  
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 name='website'
                 label='Website:'
@@ -88,7 +89,7 @@ class OrgSignUp extends Component {
                 value={this.state.website}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 type='file'
                 name='logo'
@@ -96,7 +97,7 @@ class OrgSignUp extends Component {
                 onChange={this.handleChange}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 name='email'
                 label='Contact Email:'
@@ -105,7 +106,7 @@ class OrgSignUp extends Component {
                 value={this.state.email}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 name='username'
                 label='Username:'
@@ -114,7 +115,7 @@ class OrgSignUp extends Component {
                 value={this.state.username}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 type='password'
                 name='password'
@@ -124,7 +125,7 @@ class OrgSignUp extends Component {
                 value={this.state.password}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 type='password'
                 name='confirmPassword'
@@ -134,7 +135,7 @@ class OrgSignUp extends Component {
                 value={this.state.confirmPassword}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 name='country'
                 label='Country:'
@@ -143,7 +144,7 @@ class OrgSignUp extends Component {
                 value={this.state.country}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.Input
                 name='postalCode'
                 label='Postal Code:'
@@ -152,7 +153,7 @@ class OrgSignUp extends Component {
                 value={this.state.postalCode}
               />
             </Form.Group>
-            <Form.Group>
+            <Form.Group inline>
               <Form.TextArea
                 name='description'
                 label='Description:'
@@ -163,6 +164,7 @@ class OrgSignUp extends Component {
             </Form.Group>
             <Form.Button content='submit' />
           </Form>
+        </Container>
         );
     }
 }

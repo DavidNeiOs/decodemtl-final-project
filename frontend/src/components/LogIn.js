@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form } from 'semantic-ui-react'
+import { Container, Form } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 class LogIn extends Component {
@@ -54,8 +54,9 @@ class LogIn extends Component {
     }
     render() {
         return (
+          <Container textAlign='center'>
             <Form onSubmit={this.handleSubmit}>
-              <Form.Group>
+              <Form.Group inline>
                 <Form.Input
                     name='username'
                     label='Organization Name:' 
@@ -64,18 +65,20 @@ class LogIn extends Component {
                     value={this.state.username}  
                 />
               </Form.Group>
-              <Form.Group>
+              <Form.Group inline>
                 <Form.Input
+                    width={5}
                     name='password'
-                    label='password:'
+                    label='Password:'
                     type='password'
-                    placeholder='Url'
+                    placeholder='Password'
                     onChange={this.handleChange}
                     value={this.state.password}
                 />
               </Form.Group>
-              <Form.Button content='submit' />
+              <Form.Button content='submit'/>
             </Form>
+          </Container>
         );
     }
 }
