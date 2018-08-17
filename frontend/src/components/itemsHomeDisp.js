@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button, Modal, Header } from 'semantic-ui-react'
+import { Card, Icon, Image,Grid, Button, Modal, Header, Form, Label, Input } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 
@@ -49,7 +49,20 @@ class HomeItemDisp extends Component {
                                         <Header>Item ID : {i.itemId}</Header>
                                         <p>{i.description}</p>
                                         <h2>{i.bidFinDate}</h2>
+                                        <Form>
+                                        <Form.Field inline>
+                                            <label>Amount:</label>
+                                                <Label as='a' basic>$</Label>
+                                                <Input 
+                                                    type='number' 
+                                                    name='initialPrice' 
+                                                    onChange={this.handleChange}
+                                                    required
+                                                />
+                                        </Form.Field>
                                         <Button fluid> Bid NOW! </Button>
+                                        </Form>
+                                        
                                     </Modal.Description>
                                 </Modal.Content>
                         </Modal>

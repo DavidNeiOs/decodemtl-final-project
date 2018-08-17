@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { Segment, Button, Divider, Modal } from 'semantic-ui-react'
+import { Segment, Button, Divider } from 'semantic-ui-react'
 import { connect } from 'react-redux'
-import OrgSignUp from './OrgSignUp.js'
 
 class SignUp extends Component {
   constructor () {
@@ -30,16 +29,9 @@ class SignUp extends Component {
           User Sign Up
         </Button>
         <Divider horizontal>Or</Divider>
-        <Modal trigger=
-          {<Button secondary fluid onClick={this.handleNP}>Non-Profit Sign Up
-          </Button>}>
-            <Modal.Content>
-              <Modal.Header>Non-Profit Sign-Up</Modal.Header>
-                <Modal.Description>
-                    <OrgSignUp/>
-                </Modal.Description>
-            </Modal.Content>
-          </Modal>
+        <Button secondary fluid onClick={this.handleNP}>
+          Non-Profit Sign Up
+        </Button>
       </Segment>
     );
   }
