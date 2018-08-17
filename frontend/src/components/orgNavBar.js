@@ -2,17 +2,14 @@ import React, { Component } from 'react'
 import { Input, Menu, Button, Dropdown } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
-const options = [
-    { key: 1, text: 'Settings', value: 1 },
-    { key: 2, text: 'Logout', value: 2 },
-  ]
 
 class OrgNavBar extends Component {
   constructor() {
     super();
     this.state = { org : '', signUpClick: false} 
-    this.getOrgs = this.getOrgs.bind(this)
-    this.handleListingClick = this.handleListingClick.bind(this)
+    this.getOrgs = this.getOrgs.bind(this);
+    this.handleListingClick = this.handleListingClick.bind(this);
+    this.handleLogOut = this.handleLogOut.bind(this);
   }
   getOrgs() {
     fetch('/getOrgs')
@@ -38,10 +35,33 @@ class OrgNavBar extends Component {
             content: true
         })
     }
+
+    handleLogOut() {
+        fetch('/logout', {
+            method: 'POST',
+            mode: 'same-origin',
+            credentials: 'include',
+            body: JSON.stringify({username: this.props.org[0].username})
+        })
+        .then(response => response.text())
+        .then(responseBody => {
+            let body = JSON.parse(responseBody)
+            console.log(body)
+            this.props.dispatch({
+                type: 'homepage',
+                content: true
+            })
+        })
+
+    }
   componentDidMount() {
       this.getOrgs();
   }
   render() {
+    const options = [
+        { key: 1, text: 'Settings', value: 1 },
+        { key: 2, text: 'Logout', value: 2, onClick: this.handleLogOut},
+    ]
     const { activeItem } = this.state
     return (
         <div>
@@ -71,7 +91,7 @@ class OrgNavBar extends Component {
 function mapStateToProps(state) {
     return {
         orgId: state.orgId,
-        org: state.currentorg
+        org: state.currentOrg
     }
 }
 let ConnectedOrgNavBar = connect(mapStateToProps)(OrgNavBar)

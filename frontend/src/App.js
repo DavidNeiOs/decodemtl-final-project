@@ -7,7 +7,7 @@ const reducer = function(state, action) {
 
   switch(action.type) {
     case 'homepage': 
-      return {...state, showHomepage: action.content};
+      return {...state, showHomepage: action.content, showOrgPage: false};
 
     case 'getItems':
       return {...state, items: action.content};
@@ -41,7 +41,7 @@ let myStore = createStore(
     items: [],
     showOrgPage: false,
     orgId: "",
-    currentOrg: {},
+    currentOrg: [],
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )
