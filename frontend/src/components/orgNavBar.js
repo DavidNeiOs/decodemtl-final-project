@@ -12,6 +12,7 @@ class OrgNavBar extends Component {
     super();
     this.state = { org : '', signUpClick: false} 
     this.getOrgs = this.getOrgs.bind(this)
+    this.handleListingClick = this.handleListingClick.bind(this)
   }
   getOrgs() {
     fetch('/getOrgs')
@@ -23,19 +24,25 @@ class OrgNavBar extends Component {
             type: 'getorgs',
             content: orgLoggedIn.orgId
         })
+        this.props.dispatch({
+            type: 'setOrg',
+            content: orgLoggedIn
+        })
         let singleOrgLogged = orgLoggedIn[0]
         this.setState({ org: singleOrgLogged });     
       })        
     }
-    handleListingClick = () => {
-
+    handleListingClick(){
+        this.props.dispatch({
+            type: 'showCreateL',
+            content: true
+        })
     }
   componentDidMount() {
       this.getOrgs();
   }
   render() {
     const { activeItem } = this.state
-
     return (
         <div>
             <div>
@@ -57,13 +64,14 @@ class OrgNavBar extends Component {
         </div>
       </div>
     )
+    
   }
 }
 
 function mapStateToProps(state) {
     return {
         orgId: state.orgId,
-        allItems: state.items,
+        org: state.currentorg
     }
 }
 let ConnectedOrgNavBar = connect(mapStateToProps)(OrgNavBar)

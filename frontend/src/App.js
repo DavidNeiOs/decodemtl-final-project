@@ -10,7 +10,7 @@ const reducer = function(state, action) {
       return {...state, showHomepage: action.content};
 
     case 'getItems':
-      return {...state, items: action.content}
+      return {...state, items: action.content};
 
     case 'orgSignUp':
       return {...state, showOrgSignUp: action.content, showHomepage: false};
@@ -19,10 +19,14 @@ const reducer = function(state, action) {
       return { ...state, showLogIn: action.content, showHomepage: false};
     
     case 'showOrgPage':
-      return { ...state, showLogIn: false, orgId: action.content}
+      return { ...state, showLogIn: false, orgId: action.content, showOrgPage: true, showCreateListing: false};
 
     case 'showCreateL':
-      return { ...state, showCreateListing: action.content}
+      return { ...state, showCreateListing: action.content, showOrgPage: false};
+    
+    case 'setOrg':
+      return { ...state, currentOrg: action.content}; 
+    
   }
   return state;
 }
@@ -35,7 +39,9 @@ let myStore = createStore(
     showLogIn: false,
     showCreateListing: false,
     items: [],
-    orgId: ""
+    showOrgPage: false,
+    orgId: "",
+    currentOrg: {},
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )

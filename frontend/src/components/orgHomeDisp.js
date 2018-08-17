@@ -8,10 +8,21 @@ class OrgHomeItemDisp extends Component {
         this.state = {toAuction:[], auctioned:[]}
     }
     filterItemsByOrgId = () => {
+        fetch('/getItems')
+          .then(response => response.text())
+          .then(responseBody => {
+            let parsedBody = JSON.parse(responseBody);
+            let itemList = parsedBody.items;
+            this.props.dispatch({
+                type: 'getItems',
+                content: itemList
+            })
+          }) 
         let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
         let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
         this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
     }
+
     formatItems = (x) => {
         if (x === 1) {
             let firstList = this.state.toAuction
@@ -75,7 +86,7 @@ class OrgHomeItemDisp extends Component {
        
     }
     render() {
-        {this.filterItemsByOrgId}
+        //{this.filterItemsByOrgId}
         return(
         <div>
           <div>

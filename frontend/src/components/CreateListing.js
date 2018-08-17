@@ -1,11 +1,13 @@
 import React, { Component} from 'react'
 import {Form, Input, Label, Button, Dropdown} from 'semantic-ui-react'
+import { connect } from 'react-redux'
 
 class CreateListing extends Component {
     constructor() {
         super();
         this.state = {
             title: '',
+            username: '',
             description: '',
             category: '',
             images: '',
@@ -27,7 +29,7 @@ class CreateListing extends Component {
 
     showEndTime(bidTypePeriod){
         // split the date in calendar and hours
-        let dateArr = this.state.start_date.split('T')
+        let dateArr = this.state.bidStartDate.split('T')
         // if the user wants to use hours
         if(bidTypePeriod === 'hours'){
             let timeArr = dateArr[1].split(':');
@@ -76,8 +78,9 @@ class CreateListing extends Component {
         }
     }
     handleChange (evt, {name, value}) {
-        if( name === 'picture') {
+        if( name === 'images') {
             this.setState({[name]: evt.target.files[0].name})
+            return;
         }
         if( name === 'bidTypePeriod' && this.state.bidPeriod !== ''){
             this.setState({bidFinDate: this.showEndTime(evt.target.outerText)})
@@ -88,6 +91,8 @@ class CreateListing extends Component {
     handleSubmit () {
         let state = Object.assign({}, this.state)
         delete state['options']
+        state['orgId'] = this.props.orgId;
+        state['username'] = this.props.org[0].username;
         fetch('/addItem', {
             method: 'POST',
             mode: 'same-origin',
@@ -97,12 +102,16 @@ class CreateListing extends Component {
             .then(response => response.text())
             .then(responseBody => {
               let result = JSON.parse(responseBody)
-              console.log(result.status)
+              console.log(result)
             })
             .catch(err => {
               console.log(err)
               alert('there was an error, try again')
             })
+        this.props.dispatch({
+            type: 'showOrgPage',
+            content: this.props.orgId
+        })
     }
 
     render() {
@@ -177,7 +186,7 @@ class CreateListing extends Component {
                     <label>End bid at:</label>
                     <Input
                         type='date-time-local'
-                        value={this.state.BidFinDate}
+                        value={this.state.bidFinDate}
                         required
                     />
                 </Form.Field>
@@ -186,5 +195,12 @@ class CreateListing extends Component {
         );
     }
 }
+function mapStatetoParams(state) {
+    return {
+        orgId: state.orgId,
+        org: state.currentOrg
+    }
+}
 
-export default CreateListing;
+
+export default connect(mapStatetoParams)(CreateListing);

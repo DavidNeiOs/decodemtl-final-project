@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import HomePage from './homePage.js'
 import LogIn from './LogIn.js'
 import OrgHomePage from './orgHomePage.js'
+import CreateListing from './CreateListing.js'
 
 
 class MainContainner extends Component {
@@ -14,6 +15,7 @@ class MainContainner extends Component {
             {this.props.shOrgSignUp ? (<OrgSignUp />) : (<div></div>)}
             {this.props.shLogIn ? (<LogIn />) : (<div></div>)}
             {this.props.shOrgPage ? (<OrgHomePage />) : (<div></div>)}
+            {this.props.shCreateL ? (<CreateListing />) : (<div></div>)}
         </div>
     );
   }
@@ -23,8 +25,8 @@ let mapStatetoProps = function (state) {
     shOrgSignUp: state.showOrgSignUp,
     shHomepage: state.showHomepage,
     shLogIn: state.showLogIn,
-    shOrgPage: state.orgId,
     shCreateL: state.showCreateListing,
+    shOrgPage: state.showOrgPage,
   }
 }
 
