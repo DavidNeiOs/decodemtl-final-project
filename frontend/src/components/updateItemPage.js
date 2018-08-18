@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import OrgNavBar from './orgNavBar.js'
 import Footer from './footer.js'
 
-class CreateListing extends Component {
+class UpdateItemPage extends Component {
     constructor() {
         super();
         this.state = {
@@ -18,14 +18,12 @@ class CreateListing extends Component {
             bidFinDate: '',
             bidPeriod: '',
             bidTypePeriod: '',
-            options: [
-                {key: 'hours', text: 'hours', value: 'hours'},
-                {key: 'days', text: 'days', value: 'days'}
-            ],            
+                       
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.showEndTime = this.showEndTime.bind(this)
+        this.handleDateChange = this.handleDateChange.bind(this)
     }
 
     showEndTime(bidTypePeriod){
@@ -89,13 +87,16 @@ class CreateListing extends Component {
         this.setState({ [name]: value })
     }
 
+    handleDateChange (evt) {
+        this.setState({ bidStartDate: evt.target.value})
+    }
+
     handleSubmit () {
         let state = Object.assign({}, this.state)
-        delete state['options']
         state['orgId'] = this.props.orgId;
         state['username'] = this.props.org[0].username;
-        fetch('/addItem', {
-            method: 'POST',
+        fetch('/updateItem', {
+            method: 'PUT',
             mode: 'same-origin',
             credentials: 'include',
             body: JSON.stringify(state)
@@ -115,7 +116,26 @@ class CreateListing extends Component {
         })
     }
 
+    componentDidMount () {
+        this.setState({
+            title: this.props.item.title,
+            username: this.props.item.username,
+            description: this.props.item.description,
+            category: this.props.item.category,
+            images: this.props.item.images,
+            initialPrice: this.props.item.initialPrice,
+            bidStartDate: this.props.item.bidStartDate,
+            bidFinDate: this.props.item.bidFinDate,
+            bidPeriod: this.props.item.bidPeriod,
+            bidTypePeriod: this.props.item.bidTypePeriod,
+        })
+    }
+
     render() {
+        const options = [
+            {key: 'hours', text: 'hours', value: 'hours'},
+            {key: 'days', text: 'days', value: 'days'}
+        ];
         const optionC = [
             { key: 1, text: 'Electronics', value: 'Electronics' },
             { key: 2, text: 'Furniture', value: 'Furniture'},
@@ -132,11 +152,11 @@ class CreateListing extends Component {
           <br/>
           <Container textAlign='center'>
             <Form onSubmit={this.handleSubmit}>
-                <h2>CREATE ITEM</h2>
+                <h2>EDIT ITEM</h2>
                 <Form.Field inline>
                     <label>Name(title):</label>
                     <Input
-                        placeholder='title'
+                        defaultValue={this.state.title}
                         name='title'
                         onChange={this.handleChange}
                         required
@@ -146,6 +166,7 @@ class CreateListing extends Component {
                     <label>Description:</label>
                     <Form.TextArea
                         margin-left='20px'
+                        value={this.state.description}
                         name='description'
                         onChange={this.handleChange}
                         required
@@ -155,8 +176,8 @@ class CreateListing extends Component {
                     <label>Category:</label>
                     <Dropdown
                         name='category'
-                        compact
-                        selection
+                        simple
+                        text={this.state.category}
                         options={optionC}
                         onChange={this.handleChange}
                     />
@@ -175,19 +196,21 @@ class CreateListing extends Component {
                         <Label as='a' basic>$</Label>
                         <Input 
                             type='number' 
-                            name='initialPrice' 
+                            name='initialPrice'
+                            defaultValue={this.state.initialPrice}
                             onChange={this.handleChange}
                             required
                         />
                 </Form.Field>
                 <Form.Field inline>
                     <label>Start bid at:</label>
-                    <Input 
+                    <input 
                         type='datetime-local' 
                         min='2018-08-15T14:00'
-                        name='bidStartDate' 
-                        onChange={this.handleChange}
-                        value={this.state.start_date}    
+                        name='bidStartDate'
+                        defaultValue={this.state.bidStartDate}
+                        onChange={this.handleDateChange}
+                        value={this.state.bidStartDate} 
                         required
                     />
                 </Form.Field>
@@ -197,27 +220,29 @@ class CreateListing extends Component {
                         name='bidPeriod'
                         action={<Dropdown name='bidTypePeriod'
                             button basic floating 
-                            options={this.state.options} 
-                            defaultValue=''
+                            options={options} 
+                            text={this.state.bidTypePeriod}
                             onChange={this.handleChange}
                             />
                         }
                         type='number'
-                        placeholder='time'
+                        defaultValue={this.state.bidPeriod}
+
                         onChange={this.handleChange}
                     />
                 </Form.Field>
                 <Form.Field inline>
                     <label>End bid at:</label>
-                    <Input
+                    <input
                         type='datetime-local'
                         value={this.state.bidFinDate}
                         required
                     />
                 </Form.Field>
-                <Button>CREATE</Button>
+                <Button type='submit'>UPDATE</Button>
             </Form>
           </Container>
+          <br/>
           <br/>
           <br/>
           <br/>
@@ -235,9 +260,10 @@ class CreateListing extends Component {
 function mapStatetoParams(state) {
     return {
         orgId: state.orgId,
-        org: state.currentOrg
+        org: state.currentOrg,
+        item: state.item
     }
 }
 
 
-export default connect(mapStatetoParams)(CreateListing);
+export default connect(mapStatetoParams)(UpdateItemPage);

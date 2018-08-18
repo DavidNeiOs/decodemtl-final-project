@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import OrgSignUp from './OrgSignUp.js'
-import { connect } from 'react-redux'
-import HomePage from './homePage.js'
-import LogIn from './LogIn.js'
-import OrgHomePage from './orgHomePage.js'
+import OrgSignUp from './OrgSignUp.js';
+import { connect } from 'react-redux';
+import HomePage from './homePage.js';
+import LogIn from './LogIn.js';
+import OrgHomePage from './orgHomePage.js';
+import CreateListing from './CreateListing.js';
+import UserSignUp from './UserSignUp.js';
+import BuyerHomePage from './buyerHomePage.js';
+import UpdateItemPage from './updateItemPage.js';
 
 
 class MainContainner extends Component {
@@ -12,8 +16,12 @@ class MainContainner extends Component {
         <div>
             {this.props.shHomepage ? (<HomePage />) : (<div></div>)}
             {this.props.shOrgSignUp ? (<OrgSignUp />) : (<div></div>)}
+            {this.props.shBuyerSignUp ? (<UserSignUp />) : (<div></div>)}
             {this.props.shLogIn ? (<LogIn />) : (<div></div>)}
             {this.props.shOrgPage ? (<OrgHomePage />) : (<div></div>)}
+            {this.props.shCreateL ? (<CreateListing />) : (<div></div>)}
+            {this.props.shBuyerPage ? (<BuyerHomePage />) : (<div></div>)}
+            {this.props.shEditItem ? (<UpdateItemPage />) : (<div></div>)}
         </div>
     );
   }
@@ -22,9 +30,12 @@ let mapStatetoProps = function (state) {
   return {
     shOrgSignUp: state.showOrgSignUp,
     shHomepage: state.showHomepage,
+    shBuyerSignUp: state.showBuyerSignUp,
     shLogIn: state.showLogIn,
-    shOrgPage: state.orgId,
     shCreateL: state.showCreateListing,
+    shOrgPage: state.showOrgPage,
+    shBuyerPage: state.showBuyerPage,
+    shEditItem: state.showUpdateItemPage,
   }
 }
 

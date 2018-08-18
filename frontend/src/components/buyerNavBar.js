@@ -3,37 +3,28 @@ import { Input, Menu, Button, Dropdown } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 
-class OrgNavBar extends Component {
+class BuyerNavBar extends Component {
   constructor() {
     super();
-    this.state = { org : '', signUpClick: false} 
+    this.state = { buyer : '', signUpClick: false} 
     this.getOrgs = this.getOrgs.bind(this);
     this.handleListingClick = this.handleListingClick.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
   }
   getOrgs() {
-    fetch('/getOrgs')
+    fetch('/getBuyers')
       .then(response => response.text())
       .then(responseBody => {
         let parsedBody = JSON.parse(responseBody);
-        let orgLoggedIn = parsedBody.orgs.filter(org => org.orgId === this.props.orgId);
+        let buyerLoggedIn = parsedBody.buyers.filter(byr => byr.userId === this.props.buyerId);
+
         this.props.dispatch({
-            type: 'getorgs',
-            content: orgLoggedIn.orgId
+            type: 'setBuyer',
+            content: buyerLoggedIn
         })
-        this.props.dispatch({
-            type: 'setOrg',
-            content: orgLoggedIn
-        })
-        let singleOrgLogged = orgLoggedIn[0]
-        this.setState({ org: singleOrgLogged });     
+        let singleOrgLogged = buyerLoggedIn[0]
+        this.setState({ buyer: singleOrgLogged });     
       })        
-    }
-    handleListingClick(){
-        this.props.dispatch({
-            type: 'showCreateL',
-            content: true
-        })
     }
 
     handleLogOut() {
@@ -41,7 +32,7 @@ class OrgNavBar extends Component {
             method: 'POST',
             mode: 'same-origin',
             credentials: 'include',
-            body: JSON.stringify({username: this.props.org[0].username})
+            body: JSON.stringify({username: this.props.buyer[0].username})
         })
         .then(response => response.text())
         .then(responseBody => {
@@ -73,13 +64,10 @@ class OrgNavBar extends Component {
         <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick} />
         <Menu.Menu position='right'>
             <Menu.Item>
-                <Button positive onClick={this.handleListingClick}>Create New Listing</Button>
-            </Menu.Item>
-            <Menu.Item>
                 <Input icon='search' placeholder='Search...' />
             </Menu.Item>
         </Menu.Menu>
-            <Dropdown item simple text={this.state.org.username} direction='right' options={options} />
+            <Dropdown item simple text={this.state.buyer.username} direction='right' options={options} />
         </Menu>
         </div>
       </div>
@@ -90,10 +78,10 @@ class OrgNavBar extends Component {
 
 function mapStateToProps(state) {
     return {
-        orgId: state.orgId,
-        org: state.currentOrg
+        buyerId: state.buyerId,
+        buyer: state.currentBuyer
     }
 }
-let ConnectedOrgNavBar = connect(mapStateToProps)(OrgNavBar)
+let ConnectedBuyerNavBar = connect(mapStateToProps)(BuyerNavBar)
 
-export default ConnectedOrgNavBar;
+export default ConnectedBuyerNavBar;

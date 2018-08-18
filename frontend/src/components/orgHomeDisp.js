@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button,Header } from 'semantic-ui-react'
+import { Card, Icon, Image,Grid, Button,Modal, Header, Divider } from 'semantic-ui-react'
 import { connect } from 'react-redux'
+import OrgBidOptions from './orgBidOptions.js'
+import Chat from './Chat.js'
 
 class OrgHomeItemDisp extends Component {
     constructor() {
@@ -8,18 +10,35 @@ class OrgHomeItemDisp extends Component {
         this.state = {toAuction:[], auctioned:[]}
     }
     filterItemsByOrgId = () => {
+        fetch('/getItems')
+          .then(response => response.text())
+          .then(responseBody => {
+            let parsedBody = JSON.parse(responseBody);
+            let itemList = parsedBody.items;
+            this.props.dispatch({
+                type: 'getItems',
+                content: itemList
+            })
+          }) 
         let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
         let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
         this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
+    }
+    handleEditClick = (item) => {
+        this.props.dispatch({
+            type: 'showEditItem',
+            content: item
+        })
     }
     formatItems = (x) => {
         if (x === 1) {
             let firstList = this.state.toAuction
             let filteredList = firstList.map((i) => {
+                i.images = ['stefan-ivanov-83176.jpg']
                 return (
                     
                     <Card>
-                        <Image src={i.images[0]} />
+                        <Image src={'/images/' + i.images[0]} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                         <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
@@ -30,7 +49,27 @@ class OrgHomeItemDisp extends Component {
                             {i.lastPrice}
                         </Card.Content>
                         <Card.Content extra>
-                            <Button fluid> Bid NOW! </Button>
+                            <Modal size={'large'} trigger={<Button fluid> SEE DETAILS </Button>} closeIcon>
+                                <Modal.Header>{i.title}</Modal.Header>
+                                <Modal.Content image scrolling>
+                                    <Image wrapped size='medium' src={'/images/' + i.images[0]}/>
+                                    <Modal.Description>
+                                        <Header>Item ID : {i.itemId}</Header>
+                                        <h3>Category : {i.category}</h3>
+                                        <p>{i.description}</p>
+                                        <h2>{i.bidFinDate}</h2>
+                                        <Button.Group>
+                                            <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
+                                            <Button>Close Auction</Button>
+                                            <Button>Cancel Auction</Button>
+                                        </Button.Group>
+                                    </Modal.Description>
+                                    <Modal.Description>
+                                        <Chat itemId={i.itemId} org={this.props.org} />
+                                    </Modal.Description>
+
+                                </Modal.Content>
+                            </Modal>
                         </Card.Content>
                     </Card>
                     
@@ -59,7 +98,21 @@ class OrgHomeItemDisp extends Component {
                             {i.lastPrice}
                         </Card.Content>
                         <Card.Content extra>
-                            <Button fluid> Bid NOW! </Button>
+                            <Modal trigger={<Button fluid> See Details </Button>} closeIcon>
+                                <Modal.Header>{i.title}</Modal.Header>
+                                <Modal.Content image>
+                                    <Image wrapped size='medium' src={i.images[0]}/>
+                                    <Modal.Description>
+                                        <Header>Item ID : {i.itemId}</Header>
+                                        <h3>Category : {i.category}</h3>
+                                        <p>{i.description}</p>
+                                        <h2>{i.bidFinDate}</h2>
+                                    </Modal.Description>
+                                    <Modal.Description>
+                                        <Chat itemId={i.itemId} org={this.props.org}/>
+                                    </Modal.Description>
+                                </Modal.Content>
+                            </Modal>
                         </Card.Content>
                     </Card>
                     
@@ -74,8 +127,11 @@ class OrgHomeItemDisp extends Component {
         }
        
     }
+    componentDidMount() {
+        this.filterItemsByOrgId();
+    }
     render() {
-        {this.filterItemsByOrgId}
+        //{this.filterItemsByOrgId}
         return(
         <div>
           <div>
@@ -120,7 +176,8 @@ class OrgHomeItemDisp extends Component {
 function mapStateToProps(state) {
     return {
         items: state.items,
-        currOrg : state.orgId
+        currOrg : state.orgId,
+        org: state.currentOrg,
     }
 }
 export default connect(mapStateToProps)(OrgHomeItemDisp);
