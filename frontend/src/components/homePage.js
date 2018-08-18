@@ -11,22 +11,19 @@ class HomePage extends Component {
     return (
       <div className="App">
         <div>
-        <NavBar/>
+          <NavBar/>
         </div>
         <div>
-        <HeroSlider/>
+          <HeroSlider/>
         </div>
         <div>
           <div>
-          
-          <br/>
-          <Header as='h2' icon='stopwatch' content='Products Currently in Auction' />
-          <br/>
-          <br/>
+            <br/>
+              <Header as='h2' icon='stopwatch' content='Products Currently in Auction' />
+            <br/>
+            <br/>
           </div>
-          
           <HomeItemDisp />
-          
           <br/>
           <br/>
         </div>

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button,Modal, Header } from 'semantic-ui-react'
+import { Card, Icon, Image,Grid, Button,Modal, Header, Divider } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import OrgBidOptions from './orgBidOptions.js'
+import Chat from './Chat.js'
 
 class OrgHomeItemDisp extends Component {
     constructor() {
@@ -23,9 +24,9 @@ class OrgHomeItemDisp extends Component {
         let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
         this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
     }
-    handleBidClick = (item) => {
+    handleEditClick = (item) => {
         this.props.dispatch({
-            type: 'seeItemDetails',
+            type: 'showEditItem',
             content: item
         })
     }
@@ -33,10 +34,11 @@ class OrgHomeItemDisp extends Component {
         if (x === 1) {
             let firstList = this.state.toAuction
             let filteredList = firstList.map((i) => {
+                i.images = ['stefan-ivanov-83176.jpg']
                 return (
                     
                     <Card>
-                        <Image src={i.images[0]} />
+                        <Image src={'/images/' + i.images[0]} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                         <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
@@ -47,16 +49,23 @@ class OrgHomeItemDisp extends Component {
                             {i.lastPrice}
                         </Card.Content>
                         <Card.Content extra>
-                            <Modal trigger={<Button fluid onClick={this.handleBidClick(i)}> SEE DETAILS </Button>} closeIcon>
+                            <Modal size={'large'} trigger={<Button fluid> SEE DETAILS </Button>} closeIcon>
                                 <Modal.Header>{i.title}</Modal.Header>
                                 <Modal.Content image scrolling>
-                                    <Image wrapped size='medium' src={i.images[0]}/>
+                                    <Image wrapped size='medium' src={'/images/' + i.images[0]}/>
                                     <Modal.Description>
                                         <Header>Item ID : {i.itemId}</Header>
                                         <h3>Category : {i.category}</h3>
                                         <p>{i.description}</p>
                                         <h2>{i.bidFinDate}</h2>
-                                        <OrgBidOptions/>
+                                        <Button.Group>
+                                            <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
+                                            <Button>Close Auction</Button>
+                                            <Button>Cancel Auction</Button>
+                                        </Button.Group>
+                                    </Modal.Description>
+                                    <Modal.Description>
+                                        <Chat itemId={i.itemId} org={this.props.org} />
                                     </Modal.Description>
 
                                 </Modal.Content>
@@ -98,6 +107,9 @@ class OrgHomeItemDisp extends Component {
                                         <h3>Category : {i.category}</h3>
                                         <p>{i.description}</p>
                                         <h2>{i.bidFinDate}</h2>
+                                    </Modal.Description>
+                                    <Modal.Description>
+                                        <Chat itemId={i.itemId} org={this.props.org}/>
                                     </Modal.Description>
                                 </Modal.Content>
                             </Modal>
@@ -164,7 +176,8 @@ class OrgHomeItemDisp extends Component {
 function mapStateToProps(state) {
     return {
         items: state.items,
-        currOrg : state.orgId
+        currOrg : state.orgId,
+        org: state.currentOrg,
     }
 }
 export default connect(mapStateToProps)(OrgHomeItemDisp);

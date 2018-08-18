@@ -22,13 +22,24 @@ const reducer = function(state, action) {
       return { ...state, showLogIn: action.content, showHomepage: false};
     
     case 'showOrgPage':
-      return { ...state, showLogIn: false, orgId: action.content, showOrgPage: true, showCreateListing: false};
+      return { ...state, showLogIn: false, orgId: action.content, showOrgPage: true, 
+                  showCreateListing: false, showUpdateItemPage: false
+              };
+
+    case 'setOrg':
+      return { ...state, currentOrg: action.content};
 
     case 'showCreateL':
-      return { ...state, showCreateListing: action.content, showOrgPage: false};
+      return { ...state, showCreateListing: action.content, showOrgPage: false, showUpdateItemPage: false};
     
-    case 'setOrg':
-      return { ...state, currentOrg: action.content}; 
+    case 'showBuyerPage':
+      return { ...state, showLogIn: false, buyerId: action.content, showBuyerPage: true};
+
+    case 'setBuyer':
+      return { ...state, currentBuyer: action.content}
+    
+    case 'showEditItem':
+      return { ...state, showUpdateItemPage: true, item: action.content, showOrgPage: false}
     
   }
   return state;
@@ -41,11 +52,16 @@ let myStore = createStore(
     showOrgSignUp: false,
     showBuyerSignUp: false,
     showLogIn: false,
-    showCreateListing: false,
-    items: [],
     showOrgPage: false,
+    showCreateListing: false,
+    showBuyerPage: false,
+    showUpdateItemPage: false,
+    items: [],
     orgId: "",
     currentOrg: [],
+    buyerId: "",
+    currentBuyer: [],
+    item: {}
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )

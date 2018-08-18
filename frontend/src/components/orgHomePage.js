@@ -9,7 +9,7 @@ class OrgHomePage extends Component {
     return (
       <div className="App">
         <div>
-        <ConnectedOrgNavBar/>
+          <ConnectedOrgNavBar/>
         </div>
         <div>
           <OrgHomeItemDisp />

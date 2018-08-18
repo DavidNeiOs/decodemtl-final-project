@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Form, Container } from "semantic-ui-react";
+import { Form, Container, Header } from "semantic-ui-react";
+import Footer from './footer.js'
 
 class UserSignUp extends Component {
     constructor () {
@@ -61,85 +62,105 @@ class UserSignUp extends Component {
 
     render() {
         return (
-        <Container textAlign='center'>
-          <Form onSubmit={this.handleSubmit} size='large'> 
-            <Form.Group inline>
-              <Form.Input
-                name='username'
-                label='Username:'
-                placeholder='username'
-                onChange={this.handleChange}
-                value={this.state.username}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='email'
-                label='Contact Email:'
-                placeholder='Email'
-                onChange={this.handleChange}
-                value={this.state.email}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                type='password'
-                name='password'
-                label='Password:'
-                placeholder='password'
-                onChange={this.handleChange}
-                value={this.state.password}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                type='password'
-                name='confirmPassword'
-                label='Confirm Password:'
-                placeholder='Confirm password'
-                onChange={this.handleChange}
-                value={this.state.confirmPassword}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='firstName'
-                label='First name:'
-                placeholder='first name'
-                onChange={this.handleChange}
-                value={this.state.fisrstName}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='lastName'
-                label='Last name:'
-                placeholder='last name'
-                onChange={this.handleChange}
-                value={this.state.lastName}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='country'
-                label='Country:'
-                placeholder='Country'
-                onChange={this.handleChange}
-                value={this.state.country}
-              />
-            </Form.Group>
-            <Form.Group inline>
-              <Form.Input
-                name='postalCode'
-                label='Postal Code:'
-                placeholder='Postal Code'
-                onChange={this.handleChange}
-                value={this.state.postalCode}
-              />
-            </Form.Group>
-            <Form.Button content='submit' />
-          </Form>
-        </Container>
+          <div>
+            <br />
+            <Header as='h2' style={{textAlign: 'center'}}>User Sign Up</Header>
+            <br />
+            <br />
+            <br />
+            <Container textAlign='center'>
+              <Form onSubmit={this.handleSubmit} size='large'> 
+                <Form.Group inline>
+                  <Form.Input
+                    name='username'
+                    label='Username:'
+                    placeholder='username'
+                    onChange={this.handleChange}
+                    value={this.state.username}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    name='email'
+                    label='Contact Email:'
+                    placeholder='Email'
+                    onChange={this.handleChange}
+                    value={this.state.email}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    type='password'
+                    name='password'
+                    label='Password:'
+                    placeholder='password'
+                    onChange={this.handleChange}
+                    value={this.state.password}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    type='password'
+                    name='confirmPassword'
+                    label='Confirm Password:'
+                    placeholder='Confirm password'
+                    onChange={this.handleChange}
+                    value={this.state.confirmPassword}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    name='firstName'
+                    label='First name:'
+                    placeholder='first name'
+                    onChange={this.handleChange}
+                    value={this.state.fisrstName}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    name='lastName'
+                    label='Last name:'
+                    placeholder='last name'
+                    onChange={this.handleChange}
+                    value={this.state.lastName}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    name='country'
+                    label='Country:'
+                    placeholder='Country'
+                    onChange={this.handleChange}
+                    value={this.state.country}
+                  />
+                </Form.Group>
+                <Form.Group inline>
+                  <Form.Input
+                    name='postalCode'
+                    label='Postal Code:'
+                    placeholder='Postal Code'
+                    onChange={this.handleChange}
+                    value={this.state.postalCode}
+                  />
+                </Form.Group>
+                <Form.Button content='submit' />
+              </Form>
+            </Container>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <Footer />
+          </div>
         );
     }
 }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Container, Form } from 'semantic-ui-react'
+import { Container, Form, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
+import Footer from './footer.js'
 
 class LogIn extends Component {
     constructor() {
@@ -40,11 +41,13 @@ class LogIn extends Component {
                     
                     })
                 }
-                else if (body.success && body.userType === 'buyer') {
-                    /*this.props.dispatch({
+                else if (body.status && body.userType === 'buyer') {
+                    this.props.dispatch({
                         // change the store variable that will
                         // render personalized page of buyer
-                    })*/
+                        type: 'showBuyerPage',
+                        content: body.userId
+                    })
                 }
             })
             .catch(err => {
@@ -54,31 +57,70 @@ class LogIn extends Component {
     }
     render() {
         return (
-          <Container textAlign='center'>
-            <Form onSubmit={this.handleSubmit}>
-              <Form.Group inline>
-                <Form.Input
-                    name='username'
-                    label='Organization Name:' 
-                    placeholder='Organization'
-                    onChange={this.handleChange}
-                    value={this.state.username}  
-                />
-              </Form.Group>
-              <Form.Group inline>
-                <Form.Input
-                    width={5}
-                    name='password'
-                    label='Password:'
-                    type='password'
-                    placeholder='Password'
-                    onChange={this.handleChange}
-                    value={this.state.password}
-                />
-              </Form.Group>
-              <Form.Button content='submit'/>
-            </Form>
-          </Container>
+          <div>
+            <br />
+            <br />
+            <br />
+            <Header as='h1' style={{textAlign: 'center'}}> Log in</Header>
+            <br />
+            <br />
+            <br />
+            <br />
+            <Container textAlign='center'>
+                <Form onSubmit={this.handleSubmit}>
+                <Form.Group inline>
+                    <Form.Input
+                        name='username'
+                        label='Userame:' 
+                        placeholder='Organization'
+                        onChange={this.handleChange}
+                        value={this.state.username}  
+                    />
+                </Form.Group>
+                <Form.Group inline>
+                    <Form.Input
+                        width={5}
+                        name='password'
+                        label='Password:'
+                        type='password'
+                        placeholder='Password'
+                        onChange={this.handleChange}
+                        value={this.state.password}
+                    />
+                </Form.Group>
+                <Form.Button content='submit'/>
+                </Form>
+            </Container>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <Footer />
+          </div>
         );
     }
 }
