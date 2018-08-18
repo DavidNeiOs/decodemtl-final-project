@@ -2,8 +2,16 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const sha256 = require('sha256');
 const app = express();
+const cors = require('cors');
+var db = require('./db');
+
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+app.use(cors());
 app.use(bodyParser.raw({ type: "*/*" }));
 
+//BUSINESS CONSTANTS-------------------------------------------------
 const url = "mongodb://admin:admin123@ds121332.mlab.com:21332/auctionsdb";
 const database = "auctionsdb";
 const collCategories = "categories";
@@ -27,9 +35,24 @@ let serverState = {
     itemStateList: []
 }
 
-var db = require('./db');
+//CHAT SOCKET IO--------------------------------------------------------
+//io.origins([allowedOrigins]);
+/*io.on('connection', socket => {
+    console.log("connected !");
+})*/
+io.on('connection', function(socket){
+    socket.on('sendMessage', function(content) {
+        socket.join(content.room);
+        io.sockets.in(content.room).emit('receiveMessage', content);
+    });
+});
 
-//CONNECTION WITH MONGO DB WHEN APP INIT
+
+http.listen(5000, function(){
+    console.log('chat listening on *:' + 5000);
+});
+
+//CONNECTION WITH MONGO DB WHEN APP INIT---------------------------------
 db.connect(url, function (err) {
     if (err) {
         console.log('Unable to connect to MongoDb.')
@@ -40,6 +63,8 @@ db.connect(url, function (err) {
         });
     }
 })
+
+
 
 function getDatabase() {
     return db.get().db(database);
@@ -372,6 +397,47 @@ app.post("/cancelItem", (req, res) => {
             //if session exist and is active create item
             var myquery = { itemId: bodyParam.itemId };
             var newvalues = { $set: { bidCancelDate: new Date().toISOString(), state: ITEM_STATE_CANCELED } };
+            //update Item
+            collItem.updateOne(myquery, newvalues, function (err, result) {
+                if (err) {
+                    throw err;
+                } else if (result.result.nModified > 0) {
+                    res.send(JSON.stringify({ status: true, message: "" }));
+                } else {
+                    res.send(JSON.stringify({ status: false, message: "error trying to cancel the item" }));
+                }
+            });
+
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+
+    });
+});
+
+
+/**
+ * Endpoint to cancel item 
+ */
+app.post("/closeItem", (req, res) => {
+
+    let datab = getDatabase();
+    var collItem = datab.collection(collItems);
+    let bodyParam = JSON.parse(req.body.toString());
+
+    //check if user session exist
+    var collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req);
+
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //if session exist and is active create item
+            var myquery = { itemId: bodyParam.itemId };
+            var newvalues = { $set: { bidCancelDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED } };
             //update Item
             collItem.updateOne(myquery, newvalues, function (err, result) {
                 if (err) {
