@@ -20,6 +20,7 @@ const collItemState = "itemState";
 const collOrganizations = "organizations";
 const collItems = "items";
 const collSessions = "sessions";
+const collBuyers = "buyers";
 
 const USER_TYPE_BUYER = "buyer";
 const USER_TYPE_ORG = "org";
@@ -40,15 +41,15 @@ let serverState = {
 /*io.on('connection', socket => {
     console.log("connected !");
 })*/
-io.on('connection', function(socket){
-    socket.on('sendMessage', function(content) {
+io.on('connection', function (socket) {
+    socket.on('sendMessage', function (content) {
         socket.join(content.room);
         io.sockets.in(content.room).emit('receiveMessage', content);
     });
 });
 
 
-http.listen(5000, function(){
+http.listen(5000, function () {
     console.log('chat listening on *:' + 5000);
 });
 
@@ -188,12 +189,13 @@ app.get("/getItem", (req, res) => {
 
 
 /**
- * Endpoint to do sign Up 
+ * Endpoint to do sign Up for orgs and buyers
  */
 app.post("/signUp", (req, res) => {
 
     let datab = getDatabase();
     var collOrg = datab.collection(collOrganizations);
+    var collBuy = datab.collection(collBuyers);
 
     bodyParam = JSON.parse(req.body.toString());
 
@@ -229,6 +231,40 @@ app.post("/signUp", (req, res) => {
                 });
             }
         });
+
+    } else if (bodyParam.userType !== undefined && bodyParam.userType === USER_TYPE_BUYER) {
+
+        collBuy.find({ username: bodyParam.username }).toArray(function (err, result) {
+            if (err) { throw err; }
+
+            if (result.length > 0) {
+                res.send(JSON.stringify({ status: false, message: "error in account creation, username alrready used" }))
+            } else {
+                //delete userType attribute
+                delete bodyParam['userType'];
+                //send to db to insert
+                //bodyParam.orgId = Math.floor(Math.random() * 1000) + "";
+                bodyParam.userId = '';
+                bodyParam.password = sha256(bodyParam.password);
+
+                collBuy.insertOne(bodyParam, function (err, result) {
+                    if (err) {
+                        res.send(JSON.stringify({ status: false, message: "error in account creation" }));
+                        throw err;
+                    }
+
+                    let id = result.ops[0]._id.toString();
+                    var myquery = result.ops[0];
+                    var newvalues = { $set: { userId: id } };
+                    //if insertion was ok, read and update to set user id.
+                    collBuy.updateOne(myquery, newvalues, function (err, result) {
+                        if (err) { throw err };
+                        res.send(JSON.stringify({ status: true, message: "successfully created account" }));
+                    });
+
+                });
+            }
+        });
     }
 });
 
@@ -242,14 +278,16 @@ app.post('/login', (req, res) => {
     let datab = getDatabase();
     var collOrg = datab.collection(collOrganizations);
     var collSess = datab.collection(collSessions);
+    var collBuy = datab.collection(collBuyers);
+
+    let token = Math.floor(Math.random() * 100000000000) + "";
 
     collOrg.find({ username: bodyParam.username, password: sha256(bodyParam.password) }).toArray(function (err, result) {
         if (err) { throw err; }
         if (result.length > 0) {
-            let token = Math.floor(Math.random() * 100000000000) + "";
 
             //save session in bd
-            let objSess = { username: bodyParam.username, token: token, active: true };
+            let objSess = { username: bodyParam.username, userType: "org", usrId: result[0].orgId, token: token, active: true, date: new Date().toISOString() };
             collSess.insertOne(objSess, function (err, result) {
                 if (err) { throw err; }
             });
@@ -257,13 +295,30 @@ app.post('/login', (req, res) => {
             //set cookie and send response
             res.cookie(COOKIE_NAME, token);
             res.send(JSON.stringify({ status: true, message: "", userType: "org", orgId: result[0].orgId }))
-        } else {
-            //TODO: search in user collection when login buyer for user login story
-            res.send(JSON.stringify({ status: false, message: "invalid username or password" }))
-        }
 
+        } else {
+
+            collBuy.find({ username: bodyParam.username, password: sha256(bodyParam.password) }).toArray(function (err, result) {
+                if (err) { throw err; }
+                if (result.length > 0) {
+
+                    //save session in bd
+                    let objSess = { username: bodyParam.username, userType: "buyer", usrId: result[0].userId, token: token, active: true, date: new Date().toISOString() };
+                    collSess.insertOne(objSess, function (err, result) {
+                        if (err) { throw err; }
+                    });
+
+                    //set cookie and send response
+                    res.cookie(COOKIE_NAME, token);
+                    res.send(JSON.stringify({ status: true, message: "", userType: "buyer", userId: result[0].userId }))
+                } else {
+                    res.send(JSON.stringify({ status: false, message: "invalid username or password" }))
+                }
+            });
+        }
     });
 });
+
 
 app.post('/logout', (req, res) => {
     let bodyParam = JSON.parse(req.body.toString());
@@ -282,6 +337,31 @@ app.post('/logout', (req, res) => {
                 res.clearCookie(COOKIE_NAME);
                 res.send(JSON.stringify({ status: true, message: "" }))
             });
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+
+    });
+});
+
+app.get('/home', (req, res) => {    
+    let currentSession = getSessionIdFromCookie(req);
+    
+    let datab = getDatabase();
+    var collSess = datab.collection(collSessions);
+    let query = { token: currentSession, active: true };    
+
+    collSess.find(query).toArray(function (err, result) {
+        if (err) { throw err; }
+        if (result.length > 0) {
+
+            let userTypeSaved = result[0].userType;
+            if (userTypeSaved === USER_TYPE_BUYER) {
+                res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, userId: result[0].usrId }))
+            } else {
+                res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, orgId: result[0].usrId }))
+            }
+                        
         } else {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
