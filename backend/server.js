@@ -35,7 +35,9 @@ const ITEM_STATE_CANCELED = "CANCELED";
 let serverState = {
     categoriesList: [],
     countriesList: [],
-    itemStateList: []
+    itemStateList: [],
+    chatMessages: [], //temporary
+    bidsItems: [] //temporary 
 }
 
 //CHAT SOCKET IO--------------------------------------------------------
@@ -46,12 +48,20 @@ let serverState = {
 io.on('connection', function (socket) {
     socket.on('sendMessage', function (content) {
         socket.join(content.room);
-        io.sockets.in(content.room).emit('receiveMessage', content);
+        if (content.message !== "") {
+            serverState.chatMessages.push(content);
+        }         
+        io.sockets.in(content.room).emit('receiveMessage', serverState.chatMessages);
     });
     socket.on('sendLastPrice', function (content) {
         socket.join(content.room);
         let lastPri = getItemLastPrice(content.itemId);
-        io.sockets.in(content.room).emit('receiveLastPrice', { itemId: content.itemId, lastPrice: lastPri });
+        //let objLastPrice = { itemId: content.itemId, room: content.room, lastPrice: lastPri, username: content.username }
+        let objLastPrice = [...content];
+        objLastPrice.lastPrice = lastPri;
+        objLastPrice.date = new Date().toISOString();
+        serverState.bidsItems.push(content);
+        io.sockets.in(content.room).emit('receiveLastPrice', serverState.bidsItems);
     });
 });
 
@@ -556,7 +566,7 @@ app.post("/bidItem", (req, res) => {
                                 collItm.updateOne({ itemId: bodyParam.itemId }, { $set: { lastPrice: bodyParam.bid } }, function (err, result) {
                                     if (err) { throw err; }
                                     else if (result.result.nModified > 0) {
-                                        res.send(JSON.stringify({ status: true, message: "transaction success", transactionId: id }));
+                                        res.send(JSON.stringify({ status: true, message: "transaction success", transactionId: id, username: bodyParam.username }));
                                     }
                                 });
                             }
