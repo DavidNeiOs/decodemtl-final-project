@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const sha256 = require('sha256');
 const app = express();
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 var db = require('./db');
 
 var http = require('http').Server(app);
@@ -34,7 +35,9 @@ const ITEM_STATE_CANCELED = "CANCELED";
 let serverState = {
     categoriesList: [],
     countriesList: [],
-    itemStateList: []
+    itemStateList: [],
+    chatMessages: [], //temporary
+    bidsItems: [] //temporary 
 }
 
 //CHAT SOCKET IO--------------------------------------------------------
@@ -45,12 +48,20 @@ let serverState = {
 io.on('connection', function (socket) {
     socket.on('sendMessage', function (content) {
         socket.join(content.room);
-        io.sockets.in(content.room).emit('receiveMessage', content);
+        if (content.message !== "") {
+            serverState.chatMessages.push(content);
+        }
+        io.sockets.in(content.room).emit('receiveMessage', serverState.chatMessages);
     });
     socket.on('sendLastPrice', function (content) {
         socket.join(content.room);
         let lastPri = getItemLastPrice(content.itemId);
-        io.sockets.in(content.room).emit('receiveLastPrice', {itemId: content.itemId, lastPrice: lastPri});
+        //let objLastPrice = { itemId: content.itemId, room: content.room, lastPrice: lastPri, username: content.username }
+        let objLastPrice = [...content];
+        objLastPrice.lastPrice = lastPri;
+        objLastPrice.date = new Date().toISOString();
+        serverState.bidsItems.push(content);
+        io.sockets.in(content.room).emit('receiveLastPrice', serverState.bidsItems);
     });
 });
 
@@ -316,7 +327,10 @@ app.post('/login', (req, res) => {
 
                     //set cookie and send response
                     res.cookie(COOKIE_NAME, token);
-                    res.send(JSON.stringify({ status: true, message: "", userType: "buyer", userId: result[0].userId }))
+                    //res.send(JSON.stringify({ status: true, message: "", userType: "buyer", userId: result[0].userId }))
+                    let objUser = result[0];
+                    delete objUser['password'];
+                    res.send(JSON.stringify({ status: true, message: "", userType: "buyer", user: objUser }))
                 } else {
                     res.send(JSON.stringify({ status: false, message: "invalid username or password" }))
                 }
@@ -355,6 +369,8 @@ app.get('/home', (req, res) => {
 
     let datab = getDatabase();
     var collSess = datab.collection(collSessions);
+    var collBuy = datab.collection(collBuyers);
+
     let query = { token: currentSession, active: true };
 
     collSess.find(query).toArray(function (err, result) {
@@ -363,8 +379,17 @@ app.get('/home', (req, res) => {
 
             let userTypeSaved = result[0].userType;
             if (userTypeSaved === USER_TYPE_BUYER) {
-                res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, userId: result[0].usrId }))
-            } else {
+                //res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, userId: result[0].usrId }))
+                collBuy.find({ userId: result[0].usrId }).toArray(function (err, result) {
+                    if (err) { throw err; }
+                    if (result.length > 0) {
+                        let objUser = result[0];
+                        delete objUser['password'];
+                        res.send(JSON.stringify({ status: true, message: "user has an active session", user: objUser }))
+                    }
+                });
+
+            } else { //if it is a org
                 res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, orgId: result[0].usrId }))
             }
 
@@ -511,7 +536,7 @@ app.post("/bidItem", (req, res) => {
 
     //check if user session exist
     let collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);    
+    let currentSession = getSessionIdFromCookie(req);
 
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
@@ -538,10 +563,10 @@ app.post("/bidItem", (req, res) => {
 
                             else if (result.result.nModified > 0) {
                                 //update last price of the item
-                                collItm.updateOne({itemId: bodyParam.itemId}, { $set: { lastPrice: bodyParam.bid }}, function (err, result) {
+                                collItm.updateOne({ itemId: bodyParam.itemId }, { $set: { lastPrice: bodyParam.bid } }, function (err, result) {
                                     if (err) { throw err; }
                                     else if (result.result.nModified > 0) {
-                                        res.send(JSON.stringify({ status: true, message: "transaction success", transactionId: id }));
+                                        res.send(JSON.stringify({ status: true, message: "transaction success", transactionId: id, username: bodyParam.username }));
                                     }
                                 });
                             }
@@ -604,7 +629,7 @@ app.post("/closeItem", (req, res) => {
                                 if (result.length > 0) {
                                     res.send(JSON.stringify({
                                         status: true, message: "",
-                                        winner: { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice }
+                                        winner: { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice, email: result[0].email }
                                     }));
                                 }
                             });
@@ -636,6 +661,137 @@ app.post("/closeItem", (req, res) => {
     });
 });
 
+app.post("/sendEmail", (req, res) => {
+    let bodyParam = JSON.parse(req.body.toString());
+
+    let adminEmail = "charitybidadm@gmail.com";
+    let adminEmailPass = "decode123!";
+
+    var mailOptionsUser = {
+        from: adminEmail,
+        to: bodyParam.userEmail,
+        subject: bodyParam.userEmailSubject,
+        text: bodyParam.userEmailText
+    };
+
+    var mailOptionsOrg = {
+        from: adminEmail,
+        to: bodyParam.orgEmail,
+        subject: bodyParam.orgEmailSubject,
+        text: bodyParam.orgEmailText
+    };
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: adminEmail,
+            pass: adminEmailPass
+        }
+    });
+
+    //send email to org
+    //TODO: catch all errors and send in the reponse
+    transporter.sendMail(mailOptionsOrg, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+            //send email to user
+            transporter.sendMail(mailOptionsUser, function (error, info) {
+                if (error) {
+                    res.send(JSON.stringify({ status: false, message: "error sending emails" }));
+                    console.log(error);
+                } else {
+                    res.send(JSON.stringify({ status: true, message: "" }));
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+        }
+    });
+});
+
+app.post("/getUserProfile", (req, res) => {
+
+    let datab = getDatabase();
+    var collItem = datab.collection(collItems);
+    let collBid = datab.collection(collBidTran);
+    let bodyParam = JSON.parse(req.body.toString());
+
+    //session data
+    var collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req);    
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    //data
+    let wonItemsObj=[];
+    let lostitemsObj=[];
+    let transactionsObj=[];
+    let processSearchWonItems = false;
+    let processSearchItemsBidded = false;
+
+    let cb = () => {
+        //set response
+        if (processSearchWonItems && processSearchItemsBidded) {
+
+            //find lost items
+            let arrayWinners = [];
+            wonItemsObj.forEach(e => {
+                lostitemsObj.push(e.itemId);
+            });
+
+            collBid.find({"itemId":{$nin:arrayWinners}, userId: bodyParam.userId}).toArray(function (err, result) {    
+                if (err) { throw err }
+                else if (result.length > 0) {
+                    lostitemsObj = result;                    
+                }  
+                res.send(JSON.stringify({
+                    status: true, message: "",
+                    wonItems: wonItemsObj,
+                    lostItems: lostitemsObj,
+                    transactions: transactionsObj
+                }));
+            });            
+        }
+    };
+
+    //check if user session exist
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //won items 
+            collItem.find({ winnerUserId: bodyParam.userId }).toArray(function (err, result) {
+                if (err) { throw err }
+                else if (result.length > 0) {
+                    wonItemsObj = result;                    
+                } 
+                processSearchWonItems = true;
+                cb();
+            });
+
+            //bids maded 
+            //collBid.find({ userId: bodyParam.userId }).toArray(function (err, result) {
+            let aggregateJoin = { $lookup:
+                {
+                  from: 'items',
+                  localField: 'itemId',
+                  foreignField: 'itemId',
+                  as: 'itemDetail'
+                }
+              };
+            collBid.aggregate(aggregateJoin).toArray(function (err, result) {    
+                if (err) { throw err }
+                else if (result.length > 0) {
+                    transactionsObj = result;                    
+                }
+                processSearchItemsBidded = true;
+                cb();
+            });
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
+        }
+    });
+});
 
 function getSessionIdFromCookie(req) {
     let sessionID = req.headers.cookie != undefined ? req.headers.cookie.split("=")[1] : "";
@@ -654,11 +810,10 @@ function getItemLastPrice(itemIdParam) {
     collItm.find({ itemId: itemIdParam }).toArray(function (err, result) {
         if (err) { throw err }
         else if (result.length > 0) {
-            lastPrice = result[0].lastPrice; 
+            lastPrice = result[0].lastPrice;
             //cb();
             return lastPrice;
-        } 
-    });  
-    return lastPrice;  
+        }
+    });
+    return lastPrice;
 }
-
