@@ -3,6 +3,8 @@ import { Card, Icon, Image,Grid, Button,Modal, Header, Divider } from 'semantic-
 import { connect } from 'react-redux'
 import OrgBidOptions from './orgBidOptions.js'
 import Chat from './Chat.js'
+import BidLog from './bidLog.js'
+import Timer from './timer.js'
 
 class OrgHomeItemDisp extends Component {
     constructor() {
@@ -70,12 +72,14 @@ class OrgHomeItemDisp extends Component {
                                         <Header>Item ID : {i.itemId}</Header>
                                         <h3>Category : {i.category}</h3>
                                         <p>{i.description}</p>
-                                        <h2>{i.bidFinDate}</h2>
+                                        <h2><Timer endDate={i.bidFinDate}/></h2>
                                         <Button.Group>
                                             <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
                                             <Button>Close Auction</Button>
                                             <Button onClick={ () => this.handleCancelClick(i)}>Cancel Auction</Button>
                                         </Button.Group>
+                                        
+                                        <BidLog itemId={i.itemId}/>
                                     </Modal.Description>
                                     <Modal.Description>
                                         <Chat itemId={i.itemId} org={this.props.org} />
@@ -90,8 +94,7 @@ class OrgHomeItemDisp extends Component {
             })
             let rItems = [];
             for (let i = 0; i < 4; i++) {
-                let index = Math.floor(Math.random() * filteredList.length);
-                rItems.push(<Grid.Column>{filteredList[index]}</Grid.Column>);
+                rItems.push(<Grid.Column>{filteredList[i]}</Grid.Column>);
             }
             return rItems;
         } else if (x===2) {
@@ -120,10 +123,14 @@ class OrgHomeItemDisp extends Component {
                                         <h3>Category : {i.category}</h3>
                                         <p>{i.description}</p>
                                         <h2>{i.bidFinDate}</h2>
+                                        
+                                        <BidLog itemId={i.itemId}/>
+                                    
                                     </Modal.Description>
                                     <Modal.Description>
                                         <Chat itemId={i.itemId} org={this.props.org}/>
                                     </Modal.Description>
+
                                 </Modal.Content>
                             </Modal>
                         </Card.Content>
@@ -133,8 +140,7 @@ class OrgHomeItemDisp extends Component {
             })
             let rItems = [];
             for (let i = 0; i < 4; i++) {
-                let index = Math.floor(Math.random() * filteredList.length);
-                rItems.push(<Grid.Column>{filteredList[index]}</Grid.Column>);
+                rItems.push(<Grid.Column>{filteredList[i]}</Grid.Column>);
             }
             return rItems;
         }
