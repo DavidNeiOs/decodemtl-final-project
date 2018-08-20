@@ -15,6 +15,10 @@ class BuyerHomeDisplay extends Component {
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
+    handleOrgClick = (id) => {
+        this.setState({ activeItem: id})
+    }
+
     formatItems = (name) => {
         if (name === '') {
             let filteredList = this.props.myItems.filter(item => item.state === 'TO_AUCTION').map((i) => {
@@ -131,9 +135,7 @@ class BuyerHomeDisplay extends Component {
                 this.setState({ orgNames: names})
             })
     }
-    handleOrgClicks = (id) => {
-
-    }
+    
     componentDidMount () {
         this.getOrgNames();
     }
@@ -175,12 +177,12 @@ class BuyerHomeDisplay extends Component {
                             onClick={this.handleItemClick}
                         />
                         <Divider />
-                        <Header as='h4' style={{paddingLeft: '15px'}}> Non-Porifts</Header>
+                        <Header as='h4' style={{paddingLeft: '15px'}}> Non-Profits</Header>
                         {this.state.orgNames.map(oName => {
                             return <Menu.Item
                                 name={oName.orgName}
-                                active={this.state.activeItem === oName.orgName}
-                                onClick={this.handleItemClick}
+                                active={this.state.activeItem === oName.orgId}
+                                onClick={() => this.handleOrgClick(oName.orgId)}
                             />
                         })}
                     </Menu>
