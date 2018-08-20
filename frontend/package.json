@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "moment": "^2.22.2",
     "normalize.css": "^8.0.0",
     "react": "^16.4.2",
     "react-animated-slider": "^1.1.3",

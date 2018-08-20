@@ -10,6 +10,7 @@ class SignUp extends Component {
     this.state = {open: false}
     this.handleNP = this.handleNP.bind(this)
     this.handleBuyer = this.handleBuyer.bind(this)
+
   }
   show = size => () => this.setState({ size, open: true })
   close = () => this.setState({ open: false })

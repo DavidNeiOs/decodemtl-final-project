@@ -73,7 +73,7 @@ class HomeItemDisp extends Component {
                                         onClick={this.show('mini')}
                                         position='right'>Login</Button>} size={size} open={open} onClose={this.close}>
                                         <Modal.Content>
-                                            <ConnectedLogIn/>
+                                            <ConnectedLogIn onSubmit={this.close}/>
                                         </Modal.Content>
                                         </Modal>
 
