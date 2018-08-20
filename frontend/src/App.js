@@ -33,10 +33,8 @@ const reducer = function(state, action) {
       return { ...state, showCreateListing: action.content, showOrgPage: false, showUpdateItemPage: false};
     
     case 'showBuyerPage':
-      return { ...state, showLogIn: false, buyerId: action.content, showBuyerPage: true};
-
-    case 'setBuyer':
-      return { ...state, currentBuyer: action.content}
+      return { ...state, showLogIn: false, currentBuyer: action.content,
+                   showBuyerPage: true, buyerId: action.content.userId, showHomepage: false};
     
     case 'showEditItem':
       return { ...state, showUpdateItemPage: true, item: action.content, showOrgPage: false}
@@ -60,7 +58,7 @@ let myStore = createStore(
     orgId: "",
     currentOrg: [],
     buyerId: "",
-    currentBuyer: [],
+    currentBuyer: {},
     item: {}
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()

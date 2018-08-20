@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Grid, Icon, Header } from "semantic-ui-react";
-import Footer from './footer.js'
+import { Form, Grid, Icon } from "semantic-ui-react";
 
 class OrgSignUp extends Component {
   constructor(props) {
@@ -18,7 +17,7 @@ class OrgSignUp extends Component {
       description: '',
       userType: 'org'
     }
-    this.props.onSubmit;
+    
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
@@ -67,7 +66,8 @@ class OrgSignUp extends Component {
       country: '',
       postalCode: '',
       description: ''
-    })
+    });
+    this.props.onSubmit();
   }
 
   render() {

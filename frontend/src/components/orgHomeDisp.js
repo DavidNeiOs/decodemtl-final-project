@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button,Modal, Header, Divider } from 'semantic-ui-react'
+import { Card, Icon, Image,Grid, Button,Modal, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
-import OrgBidOptions from './orgBidOptions.js'
 import Chat from './Chat.js'
 
 class OrgHomeItemDisp extends Component {

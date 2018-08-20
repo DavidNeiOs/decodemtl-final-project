@@ -35,6 +35,7 @@ class HomeItemDisp extends Component {
         const { open, open2, size } = this.state
         let firstList = this.state.randomItems
         let filteredList = firstList.map((i) => {
+            
             return (
                 <Card>
                     <Image src={'./images/' + i.images} />
