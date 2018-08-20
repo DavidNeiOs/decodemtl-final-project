@@ -24,21 +24,34 @@ class OrgHomeItemDisp extends Component {
         let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
         this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
     }
+    
     handleEditClick = (item) => {
         this.props.dispatch({
             type: 'showEditItem',
             content: item
         })
     }
+
+    handleCancelClick = (item) => {
+        fetch('/cancelItem', {
+            method: 'POST',
+            mode: 'same-origin',
+            credentials: 'include',
+            body: JSON.stringify({'itemId': item.itemId})
+        })
+        this.props.dispatch({
+            type: 'showOrgPage',
+            content: this.props.currOrg
+        })
+    }
     formatItems = (x) => {
         if (x === 1) {
             let firstList = this.state.toAuction
             let filteredList = firstList.map((i) => {
-                i.images = ['stefan-ivanov-83176.jpg']
                 return (
                     
                     <Card>
-                        <Image src={'/images/' + i.images[0]} />
+                        <Image src={'/images/' + i.images} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                         <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
@@ -52,7 +65,7 @@ class OrgHomeItemDisp extends Component {
                             <Modal size={'large'} trigger={<Button fluid> SEE DETAILS </Button>} closeIcon>
                                 <Modal.Header>{i.title}</Modal.Header>
                                 <Modal.Content image scrolling>
-                                    <Image wrapped size='medium' src={'/images/' + i.images[0]}/>
+                                    <Image wrapped size='medium' src={'/images/' + i.images}/>
                                     <Modal.Description>
                                         <Header>Item ID : {i.itemId}</Header>
                                         <h3>Category : {i.category}</h3>
@@ -61,7 +74,7 @@ class OrgHomeItemDisp extends Component {
                                         <Button.Group>
                                             <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
                                             <Button>Close Auction</Button>
-                                            <Button>Cancel Auction</Button>
+                                            <Button onClick={ () => this.handleCancelClick(i)}>Cancel Auction</Button>
                                         </Button.Group>
                                     </Modal.Description>
                                     <Modal.Description>
@@ -87,7 +100,7 @@ class OrgHomeItemDisp extends Component {
                 return (
                     
                     <Card>
-                        <Image src={i.images[0]} />
+                        <Image src={'/images/' + i.images} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                         <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
@@ -101,7 +114,7 @@ class OrgHomeItemDisp extends Component {
                             <Modal trigger={<Button fluid> See Details </Button>} closeIcon>
                                 <Modal.Header>{i.title}</Modal.Header>
                                 <Modal.Content image>
-                                    <Image wrapped size='medium' src={i.images[0]}/>
+                                    <Image wrapped size='medium' src={'/images/' + i.images}/>
                                     <Modal.Description>
                                         <Header>Item ID : {i.itemId}</Header>
                                         <h3>Category : {i.category}</h3>

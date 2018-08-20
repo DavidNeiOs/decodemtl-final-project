@@ -11,6 +11,29 @@ import UpdateItemPage from './updateItemPage.js';
 
 
 class MainContainner extends Component {
+  componentDidMount () {
+    fetch('/home', {
+      method: 'GET',
+      mode: 'same-origin',
+      credentials: 'include'
+    }).then(response => response.text())
+      .then(responseBody => {
+        let answer = JSON.parse(responseBody);
+        if (answer.userType === 'org'){
+          this.props.dispatch({
+            type: 'showOrgPage',
+            content: answer.orgId
+          })
+        }
+
+        if (answer.userType === 'buyer'){
+          this.props.dispatch({
+            type: 'showBuyerPage',
+            content: answer.userId
+          })
+        }
+      })
+  }
   render() {
     return (
         <div>
