@@ -724,29 +724,3 @@ function getItemLastPrice(itemIdParam) {
     });
     return lastPrice;
 }
-
-function sendMail(mailOptions) {
-
-    let cb = (status) => {
-        return status;
-    }
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'linque26@gmail.com',
-            pass: 'lq150885'
-        }
-    });
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-            //return false;
-            cb(false);
-        } else {
-            console.log('Email sent: ' + info.response);
-            //return true;
-            cb(true);
-        }
-    });
-}
