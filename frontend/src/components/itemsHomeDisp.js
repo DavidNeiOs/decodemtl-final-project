@@ -35,10 +35,9 @@ class HomeItemDisp extends Component {
         const { open, open2, size } = this.state
         let firstList = this.state.randomItems
         let filteredList = firstList.map((i) => {
-            i.images = ['stefan-ivanov-83176.jpg']
             return (
                 <Card>
-                    <Image src={'./images/' + i.images[0]} />
+                    <Image src={'./images/' + i.images} />
                         <Card.Content>
                             <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
@@ -52,7 +51,7 @@ class HomeItemDisp extends Component {
                         <Modal trigger={<Button>Bid Now</Button>} closeIcon>
                                 <Modal.Header>{i.title}</Modal.Header>
                                 <Modal.Content image>
-                                    <Image wrapped size='medium' src={'./images/' + i.images[0]}/>
+                                    <Image wrapped size='medium' src={'./images/' + i.images}/>
                                     <Modal.Description>
                                         <Header>Item ID : {i.itemId}</Header>
                                         <p>{i.description}</p>
