@@ -356,7 +356,7 @@ app.post('/logout', (req, res) => {
 
 app.get('/home', (req, res) => {
     let currentSession = getSessionIdFromCookie(req);
-    
+
     let datab = getDatabase();
     var collSess = datab.collection(collSessions);
     var collBuy = datab.collection(collBuyers);
@@ -651,33 +651,54 @@ app.post("/closeItem", (req, res) => {
     });
 });
 
-/*app.post("/sendEmail", (req, res) => {
+app.post("/sendEmail", (req, res) => {
     let bodyParam = JSON.parse(req.body.toString());
+
+    let adminEmail = "charitybidadm@gmail.com";
+    let adminEmailPass = "decode123!";
+
+    var mailOptionsUser = {
+        from: adminEmail,
+        to: bodyParam.userEmail,
+        subject: bodyParam.userEmailSubject,
+        text: bodyParam.userEmailText
+    };
+
+    var mailOptionsOrg = {
+        from: adminEmail,
+        to: bodyParam.orgEmail,
+        subject: bodyParam.orgEmailSubject,
+        text: bodyParam.orgEmailText
+    };
 
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'linque26@gmail.com',
-          pass: 'lq150885'
+            user: adminEmail,
+            pass: adminEmailPass
         }
-      });
-      
-      var mailOptions = {
-        from: 'youremail@gmail.com',
-        to: 'myfriend@yahoo.com',
-        subject: 'Sending Email using Node.js',
-        text: 'That was easy!'
-      };
-      
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-      });
+    });
 
-});*/
+    //send email to org
+    //TODO: catch all errors and send in the reponse
+    transporter.sendMail(mailOptionsOrg, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+            //send email to user
+            transporter.sendMail(mailOptionsUser, function (error, info) {
+                if (error) {
+                    res.send(JSON.stringify({ status: false, message: "error sending emails" }));
+                    console.log(error);
+                } else {
+                    res.send(JSON.stringify({ status: true, message: "" }));
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+        }
+    });
+});
 
 function getSessionIdFromCookie(req) {
     let sessionID = req.headers.cookie != undefined ? req.headers.cookie.split("=")[1] : "";
@@ -704,6 +725,28 @@ function getItemLastPrice(itemIdParam) {
     return lastPrice;
 }
 
-/*function sendMail() {
+function sendMail(mailOptions) {
 
-}*/
+    let cb = (status) => {
+        return status;
+    }
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'linque26@gmail.com',
+            pass: 'lq150885'
+        }
+    });
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+            //return false;
+            cb(false);
+        } else {
+            console.log('Email sent: ' + info.response);
+            //return true;
+            cb(true);
+        }
+    });
+}
