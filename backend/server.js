@@ -21,6 +21,7 @@ const collOrganizations = "organizations";
 const collItems = "items";
 const collSessions = "sessions";
 const collBuyers = "buyers";
+const collBidTran = "bidTransactions";
 
 const USER_TYPE_BUYER = "buyer";
 const USER_TYPE_ORG = "org";
@@ -45,6 +46,11 @@ io.on('connection', function (socket) {
     socket.on('sendMessage', function (content) {
         socket.join(content.room);
         io.sockets.in(content.room).emit('receiveMessage', content);
+    });
+    socket.on('sendLastPrice', function (content) {
+        socket.join(content.room);
+        let lastPri = getItemLastPrice(content.itemId);
+        io.sockets.in(content.room).emit('receiveLastPrice', {itemId: content.itemId, lastPrice: lastPri});
     });
 });
 
@@ -344,12 +350,12 @@ app.post('/logout', (req, res) => {
     });
 });
 
-app.get('/home', (req, res) => {    
+app.get('/home', (req, res) => {
     let currentSession = getSessionIdFromCookie(req);
-    
+
     let datab = getDatabase();
     var collSess = datab.collection(collSessions);
-    let query = { token: currentSession, active: true };    
+    let query = { token: currentSession, active: true };
 
     collSess.find(query).toArray(function (err, result) {
         if (err) { throw err; }
@@ -361,7 +367,7 @@ app.get('/home', (req, res) => {
             } else {
                 res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, orgId: result[0].usrId }))
             }
-                        
+
         } else {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
@@ -495,18 +501,79 @@ app.post("/cancelItem", (req, res) => {
     });
 });
 
+app.post("/bidItem", (req, res) => {
+    let datab = getDatabase();
+    let collBid = datab.collection(collBidTran);
+    let collItm = datab.collection(collItems);
+
+    bodyParam = JSON.parse(req.body.toString());
+    bodyParam.date = new Date().toISOString();
+
+    //check if user session exist
+    let collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req);    
+
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //verify if item exist and available to auction
+            collItm.find({ itemId: bodyParam.itemId, state: "TO_AUCTION" }).toArray(function (err, result) {
+                if (err) { throw err }
+
+                else if (result.length > 0) {
+                    collBid.insertOne(bodyParam, function (err, result) {
+                        if (err) {
+                            res.send(JSON.stringify({ status: false, message: "error processing bid to item" }))
+                            throw err;
+                        }
+                        let id = result.ops[0]._id.toString();
+                        var myquery = result.ops[0];
+                        var newvalues = { $set: { transactionId: id } };
+                        //if insertion was ok, read and update to set transaction id.
+                        collBid.updateOne(myquery, newvalues, function (err, result) {
+                            if (err) { throw err }
+
+                            else if (result.result.nModified > 0) {
+                                //update last price of the item
+                                collItm.updateOne({itemId: bodyParam.itemId}, { $set: { lastPrice: bodyParam.bid }}, function (err, result) {
+                                    if (err) { throw err; }
+                                    else if (result.result.nModified > 0) {
+                                        res.send(JSON.stringify({ status: true, message: "transaction success", transactionId: id }));
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                } else {
+                    res.send(JSON.stringify({ status: false, message: "item not found, offer can not be processed" }));
+                }
+            });
+
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }));
+        }
+    });
+
+
+});
 
 /**
- * Endpoint to cancel item 
+ * Endpoint to close item 
  */
 app.post("/closeItem", (req, res) => {
 
     let datab = getDatabase();
-    var collItem = datab.collection(collItems);
+    let collItem = datab.collection(collItems);
+    let collBid = datab.collection(collBidTran);
+    let collBuy = datab.collection(collBuyers);
     let bodyParam = JSON.parse(req.body.toString());
 
     //check if user session exist
-    var collSess = datab.collection(collSessions);
+    let collSess = datab.collection(collSessions);
     let currentSession = getSessionIdFromCookie(req);
 
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
@@ -515,19 +582,52 @@ app.post("/closeItem", (req, res) => {
         if (err) { throw err; }
         else if (result.length > 0) {
 
-            //if session exist and is active create item
-            var myquery = { itemId: bodyParam.itemId };
-            var newvalues = { $set: { bidCancelDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED } };
-            //update Item
-            collItem.updateOne(myquery, newvalues, function (err, result) {
-                if (err) {
-                    throw err;
-                } else if (result.result.nModified > 0) {
-                    res.send(JSON.stringify({ status: true, message: "" }));
+            let myquery = { itemId: bodyParam.itemId };
+
+            //search if there is a winner
+            collBid.find({ itemId: bodyParam.itemId }).sort({ bid: 1 }).toArray(function (err, result) {
+                if (err) { throw err; }
+                if (result.length > 0) {
+
+                    //update Item  
+                    let userWinner = result[0].userId;
+                    let bidPrice = result[0].bid;
+                    let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED, lastPrice: result[0].bid, winnerUserId: userWinner } };
+                    collItem.updateOne(myquery, newvalues, function (err, result) {
+                        if (err) {
+                            throw err;
+                        } else if (result.result.nModified > 0) {
+
+                            //find info user winner
+                            collBuy.find({ userId: userWinner }).toArray(function (err, result) {
+                                if (err) { throw err; }
+                                if (result.length > 0) {
+                                    res.send(JSON.stringify({
+                                        status: true, message: "",
+                                        winner: { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice }
+                                    }));
+                                }
+                            });
+
+                        } else {
+                            res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
+                        }
+                    });
                 } else {
-                    res.send(JSON.stringify({ status: false, message: "error trying to cancel the item" }));
+                    //if no winner,update Item                                     
+                    let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED } };
+                    collItem.updateOne(myquery, newvalues, function (err, result) {
+                        if (err) {
+                            throw err;
+                        } else if (result.result.nModified > 0) {
+                            res.send(JSON.stringify({ status: true, message: "", winner: {} }));
+                        } else {
+                            res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
+                        }
+                    });
                 }
             });
+
 
         } else {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
@@ -536,8 +636,29 @@ app.post("/closeItem", (req, res) => {
     });
 });
 
+
 function getSessionIdFromCookie(req) {
     let sessionID = req.headers.cookie != undefined ? req.headers.cookie.split("=")[1] : "";
     return sessionID;
+}
+
+function getItemLastPrice(itemIdParam) {
+    let lastPrice = 0;
+    /*let cb = () => {
+        return lastPrice;
+    };*/
+
+    let datab = getDatabase();
+    let collItm = datab.collection(collItems);
+
+    collItm.find({ itemId: itemIdParam }).toArray(function (err, result) {
+        if (err) { throw err }
+        else if (result.length > 0) {
+            lastPrice = result[0].lastPrice; 
+            //cb();
+            return lastPrice;
+        } 
+    });  
+    return lastPrice;  
 }
 
