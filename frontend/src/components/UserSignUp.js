@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Form, Container, Header } from "semantic-ui-react";
+import { Form, Grid } from "semantic-ui-react";
 import Footer from './footer.js'
 
 class UserSignUp extends Component {
-    constructor () {
-        super();
+    constructor (props) {
+        super(props);
         this.state = {
             username: '',
             email: '',
@@ -16,6 +16,7 @@ class UserSignUp extends Component {
             postalCode: '',
             userType: 'buyer'
         }
+        this.props.onSubmit
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
@@ -26,6 +27,7 @@ class UserSignUp extends Component {
     }
 
     handleSubmit () {
+      this.props.onSubmit()
       if (this.state.password !== this.state.confirmPassword) {
           this.setState({password: '', confirmPassword: ''});
           alert(`passwords do not match`);
@@ -63,24 +65,21 @@ class UserSignUp extends Component {
     render() {
         return (
           <div>
-            <br />
-            <Header as='h2' style={{textAlign: 'center'}}>User Sign Up</Header>
-            <br />
-            <br />
-            <br />
-            <Container textAlign='center'>
-              <Form onSubmit={this.handleSubmit} size='large'> 
-                <Form.Group inline>
-                  <Form.Input
+            <Form centered onSubmit={this.handleSubmit} size='large'> 
+              <Grid>
+                <Grid.Row centered columns={1}>
+                
+                <Grid.Column>
+                <Form.Group widths='equal'>
+                  <Form.Input required
                     name='username'
                     label='Username:'
                     placeholder='username'
                     onChange={this.handleChange}
                     value={this.state.username}
                   />
-                </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+
+                  <Form.Input required
                     name='email'
                     label='Contact Email:'
                     placeholder='Email'
@@ -88,8 +87,12 @@ class UserSignUp extends Component {
                     value={this.state.email}
                   />
                 </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+                </Grid.Column>
+                </Grid.Row>
+                <Grid.Row centered columns={1}>
+                <Grid.Column>
+                <Form.Group widths='equal'>
+                  <Form.Input required
                     type='password'
                     name='password'
                     label='Password:'
@@ -97,9 +100,8 @@ class UserSignUp extends Component {
                     onChange={this.handleChange}
                     value={this.state.password}
                   />
-                </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+
+                  <Form.Input required
                     type='password'
                     name='confirmPassword'
                     label='Confirm Password:'
@@ -108,17 +110,21 @@ class UserSignUp extends Component {
                     value={this.state.confirmPassword}
                   />
                 </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+                </Grid.Column>
+                </Grid.Row>
+                <Grid.Row centered columns={1}>
+                
+                <Grid.Column>
+                <Form.Group widths='equal'>
+                  <Form.Input required
                     name='firstName'
                     label='First name:'
                     placeholder='first name'
                     onChange={this.handleChange}
                     value={this.state.fisrstName}
                   />
-                </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+
+                  <Form.Input required
                     name='lastName'
                     label='Last name:'
                     placeholder='last name'
@@ -126,17 +132,21 @@ class UserSignUp extends Component {
                     value={this.state.lastName}
                   />
                 </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+                </Grid.Column>
+                </Grid.Row>
+                <Grid.Row centered columns={1}>
+                
+                <Grid.Column>
+                <Form.Group widths='equal'>
+                  <Form.Input required
                     name='country'
                     label='Country:'
                     placeholder='Country'
                     onChange={this.handleChange}
                     value={this.state.country}
                   />
-                </Form.Group>
-                <Form.Group inline>
-                  <Form.Input
+
+                  <Form.Input required
                     name='postalCode'
                     label='Postal Code:'
                     placeholder='Postal Code'
@@ -144,22 +154,13 @@ class UserSignUp extends Component {
                     value={this.state.postalCode}
                   />
                 </Form.Group>
+                </Grid.Column>
                 <Form.Button content='submit' />
+                </Grid.Row>
+                </Grid>
               </Form>
-            </Container>
             <br />
             <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <Footer />
           </div>
         );
     }
