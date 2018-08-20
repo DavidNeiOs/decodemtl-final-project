@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import { Container, Form, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
-import Footer from './footer.js'
+
 
 class LogIn extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             username: '',
             password: ''
         }
+        this.props.onSubmit
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
@@ -19,6 +20,7 @@ class LogIn extends Component {
     }
 
     handleSubmit() {
+        this.props.onSubmit()
         const state = Object.assign({}, this.state);
         fetch('/logIn', 
             {
@@ -59,12 +61,7 @@ class LogIn extends Component {
         return (
           <div>
             <br />
-            <br />
-            <br />
             <Header as='h1' style={{textAlign: 'center'}}> Log in</Header>
-            <br />
-            <br />
-            <br />
             <br />
             <Container textAlign='center'>
                 <Form onSubmit={this.handleSubmit}>
@@ -79,7 +76,6 @@ class LogIn extends Component {
                 </Form.Group>
                 <Form.Group inline>
                     <Form.Input
-                        width={5}
                         name='password'
                         label='Password:'
                         type='password'
@@ -92,39 +88,11 @@ class LogIn extends Component {
                 </Form>
             </Container>
             <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <Footer />
           </div>
         );
     }
 }
 
-let connectedLogIn = connect()(LogIn)
+let ConnectedLogIn = connect()(LogIn)
 
-export default connectedLogIn;
+export default ConnectedLogIn;

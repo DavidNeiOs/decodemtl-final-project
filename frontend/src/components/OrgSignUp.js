@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Form, Container, Header } from "semantic-ui-react";
+import { Form, Grid, Icon, Header } from "semantic-ui-react";
 import Footer from './footer.js'
 
 class OrgSignUp extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       orgName: '',
       website: '',
@@ -18,6 +18,7 @@ class OrgSignUp extends Component {
       description: '',
       userType: 'org'
     }
+    this.props.onSubmit;
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
@@ -32,6 +33,7 @@ class OrgSignUp extends Component {
   }
 
   handleSubmit() {
+    this.props.onSubmit()
     if (this.state.password !== this.state.confirmPassword) {
       this.setState({ password: '', confirmPassword: '' });
       alert(`passwords do not match`);
@@ -72,19 +74,20 @@ class OrgSignUp extends Component {
     return (
       <div>
           <br />
-          <Header as='h2' style={{textAlign: 'center'}}>Non-Profit Sign Up</Header>
-          <Container textAlign='center'>
-            <Form onSubmit={this.handleSubmit} size='large'>
-              <Form.Group inline>
-                <Form.Input
+          
+          <br />
+          <Form centered onSubmit={this.handleSubmit} size='large'>
+          <Grid>
+            <Grid.Row centered columns={1}>
+              <Grid.Column centered>
+              <Form.Group unstackable widths='equal'>
+                <Form.Input required
                   name='orgName'
                   label='Organization Name:'
                   placeholder='Organization'
                   onChange={this.handleChange}
                   value={this.state.orgName}
                 />
-              </Form.Group>
-              <Form.Group inline>
                 <Form.Input
                   name='website'
                   label='Website:'
@@ -93,34 +96,44 @@ class OrgSignUp extends Component {
                   value={this.state.website}
                 />
               </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+              </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered columns={1}>
+          <Grid.Column centered>
+              <Form.Group widths='equal'>
+                <Form.Input 
                   type='file'
                   name='logo'
                   label='Upload logo:'
                   onChange={this.handleChange}
                 />
-              </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+
+                <Form.Input required
                   name='email'
                   label='Contact Email:'
                   placeholder='Email'
                   onChange={this.handleChange}
                   value={this.state.email}
-                />
+                  iconPosition='left' 
+                >
+                <Icon name='at' />
+                <input />
+                </Form.Input> 
               </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+              </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered columns={1}>
+          <Grid.Column>
+              <Form.Group widths='equal'>
+                <Form.Input required
                   name='username'
                   label='Username:'
                   placeholder='username'
                   onChange={this.handleChange}
                   value={this.state.username}
                 />
-              </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+
+                <Form.Input required
                   type='password'
                   name='password'
                   label='Password:'
@@ -128,9 +141,8 @@ class OrgSignUp extends Component {
                   onChange={this.handleChange}
                   value={this.state.password}
                 />
-              </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+
+                <Form.Input required
                   type='password'
                   name='confirmPassword'
                   label='Confirm Password:'
@@ -139,17 +151,20 @@ class OrgSignUp extends Component {
                   value={this.state.confirmPassword}
                 />
               </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+              </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered columns={1}>
+          <Grid.Column centered>
+              <Form.Group widths='equal'>
+                <Form.Input required
                   name='country'
                   label='Country:'
                   placeholder='Country'
                   onChange={this.handleChange}
                   value={this.state.country}
                 />
-              </Form.Group>
-              <Form.Group inline>
-                <Form.Input
+
+                <Form.Input required
                   name='postalCode'
                   label='Postal Code:'
                   placeholder='Postal Code'
@@ -157,7 +172,11 @@ class OrgSignUp extends Component {
                   value={this.state.postalCode}
                 />
               </Form.Group>
-              <Form.Group inline>
+              </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered columns={1}>
+          <Grid.Column centered>
+              <Form.Group widths='equal'>
                 <Form.TextArea
                   name='description'
                   label='Description:'
@@ -166,15 +185,15 @@ class OrgSignUp extends Component {
                   value={this.state.description}
                 />
               </Form.Group>
-              <Form.Button content='submit' />
+              
+            </Grid.Column>
+            <Form.Button  content='submit' />
+          </Grid.Row>
+              </Grid>
+              
             </Form>
-          </Container>
+          
           <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <Footer />
       </div>
     );
   }

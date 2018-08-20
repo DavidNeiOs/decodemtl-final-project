@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import { Card, Icon, Image,Grid, Button, Modal, Header, Form, Label, Input } from 'semantic-ui-react'
 import { connect } from 'react-redux'
+import ConnectedSignUp from './signUp.js'
+import ConnectedLogIn from './LogIn.js'
 
 
 class HomeItemDisp extends Component {
     constructor() {
         super();
-        this.state = {items:[],randomItems:[]}
+        this.state = {items:[],randomItems:[], open:false,open2:false}
         this.getItems = this.getItems.bind(this)
     }
+    show = size => () => this.setState({ size, open: true })
+    show2 = size => () => this.setState({ size, open2: true })
+    close = () => this.setState({ open: false })
     getItems() {
         fetch('/getItems')
           .then(response => response.text())
@@ -26,6 +31,8 @@ class HomeItemDisp extends Component {
     }
 
     formatItems = () => {
+        const { activeItem } = this.state
+        const { open, open2, size } = this.state
         let firstList = this.state.randomItems
         let filteredList = firstList.map((i) => {
             i.images = ['stefan-ivanov-83176.jpg']
@@ -58,10 +65,26 @@ class HomeItemDisp extends Component {
                                                     type='number' 
                                                     name='initialPrice' 
                                                     onChange={this.handleChange}
-                                                    required
+                                                    
                                                 />
                                         </Form.Field>
-                                        <Button fluid> Bid NOW! </Button>
+                                        <Modal trigger={<Button secondary
+                                        active={activeItem === 'login'}
+                                        onClick={this.show('mini')}
+                                        position='right'>Login</Button>} size={size} open={open} onClose={this.close}>
+                                        <Modal.Content>
+                                            <ConnectedLogIn/>
+                                        </Modal.Content>
+                                        </Modal>
+
+                                        <Modal trigger={<Button primary
+                                        active={activeItem === 'signup'}
+                                        onClick={this.show2('mini')}
+                                        position='right'>Sign Up</Button>} size={size} open2={open} onClose={this.close}>
+                                        <Modal.Content>
+                                            <ConnectedSignUp/>
+                                        </Modal.Content>
+                                        </Modal>
                                         </Form>
                                         
                                     </Modal.Description>

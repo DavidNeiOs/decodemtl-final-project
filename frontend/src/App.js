@@ -23,7 +23,7 @@ const reducer = function(state, action) {
     
     case 'showOrgPage':
       return { ...state, showLogIn: false, orgId: action.content, showOrgPage: true, 
-                  showCreateListing: false, showUpdateItemPage: false
+                  showCreateListing: false, showUpdateItemPage: false, showHomepage:false
               };
 
     case 'setOrg':

@@ -1,14 +1,18 @@
 import React, { Component } from 'react'
-import { Segment, Button, Divider } from 'semantic-ui-react'
+import { Segment, Button, Divider, Modal, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
+import OrgSignUp from './OrgSignUp.js'
+import UserSignUp from './UserSignUp.js'
 
 class SignUp extends Component {
   constructor () {
     super();
+    this.state = {open: false}
     this.handleNP = this.handleNP.bind(this)
     this.handleBuyer = this.handleBuyer.bind(this)
   }
-
+  show = size => () => this.setState({ size, open: true })
+  close = () => this.setState({ open: false })
   handleNP () {
     this.props.dispatch({
       type: 'orgSignUp',
@@ -23,19 +27,32 @@ class SignUp extends Component {
     })
   }
   render() {
+    const { open, size } = this.state
     return (
       <Segment padded>
-        <Button primary fluid onClick={this.handleBuyer}>
+        
+        <Modal trigger={<Button fluid primary onClick={this.show('tiny')}
+        size={size} open={open} onClose={this.close}>
           User Sign Up
-        </Button>
+        </Button>}>
+        <Modal.Header><Header as='h2' style={{textAlign: 'center'}}>User Sign Up</Header></Modal.Header>
+              <Modal.Content>
+                <UserSignUp onSubmit={this.close}/>
+              </Modal.Content>
+        </Modal>
         <Divider horizontal>Or</Divider>
-        <Button secondary fluid onClick={this.handleNP}>
+        <Modal trigger={<Button fluid secondary>
           Non-Profit Sign Up
-        </Button>
+        </Button>}>
+        <Modal.Header><Header as='h2' style={{textAlign: 'center'}}>Non-Profit Sign Up</Header></Modal.Header>
+              <Modal.Content>
+                <OrgSignUp onSubmit={this.close}/>
+              </Modal.Content>
+        </Modal>
       </Segment>
     );
   }
  }
 
-let connectedSignUp = connect()(SignUp)
-export default connectedSignUp;
+let ConnectedSignUp = connect()(SignUp)
+export default ConnectedSignUp;

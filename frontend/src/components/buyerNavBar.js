@@ -9,7 +9,7 @@ class BuyerNavBar extends Component {
     this.state = { buyer : '', signUpClick: false} 
     this.getOrgs = this.getOrgs.bind(this);
     this.handleListingClick = this.handleListingClick.bind(this);
-    this.handleLogOut = this.handleLogOut.bind(this);
+
   }
   getOrgs() {
     fetch('/getBuyers')
