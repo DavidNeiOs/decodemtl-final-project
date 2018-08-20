@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const sha256 = require('sha256');
 const app = express();
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 var db = require('./db');
 
 var http = require('http').Server(app);
@@ -50,7 +51,7 @@ io.on('connection', function (socket) {
     socket.on('sendLastPrice', function (content) {
         socket.join(content.room);
         let lastPri = getItemLastPrice(content.itemId);
-        io.sockets.in(content.room).emit('receiveLastPrice', {itemId: content.itemId, lastPrice: lastPri});
+        io.sockets.in(content.room).emit('receiveLastPrice', { itemId: content.itemId, lastPrice: lastPri });
     });
 });
 
@@ -355,9 +356,11 @@ app.post('/logout', (req, res) => {
 
 app.get('/home', (req, res) => {
     let currentSession = getSessionIdFromCookie(req);
-
+    
     let datab = getDatabase();
     var collSess = datab.collection(collSessions);
+    var collBuy = datab.collection(collBuyers);
+
     let query = { token: currentSession, active: true };
 
     collSess.find(query).toArray(function (err, result) {
@@ -366,8 +369,17 @@ app.get('/home', (req, res) => {
 
             let userTypeSaved = result[0].userType;
             if (userTypeSaved === USER_TYPE_BUYER) {
-                res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, userId: result[0].usrId }))
-            } else {
+                //res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, userId: result[0].usrId }))
+                collBuy.find({ userId: result[0].usrId }).toArray(function (err, result) {
+                    if (err) { throw err; }
+                    if (result.length > 0) {
+                        let objUser = result[0];
+                        delete objUser['password'];
+                        res.send(JSON.stringify({ status: true, message: "user has an active session", user: objUser }))
+                    }
+                });
+
+            } else { //if it is a org
                 res.send(JSON.stringify({ status: true, message: "user has an active session", username: result[0].username, userType: userTypeSaved, orgId: result[0].usrId }))
             }
 
@@ -514,7 +526,7 @@ app.post("/bidItem", (req, res) => {
 
     //check if user session exist
     let collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);    
+    let currentSession = getSessionIdFromCookie(req);
 
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
@@ -541,7 +553,7 @@ app.post("/bidItem", (req, res) => {
 
                             else if (result.result.nModified > 0) {
                                 //update last price of the item
-                                collItm.updateOne({itemId: bodyParam.itemId}, { $set: { lastPrice: bodyParam.bid }}, function (err, result) {
+                                collItm.updateOne({ itemId: bodyParam.itemId }, { $set: { lastPrice: bodyParam.bid } }, function (err, result) {
                                     if (err) { throw err; }
                                     else if (result.result.nModified > 0) {
                                         res.send(JSON.stringify({ status: true, message: "transaction success", transactionId: id }));
@@ -607,7 +619,7 @@ app.post("/closeItem", (req, res) => {
                                 if (result.length > 0) {
                                     res.send(JSON.stringify({
                                         status: true, message: "",
-                                        winner: { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice }
+                                        winner: { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice, email: result[0].email }
                                     }));
                                 }
                             });
@@ -639,6 +651,33 @@ app.post("/closeItem", (req, res) => {
     });
 });
 
+/*app.post("/sendEmail", (req, res) => {
+    let bodyParam = JSON.parse(req.body.toString());
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'linque26@gmail.com',
+          pass: 'lq150885'
+        }
+      });
+      
+      var mailOptions = {
+        from: 'youremail@gmail.com',
+        to: 'myfriend@yahoo.com',
+        subject: 'Sending Email using Node.js',
+        text: 'That was easy!'
+      };
+      
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+
+});*/
 
 function getSessionIdFromCookie(req) {
     let sessionID = req.headers.cookie != undefined ? req.headers.cookie.split("=")[1] : "";
@@ -657,11 +696,14 @@ function getItemLastPrice(itemIdParam) {
     collItm.find({ itemId: itemIdParam }).toArray(function (err, result) {
         if (err) { throw err }
         else if (result.length > 0) {
-            lastPrice = result[0].lastPrice; 
+            lastPrice = result[0].lastPrice;
             //cb();
             return lastPrice;
-        } 
-    });  
-    return lastPrice;  
+        }
+    });
+    return lastPrice;
 }
 
+/*function sendMail() {
+
+}*/
