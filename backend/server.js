@@ -50,7 +50,7 @@ io.on('connection', function (socket) {
         socket.join(content.room);
         if (content.message !== "") {
             serverState.chatMessages.push(content);
-        }         
+        }
         io.sockets.in(content.room).emit('receiveMessage', serverState.chatMessages);
     });
     socket.on('sendLastPrice', function (content) {
@@ -706,6 +706,90 @@ app.post("/sendEmail", (req, res) => {
                     console.log('Email sent: ' + info.response);
                 }
             });
+        }
+    });
+});
+
+app.post("/getUserProfile", (req, res) => {
+
+    let datab = getDatabase();
+    var collItem = datab.collection(collItems);
+    let collBid = datab.collection(collBidTran);
+    let bodyParam = JSON.parse(req.body.toString());
+
+    //session data
+    var collSess = datab.collection(collSessions);
+    //let currentSession = getSessionIdFromCookie(req);
+    let currentSession = "2576884454";
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
+
+    //data
+    let wonItemsObj=[];
+    let lostitemsObj=[];
+    let transactionsObj=[];
+    let processSearchWonItems = false;
+    let processSearchItemsBidded = false;
+
+    let cb = () => {
+        //set response
+        if (processSearchWonItems && processSearchItemsBidded) {
+
+            //find lost items
+            let arrayWinners = [];
+            wonItemsObj.forEach(e => {
+                lostitemsObj.push(e.itemId);
+            });
+
+            collBid.find({"itemId":{$nin:arrayWinners}, userId: bodyParam.userId}).toArray(function (err, result) {    
+                if (err) { throw err }
+                else if (result.length > 0) {
+                    lostitemsObj = result;                    
+                }  
+                res.send(JSON.stringify({
+                    status: true, message: "",
+                    wonItems: wonItemsObj,
+                    lostItems: lostitemsObj,
+                    transactions: transactionsObj
+                }));
+            });            
+        }
+    };
+
+    //check if user session exist
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
+
+            //won items 
+            collItem.find({ winnerUserId: bodyParam.userId }).toArray(function (err, result) {
+                if (err) { throw err }
+                else if (result.length > 0) {
+                    wonItemsObj = result;                    
+                } 
+                processSearchWonItems = true;
+                cb();
+            });
+
+            //bids maded 
+            //collBid.find({ userId: bodyParam.userId }).toArray(function (err, result) {
+            let aggregateJoin = { $lookup:
+                {
+                  from: 'items',
+                  localField: 'itemId',
+                  foreignField: 'itemId',
+                  as: 'itemDetail'
+                }
+              };
+            collBid.aggregate(aggregateJoin).toArray(function (err, result) {    
+                if (err) { throw err }
+                else if (result.length > 0) {
+                    transactionsObj = result;                    
+                }
+                processSearchItemsBidded = true;
+                cb();
+            });
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
     });
 });
