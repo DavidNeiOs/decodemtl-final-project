@@ -316,7 +316,10 @@ app.post('/login', (req, res) => {
 
                     //set cookie and send response
                     res.cookie(COOKIE_NAME, token);
-                    res.send(JSON.stringify({ status: true, message: "", userType: "buyer", userId: result[0].userId }))
+                    //res.send(JSON.stringify({ status: true, message: "", userType: "buyer", userId: result[0].userId }))
+                    let objUser = result[0];
+                    delete objUser['password'];
+                    res.send(JSON.stringify({ status: true, message: "", userType: "buyer", user: objUser }))
                 } else {
                     res.send(JSON.stringify({ status: false, message: "invalid username or password" }))
                 }
