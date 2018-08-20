@@ -719,8 +719,7 @@ app.post("/getUserProfile", (req, res) => {
 
     //session data
     var collSess = datab.collection(collSessions);
-    //let currentSession = getSessionIdFromCookie(req);
-    let currentSession = "2576884454";
+    let currentSession = getSessionIdFromCookie(req);    
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
     //data
