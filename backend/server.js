@@ -23,6 +23,7 @@ const collItems = "items";
 const collSessions = "sessions";
 const collBuyers = "buyers";
 const collBidTran = "bidTransactions";
+const collChatMess = "chatMessages";
 
 const USER_TYPE_BUYER = "buyer";
 const USER_TYPE_ORG = "org";
@@ -39,36 +40,6 @@ let serverState = {
     chatMessages: [], //temporary
     bidsItems: [] //temporary 
 }
-
-//CHAT SOCKET IO--------------------------------------------------------
-//io.origins([allowedOrigins]);
-/*io.on('connection', socket => {
-    console.log("connected !");
-})*/
-io.on('connection', function (socket) {
-    socket.on('sendMessage', function (content) {
-        socket.join(content.room);
-        if (content.message !== "") {
-            serverState.chatMessages.push(content);
-        }
-        io.sockets.in(content.room).emit('receiveMessage', serverState.chatMessages);
-    });
-    socket.on('sendLastPrice', function (content) {
-        socket.join(content.room);
-        let lastPri = getItemLastPrice(content.itemId);
-        //let objLastPrice = { itemId: content.itemId, room: content.room, lastPrice: lastPri, username: content.username }
-        let objLastPrice = [...content];
-        objLastPrice.lastPrice = lastPri;
-        objLastPrice.date = new Date().toISOString();
-        serverState.bidsItems.push(content);
-        io.sockets.in(content.room).emit('receiveLastPrice', serverState.bidsItems);
-    });
-});
-
-
-http.listen(5000, function () {
-    console.log('chat listening on *:' + 5000);
-});
 
 //CONNECTION WITH MONGO DB WHEN APP INIT---------------------------------
 db.connect(url, function (err) {
@@ -532,7 +503,6 @@ app.post("/bidItem", (req, res) => {
     let collItm = datab.collection(collItems);
 
     bodyParam = JSON.parse(req.body.toString());
-    bodyParam.date = new Date().toISOString();
 
     //check if user session exist
     let collSess = datab.collection(collSessions);
@@ -549,6 +519,7 @@ app.post("/bidItem", (req, res) => {
                 if (err) { throw err }
 
                 else if (result.length > 0) {
+                    bodyParam.date = new Date().toISOString();
                     collBid.insertOne(bodyParam, function (err, result) {
                         if (err) {
                             res.send(JSON.stringify({ status: false, message: "error processing bid to item" }))
@@ -661,55 +632,77 @@ app.post("/closeItem", (req, res) => {
     });
 });
 
+/*
+* Endpoint used to send email. This endpoint should be used to send whatever email but
+* for this case of notify end bid, is used to send several emails at the same time.
+*/
 app.post("/sendEmail", (req, res) => {
     let bodyParam = JSON.parse(req.body.toString());
-
     let adminEmail = "charitybidadm@gmail.com";
     let adminEmailPass = "decode123!";
 
-    var mailOptionsUser = {
-        from: adminEmail,
-        to: bodyParam.userEmail,
-        subject: bodyParam.userEmailSubject,
-        text: bodyParam.userEmailText
-    };
+    //check if user session exist
+    let datab = getDatabase();
+    let collSess = datab.collection(collSessions);
+    let currentSession = getSessionIdFromCookie(req); 
+    let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
-    var mailOptionsOrg = {
-        from: adminEmail,
-        to: bodyParam.orgEmail,
-        subject: bodyParam.orgEmailSubject,
-        text: bodyParam.orgEmailText
-    };
+    collSess.find(querySess).toArray(function (err, result) {
+        if (err) { throw err; }
+        else if (result.length > 0) {
 
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: adminEmail,
-            pass: adminEmailPass
-        }
-    });
+            var mailOptionsUser = {
+                from: adminEmail,
+                to: bodyParam.userEmail,
+                subject: bodyParam.userEmailSubject,
+                text: bodyParam.userEmailText
+            };
 
-    //send email to org
-    //TODO: catch all errors and send in the reponse
-    transporter.sendMail(mailOptionsOrg, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-            //send email to user
-            transporter.sendMail(mailOptionsUser, function (error, info) {
-                if (error) {
-                    res.send(JSON.stringify({ status: false, message: "error sending emails" }));
-                    console.log(error);
-                } else {
-                    res.send(JSON.stringify({ status: true, message: "" }));
-                    console.log('Email sent: ' + info.response);
+            var mailOptionsOrg = {
+                from: adminEmail,
+                to: bodyParam.orgEmail,
+                subject: bodyParam.orgEmailSubject,
+                text: bodyParam.orgEmailText
+            };
+
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: adminEmail,
+                    pass: adminEmailPass
                 }
             });
+
+            //send email to org
+            //TODO: catch all errors and send in the reponse
+            transporter.sendMail(mailOptionsOrg, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    //send email to user
+                    transporter.sendMail(mailOptionsUser, function (error, info) {
+                        if (error) {
+                            res.send(JSON.stringify({ status: false, message: "error sending emails" }));
+                            console.log(error);
+                        } else {
+                            res.send(JSON.stringify({ status: true, message: "" }));
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                }
+            });
+
+        } else {
+            res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
     });
 });
 
+/*
+* Endpoint used to get information about all bid transactions an user did, how many items an user has won and 
+* how many has lost.
+*/
 app.post("/getUserProfile", (req, res) => {
 
     let datab = getDatabase();
@@ -719,13 +712,13 @@ app.post("/getUserProfile", (req, res) => {
 
     //session data
     var collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);    
+    let currentSession = getSessionIdFromCookie(req);
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
     //data
-    let wonItemsObj=[];
-    let lostitemsObj=[];
-    let transactionsObj=[];
+    let wonItemsObj = [];
+    let lostitemsObj = [];
+    let transactionsObj = [];
     let processSearchWonItems = false;
     let processSearchItemsBidded = false;
 
@@ -739,18 +732,18 @@ app.post("/getUserProfile", (req, res) => {
                 lostitemsObj.push(e.itemId);
             });
 
-            collBid.find({"itemId":{$nin:arrayWinners}, userId: bodyParam.userId}).toArray(function (err, result) {    
+            collBid.find({ "itemId": { $nin: arrayWinners }, userId: bodyParam.userId }).toArray(function (err, result) {
                 if (err) { throw err }
                 else if (result.length > 0) {
-                    lostitemsObj = result;                    
-                }  
+                    lostitemsObj = result;
+                }
                 res.send(JSON.stringify({
                     status: true, message: "",
                     wonItems: wonItemsObj,
                     lostItems: lostitemsObj,
                     transactions: transactionsObj
                 }));
-            });            
+            });
         }
     };
 
@@ -763,26 +756,27 @@ app.post("/getUserProfile", (req, res) => {
             collItem.find({ winnerUserId: bodyParam.userId }).toArray(function (err, result) {
                 if (err) { throw err }
                 else if (result.length > 0) {
-                    wonItemsObj = result;                    
-                } 
+                    wonItemsObj = result;
+                }
                 processSearchWonItems = true;
                 cb();
             });
 
             //bids maded 
             //collBid.find({ userId: bodyParam.userId }).toArray(function (err, result) {
-            let aggregateJoin = { $lookup:
+            let aggregateJoin = [{
+                $lookup:
                 {
-                  from: 'items',
-                  localField: 'itemId',
-                  foreignField: 'itemId',
-                  as: 'itemDetail'
+                    from: 'items',
+                    localField: 'itemId',
+                    foreignField: 'itemId',
+                    as: 'itemDetail'
                 }
-              };
-            collBid.aggregate(aggregateJoin).toArray(function (err, result) {    
+            }];
+            collBid.aggregate(aggregateJoin).toArray(function (err, result) {
                 if (err) { throw err }
                 else if (result.length > 0) {
-                    transactionsObj = result;                    
+                    transactionsObj = result;
                 }
                 processSearchItemsBidded = true;
                 cb();
@@ -817,3 +811,76 @@ function getItemLastPrice(itemIdParam) {
     });
     return lastPrice;
 }
+
+//-----------------------------------------------------------------
+//SOCKET IO--------------------------------------------------------
+//io.origins([allowedOrigins]);
+/*io.on('connection', socket => {
+    console.log("connected !");
+})*/
+io.on('connection', function (socket) {
+    let datab = getDatabase();
+
+    //namespace used to receive and send messages for chat
+    socket.on('sendMessage', function (content) {
+        socket.join(content.room);
+
+        let collChat = datab.collection(collChatMess);
+        let chatObj = { room: content.room, username: content.username, message: content.message, date: new Date().toISOString() };
+
+        if (content.message !== "") {
+            collChat.insertOne(chatObj, function (err, result) {
+                if (err) throw err;
+                collChat.find({ room: content.room }).sort({ date: 1 }).toArray(function (err, result) {
+                    if (err) { throw err }
+                    io.sockets.in(content.room).emit('receiveMessage', result);
+                });
+            });
+        } else {
+            collChat.find({ room: content.room }).sort({ date: 1 }).toArray(function (err, result) {
+                if (err) { throw err }
+                io.sockets.in(content.room).emit('receiveMessage', result);
+            });
+        }
+    });
+
+    //namespace used to receive and send messages for bid process
+    socket.on('sendLastPrice', function (content) {
+        socket.join(content.room);
+
+        /*let lastPri = getItemLastPrice(content.itemId);
+        //let objLastPrice = { itemId: content.itemId, room: content.room, lastPrice: lastPri, username: content.username }
+        let objLastPrice = [...content];
+        objLastPrice.lastPrice = lastPri;
+        objLastPrice.date = new Date().toISOString();
+        serverState.bidsItems.push(content);*/
+
+        let bidItemsArray = [];
+        let collBid = datab.collection(collBidTran);
+        /*let aggregateJoin = [{ $lookup:
+            {
+              from: 'buyers',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userDetail'
+            }
+          }];
+        collBid.find({itemId : content.itemId}).aggregate(aggregateJoin).toArray(function (err, result) {*/
+        collBid.find({ itemId: content.itemId }).sort({ bid: -1 }).toArray(function (err, result) {
+            if (err) { throw err }
+            else if (result.length > 0) {
+                result.forEach(e => {
+                    let objitem = { itemId: e.itemId, bid: e.bid, username: e.username, date: e.date };
+                    bidItemsArray.push(objitem);
+                })
+            }
+            io.sockets.in(content.room).emit('receiveLastPrice', bidItemsArray);
+        });
+
+    });
+});
+
+
+http.listen(5000, function () {
+    console.log('SOCKET IO backend project listening on *:' + 5000);
+});
