@@ -7,6 +7,7 @@ class BuyerNavBar extends Component {
   constructor() {
     super();
     this.state = { buyer : '', signUpClick: false} 
+    this.handleLogOut = this.handleLogOut.bind(this)
   } 
   
     handleLogOut() {
@@ -14,7 +15,7 @@ class BuyerNavBar extends Component {
             method: 'POST',
             mode: 'same-origin',
             credentials: 'include',
-            body: JSON.stringify({username: this.props.buyer[0].username})
+            body: JSON.stringify({username: this.state.buyer.username})
         })
         .then(response => response.text())
         .then(responseBody => {
