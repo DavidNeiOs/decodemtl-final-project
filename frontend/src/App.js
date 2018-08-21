@@ -8,8 +8,7 @@ const reducer = function(state, action) {
   switch(action.type) {
     case 'homepage': 
       return {...state, showHomepage: action.content, showOrgPage: false, showBuyerPage: false,
-                  showCreateListing: false, 
-              };
+                  showCreateListing: false, showOrgProfile: false, showBuyerProfile: false};
 
     case 'getItems':
       return {...state, items: action.content};
@@ -25,20 +24,24 @@ const reducer = function(state, action) {
     
     case 'showOrgPage':
       return { ...state, showLogIn: false, orgId: action.content, showOrgPage: true, 
-                  showCreateListing: false, showUpdateItemPage: false, showHomepage:false
+                  showCreateListing: false, showUpdateItemPage: false, showHomepage:false 
               };
-
-    case 'setOrg':
+    
+    case 'updateBid' :
+      return  { ...state, items : action.content };
+    
+      case 'setOrg':
       return { ...state, currentOrg: action.content};
 
     case 'showCreateL':
-      return { ...state, showCreateListing: action.content, showOrgPage: false, showUpdateItemPage: false,
-                showOrgProfile: false
-              };
+      return { ...state, showCreateListing: action.content, showOrgPage: false, showUpdateItemPage: false};
     
-    case 'showBuyerPage':
+      case 'showBuyerPage':
       return { ...state, showLogIn: false, currentBuyer: action.content,
-                   showBuyerPage: true, buyerId: action.content.userId, showHomepage: false};
+                    showBuyerPage: true, buyerId: action.content.userId, showHomepage: false};
+                    
+    case 'setBuyer':
+      return { ...state, currentBuyer: action.content}
     
     case 'showEditItem':
       return { ...state, showUpdateItemPage: true, item: action.content, showOrgPage: false}
@@ -61,16 +64,14 @@ let myStore = createStore(
     showBuyerSignUp: false,
     showLogIn: false,
     showOrgPage: false,
-    showOrgProfile: false,
     showCreateListing: false,
     showBuyerPage: false,
-    showBuyerProfile: false,
     showUpdateItemPage: false,
     items: [],
     orgId: "",
     currentOrg: [],
     buyerId: "",
-    currentBuyer: {},
+    currentBuyer: [],
     item: {}
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()

@@ -8,8 +8,8 @@ import Timer from './timer.js'
 
 class BuyerHomeDisplay extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             activeItem: '',
             orgNames: [],
@@ -40,17 +40,18 @@ class BuyerHomeDisplay extends Component {
                 )
                 
             })
-            .then(console.log(JSON.stringify({
-                username:username,
-                itemId:itemId,
-                userId:this.props.usr.userId,
-                bid:amount
-            }
-            )))
             .then(response => response.text())
             .then(response => {
                 console.log(response)
                 this.sendBid(itemId, username);
+                let updatedItems = this.props.myItems.map(item => {
+                    if (item.itemId === itemId) {
+                        item.lastPrice = amount
+                    }
+                    return item;
+                });
+
+                this.props.dispatch({type : 'updateBid', content: updatedItems})
             })
             .catch(err => {
                 console.log(err)
@@ -91,7 +92,10 @@ class BuyerHomeDisplay extends Component {
                                             <Header>Item ID : {i.itemId}</Header>
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
+                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <br />
                                             <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            
                                             <Input type='number' onChange={this.handleChange}/>
                                             <Button.Group>
                                                 <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>
@@ -149,6 +153,8 @@ class BuyerHomeDisplay extends Component {
                                             <Header>Item ID : {i.itemId}</Header>
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
+                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <br />
                                             <h2><Timer endDate={i.bidFinDate}/></h2>
                                             <Input type='number' onChange={this.handleChange}/>
                                             <Button.Group>

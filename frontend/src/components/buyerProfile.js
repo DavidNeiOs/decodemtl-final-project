@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Form, Grid } from "semantic-ui-react";
 import ConnectedBuyerNavBar from './buyerNavBar.js'
 import Footer from './footer.js'
+import { connect } from 'react-redux'
 
 class BuyerProfile extends Component {
     constructor(){
@@ -59,31 +60,41 @@ class BuyerProfile extends Component {
           postalCode: '',
       })*/
     }
+    componentDidMount() {
 
+    }
     render() {
         return (
           <div>
             <ConnectedBuyerNavBar />
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             <Form centered onSubmit={this.handleSubmit} size='large'> 
               <Grid>
                 <Grid.Row centered columns={1}>
                 
                 <Grid.Column>
                 <Form.Group widths='equal'>
-                  <Form.Input required
+                  <Form.Input
                     name='username'
                     label='Username:'
                     placeholder='username'
                     onChange={this.handleChange}
-                    value={this.state.username}
+                    value={this.props.byr.username}
                   />
 
-                  <Form.Input required
+                  <Form.Input 
                     name='email'
                     label='Contact Email:'
                     placeholder='Email'
                     onChange={this.handleChange}
-                    value={this.state.email}
+                    value={this.props.byr.email}
                   />
                 </Form.Group>
                 </Grid.Column>
@@ -91,44 +102,20 @@ class BuyerProfile extends Component {
                 <Grid.Row centered columns={1}>
                 <Grid.Column>
                 <Form.Group widths='equal'>
-                  <Form.Input required
-                    type='password'
-                    name='password'
-                    label='Password:'
-                    placeholder='password'
-                    onChange={this.handleChange}
-                    value={this.state.password}
-                  />
-
-                  <Form.Input required
-                    type='password'
-                    name='confirmPassword'
-                    label='Confirm Password:'
-                    placeholder='Confirm password'
-                    onChange={this.handleChange}
-                    value={this.state.confirmPassword}
-                  />
-                </Form.Group>
-                </Grid.Column>
-                </Grid.Row>
-                <Grid.Row centered columns={1}>
-                
-                <Grid.Column>
-                <Form.Group widths='equal'>
-                  <Form.Input required
+                  <Form.Input 
                     name='firstName'
                     label='First name:'
                     placeholder='first name'
                     onChange={this.handleChange}
-                    value={this.state.fisrstName}
+                    value={this.props.byr.firstName}
                   />
 
-                  <Form.Input required
+                  <Form.Input
                     name='lastName'
                     label='Last name:'
                     placeholder='last name'
                     onChange={this.handleChange}
-                    value={this.state.lastName}
+                    value={this.props.byr.lastName}
                   />
                 </Form.Group>
                 </Grid.Column>
@@ -137,33 +124,56 @@ class BuyerProfile extends Component {
                 
                 <Grid.Column>
                 <Form.Group widths='equal'>
-                  <Form.Input required
+                  <Form.Input 
                     name='country'
                     label='Country:'
                     placeholder='Country'
                     onChange={this.handleChange}
-                    value={this.state.country}
+                    value={this.props.byr.country}
                   />
 
-                  <Form.Input required
+                  <Form.Input
                     name='postalCode'
                     label='Postal Code:'
                     placeholder='Postal Code'
                     onChange={this.handleChange}
-                    value={this.state.postalCode}
+                    value={this.props.byr.postalCode}
                   />
                 </Form.Group>
                 </Grid.Column>
-                <Form.Button content='submit' />
                 </Grid.Row>
                 </Grid>
               </Form>
             <br />
             <br />
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            
             <Footer />
           </div>
         );
     }
 }
 
-export default BuyerProfile;
+function mapStateToProps(state) {
+    return {
+        byr: state.currentBuyer
+    }
+}
+
+export default connect(mapStateToProps)(BuyerProfile);
