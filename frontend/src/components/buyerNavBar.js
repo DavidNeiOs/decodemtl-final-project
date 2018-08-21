@@ -6,8 +6,9 @@ import { connect } from 'react-redux'
 class BuyerNavBar extends Component {
   constructor() {
     super();
-    this.state = { buyer : '', signUpClick: false} 
-    this.handleLogOut = this.handleLogOut.bind(this)
+    this.state = { buyer : '', signUpClick: false} ;
+    this.handleLogOut = this.handleLogOut.bind(this);
+    this.handleSettings = this.handleSettings.bind(this);
   } 
   
     handleLogOut() {
@@ -28,12 +29,19 @@ class BuyerNavBar extends Component {
         })
 
     }
+
+    handleSettings() {
+        this.props.dispatch({
+            type: 'showBuyerProfile',
+            content: true
+        })
+    }
   componentDidMount() {
     this.setState({ buyer: this.props.buyer });
   }
   render() {
     const options = [
-        { key: 1, text: 'Settings', value: 1 },
+        { key: 1, text: 'Settings', value: 1, onClick: this.handleSettings },
         { key: 2, text: 'Logout', value: 2, onClick: this.handleLogOut},
     ]
     const { activeItem } = this.state

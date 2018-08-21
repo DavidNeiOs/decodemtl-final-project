@@ -9,7 +9,7 @@ import UserSignUp from './UserSignUp.js';
 import BuyerHomePage from './buyerHomePage.js';
 import UpdateItemPage from './updateItemPage.js';
 import OrgProfile from './orgProfile.js'
-
+import BuyerProfile from './buyerProfile.js'
 class MainContainner extends Component {
   componentDidMount () {
     fetch('/home', {
@@ -47,6 +47,7 @@ class MainContainner extends Component {
             {this.props.shBuyerPage ? (<BuyerHomePage />) : (<div></div>)}
             {this.props.shEditItem ? (<UpdateItemPage />) : (<div></div>)}
             {this.props.shOrgProfile ? (<OrgProfile />) : (<div></div>)}
+            {this.props.shBuyerProfile ? (<BuyerProfile />) : (<div></div>) }
         </div>
     );
   }
@@ -62,6 +63,7 @@ let mapStatetoProps = function (state) {
     shBuyerPage: state.showBuyerPage,
     shEditItem: state.showUpdateItemPage,
     shOrgProfile: state.showOrgProfile,
+    shBuyerProfile: state.showBuyerProfile
   }
 }
 

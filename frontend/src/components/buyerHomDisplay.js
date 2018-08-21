@@ -16,7 +16,7 @@ class BuyerHomeDisplay extends Component {
             currBid:0
         }
 
-        this.socket = socketIO("http://10.65.110.209:5000");
+        this.socket = socketIO("http://159.203.57.3:5000");
         this.sendBid = (itemId,username) => {
             this.socket.emit('sendLastPrice', {
                 itemId: itemId,

@@ -47,7 +47,7 @@ const reducer = function(state, action) {
       return { ...state, showOrgPage: false, showOrgProfile: action.content, showCreateListing: false}
     
     case 'showBuyerProfile':
-        return { ...state, showBuyerPage: false, showBuyerPage: true}
+        return { ...state, showBuyerPage: false, showBuyerProfile: action.content}
     
   }
   return state;
