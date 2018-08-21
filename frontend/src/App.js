@@ -7,7 +7,9 @@ const reducer = function(state, action) {
 
   switch(action.type) {
     case 'homepage': 
-      return {...state, showHomepage: action.content, showOrgPage: false};
+      return {...state, showHomepage: action.content, showOrgPage: false, showBuyerPage: false,
+                  showCreateListing: false, 
+              };
 
     case 'getItems':
       return {...state, items: action.content};
@@ -30,7 +32,9 @@ const reducer = function(state, action) {
       return { ...state, currentOrg: action.content};
 
     case 'showCreateL':
-      return { ...state, showCreateListing: action.content, showOrgPage: false, showUpdateItemPage: false};
+      return { ...state, showCreateListing: action.content, showOrgPage: false, showUpdateItemPage: false,
+                showOrgProfile: false
+              };
     
     case 'showBuyerPage':
       return { ...state, showLogIn: false, currentBuyer: action.content,
@@ -38,6 +42,12 @@ const reducer = function(state, action) {
     
     case 'showEditItem':
       return { ...state, showUpdateItemPage: true, item: action.content, showOrgPage: false}
+
+    case 'showOrgProfile':
+      return { ...state, showOrgPage: false, showOrgProfile: action.content, showCreateListing: false}
+    
+    case 'showBuyerProfile':
+        return { ...state, showBuyerPage: false, showBuyerPage: true}
     
   }
   return state;
@@ -51,8 +61,10 @@ let myStore = createStore(
     showBuyerSignUp: false,
     showLogIn: false,
     showOrgPage: false,
+    showOrgProfile: false,
     showCreateListing: false,
     showBuyerPage: false,
+    showBuyerProfile: false,
     showUpdateItemPage: false,
     items: [],
     orgId: "",

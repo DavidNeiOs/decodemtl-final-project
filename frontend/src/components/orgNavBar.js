@@ -10,6 +10,7 @@ class OrgNavBar extends Component {
     this.getOrgs = this.getOrgs.bind(this);
     this.handleListingClick = this.handleListingClick.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
+    this.handleSettings = this.handleSettings.bind(this);
   }
   getOrgs() {
     fetch('/getOrgs')
@@ -54,12 +55,20 @@ class OrgNavBar extends Component {
         })
 
     }
+
+    handleSettings(){
+        this.props.dispatch({
+            type: 'showOrgProfile',
+            content: true
+        })
+    }
+
   componentDidMount() {
       this.getOrgs();
   }
   render() {
     const options = [
-        { key: 1, text: 'Settings', value: 1 },
+        { key: 1, text: 'Settings', value: 1, onClick: this.handleSettings },
         { key: 2, text: 'Logout', value: 2, onClick: this.handleLogOut},
     ]
     const { activeItem } = this.state

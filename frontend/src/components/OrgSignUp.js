@@ -8,6 +8,7 @@ class OrgSignUp extends Component {
       orgName: '',
       website: '',
       logo: '',
+      banner: '',
       email: '',
       username: '',
       password: '',
@@ -24,7 +25,7 @@ class OrgSignUp extends Component {
 
   // on change of any field (found at semantic ui Form documentation)
   handleChange(evt, { name, value }) {
-    if (name === 'logo') {
+    if (name === 'logo' || name === 'banner') {
       this.setState({ logo: evt.target.files[0].name });
       return;
     }
@@ -121,6 +122,18 @@ class OrgSignUp extends Component {
                 </Form.Input> 
               </Form.Group>
               </Grid.Column>
+          </Grid.Row>
+          <Grid.Row centered columns={1}>
+            <Grid.Column centered>
+              <Form.Group widths='equal'>
+                <Form.Input 
+                  type='file'
+                  name='banner'
+                  label='Upload banner:'
+                  onChange={this.handleChange}
+                />
+              </Form.Group>
+            </Grid.Column>
           </Grid.Row>
           <Grid.Row centered columns={1}>
           <Grid.Column>
