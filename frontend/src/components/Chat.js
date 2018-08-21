@@ -28,11 +28,18 @@ class Chat extends Component {
 
         const addMessage = data => {
             console.log(data);
-            this.setState({messages: [ ...this.state.messages, data]});
+            //this.setState({messages: [ ...this.state.messages, data]});
+            this.setState({messages: data})
             console.log(this.state.messages);
         };
     }
-
+    componentDidMount() {
+        this.socket.emit('sendMessage', {
+            username: this.props.org[0].username,
+            message: '',
+            room: this.room
+        })
+    }
     render () {
         return (
             <div className='container'>

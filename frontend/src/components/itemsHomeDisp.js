@@ -35,6 +35,7 @@ class HomeItemDisp extends Component {
         const { open, open2, size } = this.state
         let firstList = this.state.randomItems
         let filteredList = firstList.map((i) => {
+            
             return (
                 <Card>
                     <Image src={'./images/' + i.images} />
@@ -72,7 +73,7 @@ class HomeItemDisp extends Component {
                                         onClick={this.show('mini')}
                                         position='right'>Login</Button>} size={size} open={open} onClose={this.close}>
                                         <Modal.Content>
-                                            <ConnectedLogIn/>
+                                            <ConnectedLogIn onSubmit={this.close}/>
                                         </Modal.Content>
                                         </Modal>
 

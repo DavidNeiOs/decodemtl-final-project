@@ -26,10 +26,11 @@ class MainContainner extends Component {
           })
         }
 
-        if (answer.userType === 'buyer'){
+        if (answer.status && !answer.userType){
+          console.log(answer);
           this.props.dispatch({
             type: 'showBuyerPage',
-            content: answer.userId
+            content: answer.user  
           })
         }
       })

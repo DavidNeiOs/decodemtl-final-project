@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Menu, Button, Dropdown } from 'semantic-ui-react'
+import { Input, Menu, Dropdown } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 
@@ -7,26 +7,8 @@ class BuyerNavBar extends Component {
   constructor() {
     super();
     this.state = { buyer : '', signUpClick: false} 
-    this.getOrgs = this.getOrgs.bind(this);
-    this.handleListingClick = this.handleListingClick.bind(this);
-
-  }
-  getOrgs() {
-    fetch('/getBuyers')
-      .then(response => response.text())
-      .then(responseBody => {
-        let parsedBody = JSON.parse(responseBody);
-        let buyerLoggedIn = parsedBody.buyers.filter(byr => byr.userId === this.props.buyerId);
-
-        this.props.dispatch({
-            type: 'setBuyer',
-            content: buyerLoggedIn
-        })
-        let singleOrgLogged = buyerLoggedIn[0]
-        this.setState({ buyer: singleOrgLogged });     
-      })        
-    }
-
+  } 
+  
     handleLogOut() {
         fetch('/logout', {
             method: 'POST',
@@ -46,7 +28,7 @@ class BuyerNavBar extends Component {
 
     }
   componentDidMount() {
-      this.getOrgs();
+    this.setState({ buyer: this.props.buyer });
   }
   render() {
     const options = [

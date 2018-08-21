@@ -10,7 +10,6 @@ class LogIn extends Component {
             username: '',
             password: ''
         }
-        this.props.onSubmit
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
@@ -48,7 +47,7 @@ class LogIn extends Component {
                         // change the store variable that will
                         // render personalized page of buyer
                         type: 'showBuyerPage',
-                        content: body.userId
+                        content: body.user
                     })
                 }
             })
