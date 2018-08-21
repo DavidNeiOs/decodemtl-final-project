@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Grid, Menu, Card, Button, Modal, Header, Image, Icon, Divider } from 'semantic-ui-react'
+import { Grid, Menu, Card, Button, Modal, Header, Image, Icon, Divider, Input } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import Chat from './Chat.js'
 
@@ -44,14 +44,13 @@ class BuyerHomeDisplay extends Component {
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
                                             <h2>{i.bidFinDate}</h2>
+                                            <Input type='number' />
                                             <Button.Group>
-                                                <Button onClick={() => this.handleEditClick(i)}>Edit</Button>
-                                                <Button>Close Auction</Button>
-                                                <Button onClick={() => this.handleCancelClick(i)}>Cancel Auction</Button>
+                                                <Button onClick={() => {}}>Bid</Button>
                                             </Button.Group>
                                         </Modal.Description>
                                         <Modal.Description>
-                                            <Chat itemId={i.itemId} org={this.props.org} />
+                                            <Chat itemId={i.itemId} buyer={this.props.usr} />
                                         </Modal.Description>
         
                                     </Modal.Content>
@@ -96,14 +95,13 @@ class BuyerHomeDisplay extends Component {
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
                                             <h2>{i.bidFinDate}</h2>
+                                            <Input type='number' />
                                             <Button.Group>
-                                                <Button onClick={() => this.handleEditClick(i)}>Edit</Button>
-                                                <Button>Close Auction</Button>
-                                                <Button onClick={() => this.handleCancelClick(i)}>Cancel Auction</Button>
+                                                <Button onClick={() => {}}>Bid</Button>
                                             </Button.Group>
                                         </Modal.Description>
                                         <Modal.Description>
-                                            <Chat itemId={i.itemId} org={this.props.org} />
+                                            <Chat itemId={i.itemId} buyer={this.props.usr} />
                                         </Modal.Description>
         
                                     </Modal.Content>
@@ -201,7 +199,8 @@ class BuyerHomeDisplay extends Component {
 
 function mapStateToProps(state) {
     return {
-        myItems: state.items
+        myItems: state.items,
+        usr: state.currentBuyer
     }
 }
 export default connect(mapStateToProps)(BuyerHomeDisplay);

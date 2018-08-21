@@ -15,11 +15,21 @@ class Chat extends Component {
 
         this.sendMessage = ev => {
             ev.preventDefault();
-            this.socket.emit('sendMessage', {
-                username: this.props.org[0].username,
-                message: this.state.message,
-                room: this.room
-            })
+            if (this.props.org) {
+                this.socket.emit('sendMessage', {
+                    username: this.props.org[0].username,
+                    message: this.state.message,
+                    room: this.room
+                })
+            }
+            if (this.props.buyer) {
+                this.socket.emit('sendMessage', {
+                    username: this.props.buyer.username,
+                    message: this.state.message,
+                    room: this.room
+                })
+            }
+            
             this.setState({message: ''})
         }
         this.socket.on('receiveMessage', function(data){
@@ -34,11 +44,19 @@ class Chat extends Component {
         };
     }
     componentDidMount() {
-        this.socket.emit('sendMessage', {
-            username: this.props.org[0].username,
-            message: '',
-            room: this.room
-        })
+        if(this.props.org) {
+            this.socket.emit('sendMessage', {
+                username: this.props.org[0].username,
+                message: '',
+                room: this.room
+            })
+        } else if (this.props.buyer) {
+            this.socket.emit('sendMessage', {
+                username: this.props.buyer.username,
+                message: '',
+                room: this.room
+            })
+        }
     }
     render () {
         return (
