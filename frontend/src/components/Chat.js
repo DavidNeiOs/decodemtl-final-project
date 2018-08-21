@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import socketIO from 'socket.io-client';
-import { Input, Button } from 'semantic-ui-react'
+import { Segment, Input, Button } from 'semantic-ui-react'
 
 class Chat extends Component {
     constructor(props) {
@@ -60,31 +60,31 @@ class Chat extends Component {
     }
     render () {
         return (
-            <div className='container'>
-                <div style={{textAlign: 'center'}}>
-                    <h3>CHAT</h3>
-                </div>
-                <div className='chatBody'>
-                    <div className='messages'>
+            <div>
+                <Segment.Group color='green'>
+                <div >
+                    <div >
                         {this.state.messages.map(msg => {
                             return (
                                 <div> {msg.username} : {msg.message} </div>
                             )
                         })}
                     </div>
-                    <div className='input' style={{position: 'fixed', bottom: '0px', right: '5%'}} >
-                        <Input 
+                    <div style={{align: 'center'}} >
+                        <Input fluid
                             placeholder='message'
                             value={this.state.message}
                             onChange={ev => this.setState({message: ev.target.value})}
                         />
                         <Button
-                            color='violet'
+                            fluid
+                            color='green'
                             content='Send'
                             onClick={this.sendMessage}
                         />
                     </div>
                 </div>
+                </Segment.Group>
             </div>
         )
     }

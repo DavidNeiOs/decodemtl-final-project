@@ -11,26 +11,25 @@ class BidLog extends Component {
             bids: []
         }
         this.room = 'bid_'+this.props.itemId;
-        this.socket = socketIO("http://159.203.57.3:5000");
+        this.socket = socketIO("http://10.65.110.209:5000");
 
-        this.sendBid = () => {
-            this.socket.emit('sendLastPrice', {
-                itemId: this.props.itemId,
-                room: this.room
-            })
-            this.setState({message: ''})
-        }
         this.socket.on('receiveLastPrice', function(data){
             addBid(data);
         })
 
         const addBid = data => {
             console.log(data);
-            this.setState({bids: [ ...this.state.bids, data.LastPrice]});
+            this.setState({bids: data});
             console.log(this.state.bids);
         };
     }
-
+    componentDidMount() {
+        this.socket.emit('sendLastPrice', {
+            itemId: this.props.itemId,
+            room: 'bid_'+this.props.itemId,
+            username: this.props.userBid
+        })
+    }
     render () {
         return (
             <div className='container'>
@@ -42,7 +41,7 @@ class BidLog extends Component {
                     <div>
                         {this.state.bids.map(log => {
                             return (
-                                <div> A ChariBid User just bidded for {log} $ </div>
+                                <div> {log.username} just bidded for {log.bid} $ </div>
                             )
                         })}
                     </div>

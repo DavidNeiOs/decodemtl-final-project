@@ -80,7 +80,7 @@ class OrgHomeItemDisp extends Component {
                                         
                                         <BidLog itemId={i.itemId}/>
                                     </Modal.Description>
-                                    <Modal.Description>
+                                    <Modal.Description padded>
                                         <Chat itemId={i.itemId} org={this.props.org} />
                                     </Modal.Description>
 
