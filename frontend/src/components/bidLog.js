@@ -11,7 +11,7 @@ class BidLog extends Component {
             bids: []
         }
         this.room = 'bid_'+this.props.itemId;
-        this.socket = socketIO("http://10.65.110.209:5000");
+        this.socket = socketIO("http://159.203.57.3:5000");
 
         this.socket.on('receiveLastPrice', function(data){
             addBid(data);
@@ -20,7 +20,6 @@ class BidLog extends Component {
         const addBid = data => {
             console.log(data);
             this.setState({bids: data});
-            console.log(this.state.bids);
         };
     }
     componentDidMount() {
