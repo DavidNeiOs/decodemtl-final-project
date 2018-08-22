@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Grid, Icon } from "semantic-ui-react";
+import { connect } from 'react-redux'
 
 class OrgSignUp extends Component {
   constructor(props) {
@@ -33,13 +34,13 @@ class OrgSignUp extends Component {
   }
 
   handleSubmit() {
-    this.props.onSubmit()
     if (this.state.password !== this.state.confirmPassword) {
       this.setState({ password: '', confirmPassword: '' });
       alert(`passwords do not match`);
       return;
     }
     const state = Object.assign({}, this.state);
+    let signUpState = this.state
     delete state['confirmPassword'];
     fetch('/signUp', {
       method: 'POST',
@@ -54,8 +55,8 @@ class OrgSignUp extends Component {
         console.log(err)
         alert('there was an error, try again')
       })
-
-    // set The state back to empty
+      .then(() => {
+        // set The state back to empty
     this.setState({
       orgName: '',
       website: '',
@@ -73,7 +74,7 @@ class OrgSignUp extends Component {
                 method:'POST',
                 mode:'same-origin',
                 credentials:'include',
-                body: JSON.stringify({username: this.state.username, password: this.state.password})
+                body: JSON.stringify({username: signUpState.username, password: signUpState.password})
             })
             .then(response => response.text())
             .then(res => {
@@ -91,7 +92,8 @@ class OrgSignUp extends Component {
                 console.log(err)
                 alert('there was an error loging in, try again')
             })
-    this.props.onSubmit();
+      })
+    
   }
 
   render() {
@@ -235,4 +237,4 @@ class OrgSignUp extends Component {
   }
 }
 
-export default OrgSignUp;
+export default connect()(OrgSignUp);

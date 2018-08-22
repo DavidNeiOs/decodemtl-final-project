@@ -9,7 +9,7 @@ import OrgCard from './orgCard.js'
 class OrgHomeItemDisp extends Component {
     constructor() {
         super();
-        this.state = {toAuction:[], auctioned:[]}
+        this.state = {toAuction:[], auctioned:[], myItems:[]}
     }
     filterItemsByOrgId = () => {
         fetch('/getItems')
@@ -22,10 +22,35 @@ class OrgHomeItemDisp extends Component {
                 content: itemList
             })
             
-          }) 
-        let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
-        let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
-        this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
+          }).then(ans => {
+            let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
+            let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
+            this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });
+            this.props.dispatch({
+                type: 'itemFinished',
+                content: itemsAuctioned            
+            })
+            itemsFiltred.forEach((x) => {
+                let item = x
+                setTimeout(() => {
+                    console.log(item)
+                    let newTA = this.state.toAuction.slice();
+                    newTA = newTA.filter(itm => item.itemId !== itm.itemId)
+                    let newArr = this.props.fItems.slice();
+                    newArr.push(item)
+
+                    this.setState({toAuction: newTA ,auctioned: newArr})
+                    this.props.dispatch({
+                        type: 'itemFinished',
+                        content: itemsAuctioned
+                    })
+
+                }, 
+               new Date(item.bidFinDate) - Date.now()
+                //5000
+            )
+            });            
+          })  
     }
     
     componentDidUpdate(prevProps,prevState){
@@ -118,9 +143,9 @@ class OrgHomeItemDisp extends Component {
                                     <Modal.Description padded>
                                         </Modal.Description >
                                     <Modal.Description padded>
-                                    <Segment.Group padded >
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
-                                        <Chat itemId={i.itemId} org={this.props.org} />
+                                    <Segment.Group raised >
+                                        <Segment inverted color='black' align='center'><Header>Chat</Header>
+                                        <Chat itemId={i.itemId} org={this.props.org} /></Segment>
                                     </Segment.Group>
                                     </Modal.Description>
 
@@ -191,6 +216,13 @@ class OrgHomeItemDisp extends Component {
        
     }
     componentDidMount() {
+        fetch('/getItems')
+            .then(response => response.text())
+            .then(responseBody => {
+                let body = JSON.parse(responseBody)
+                let items = body.items;
+                this.setState({myItems: items})
+            })
         this.filterItemsByOrgId();
     }
     render() {
@@ -204,32 +236,27 @@ class OrgHomeItemDisp extends Component {
           <br/>
                 </Grid.Column>
                 <Grid.Column stretched width={12}>
-          <Header as='h2' icon='stopwatch' content='Unbidded Products' />
-          <br/>
-          <br/>
-
-          
+                <Segment color='blue'>
+                <Header as='h2' icon={<Icon loading size='big' name='stopwatch' color='blue' />} content='Your Products Currently Bidding' />
+                 <Divider/>         
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(1)}
                 </Grid>
             </div>
-            
-          <br/>
-          <br/>
-          <div>
+            </Segment>
           
-          <br/>
-          <Header as='h2' icon='legal' content='Sold Products' />
-          <br/>
-          <br/>
-          </div>
+          
+          <Segment color='orange'>
+          <Header as='h2' icon={<Icon loading size='big' name='legal' color='orange' />} content='Your Sold Products' />
+          <Divider/>
           
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(2)}
                 </Grid>
             </div>
+            </Segment>
           </Grid.Column>
           </Grid>
           <br/>

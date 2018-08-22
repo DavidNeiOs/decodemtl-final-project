@@ -105,7 +105,7 @@ class HomeItemDisp extends Component {
             )
         })
         let rItems = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < filteredList.length; i++) {
             rItems.push(<Grid.Column> {filteredList[i]}</Grid.Column>);
         }
         return rItems;

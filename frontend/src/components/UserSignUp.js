@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Grid } from "semantic-ui-react";
+import { connect } from 'react-redux'
 
 class UserSignUp extends Component {
     constructor (props) {
@@ -25,13 +26,13 @@ class UserSignUp extends Component {
     }
 
     handleSubmit () {
-      this.props.onSubmit()
       if (this.state.password !== this.state.confirmPassword) {
           this.setState({password: '', confirmPassword: ''});
           alert(`passwords do not match`);
           return;
       }
       const state = Object.assign({}, this.state);
+      let signUpState = this.state
       delete state['confirmPassword'];
       fetch('/signUp', {
         method: 'POST',
@@ -46,7 +47,41 @@ class UserSignUp extends Component {
           console.log(err)
           alert('there was an error, try again')
         })
-        
+        .then(() => {
+          // set The state back to empty
+      this.setState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        firstName: '',
+        lastName: '',
+        country: '',
+        postalCode: '',
+        userType: 'buyer'
+      });
+      fetch('/logIn', 
+              {
+                  method:'POST',
+                  mode:'same-origin',
+                  credentials:'include',
+                  body: JSON.stringify({username: signUpState.username, password: signUpState.password})
+              })
+              .then(response => response.text())
+              .then(res => {
+                let body = JSON.parse(res);
+                this.props.dispatch({
+                  // change the store variable that will 
+                  // render personalized page of org
+                  type: 'showBuyerPage',
+                  content: body.user
+                })
+              })
+              .catch(err => {
+                  console.log(err)
+                  alert('there was an error loging in, try again')
+              })
+        })
       // set The state back to empty
       /*this.setState({
           username: '',
@@ -164,4 +199,4 @@ class UserSignUp extends Component {
     }
 }
 
-export default UserSignUp;
+export default connect()(UserSignUp);

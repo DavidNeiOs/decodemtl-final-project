@@ -38,7 +38,7 @@ class SignUp extends Component {
         </Button>}>
         <Modal.Header><Header as='h2' style={{textAlign: 'center'}}>User Sign Up</Header></Modal.Header>
               <Modal.Content>
-                <UserSignUp onSubmit={this.close}/>
+                <UserSignUp />
               </Modal.Content>
         </Modal>
         <Divider horizontal>Or</Divider>
@@ -47,7 +47,7 @@ class SignUp extends Component {
         </Button>}>
         <Modal.Header><Header as='h2' style={{textAlign: 'center'}}>Non-Profit Sign Up</Header></Modal.Header>
               <Modal.Content>
-                <OrgSignUp onSubmit={this.close}/>
+                <OrgSignUp />
               </Modal.Content>
         </Modal>
       </Segment>
