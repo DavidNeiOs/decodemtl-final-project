@@ -64,8 +64,16 @@ class Timer extends Component {
           })
     }
     render() {
-        if (this.state.timeRemaining <= 0) {
+        if (this.state.timeRemaining < 0 && this.props.item.state === 'TO_AUCTION') {
             this.handleCloseItem();
+            return (
+                <div>
+                    <Message warning color="red">
+                        <Message.Header>Unfortunately this auction is over.</Message.Header>
+                    </Message>
+                </div>
+            )
+        }else if(this.state.timeRemaining < 0 && this.props.item.state === 'AUCTIONED'){
             return (
                 <div>
                     <Message warning color="red">

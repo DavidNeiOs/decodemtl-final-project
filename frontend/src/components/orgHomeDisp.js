@@ -9,7 +9,7 @@ import OrgCard from './orgCard.js'
 class OrgHomeItemDisp extends Component {
     constructor() {
         super();
-        this.state = {toAuction:[], auctioned:[]}
+        this.state = {toAuction:[], auctioned:[], myItems:[]}
     }
     filterItemsByOrgId = () => {
         fetch('/getItems')
@@ -22,10 +22,11 @@ class OrgHomeItemDisp extends Component {
                 content: itemList
             })
             
-          }) 
-        let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
-        let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
-        this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
+          }).then(ans => {
+            let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
+            let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
+            this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });
+          })  
     }
     
     componentDidUpdate(prevProps,prevState){
@@ -191,6 +192,13 @@ class OrgHomeItemDisp extends Component {
        
     }
     componentDidMount() {
+        fetch('/getItems')
+            .then(response => response.text())
+            .then(responseBody => {
+                let body = JSON.parse(responseBody)
+                let items = body.items;
+                this.setState({myItems: items})
+            })
         this.filterItemsByOrgId();
     }
     render() {
