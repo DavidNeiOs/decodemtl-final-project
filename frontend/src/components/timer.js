@@ -52,7 +52,7 @@ class Timer extends Component {
         return days
     }
     handleCloseItem = () => {
-        fetch('/closeItem', {
+        /*fetch('/closeItem', {
             method: 'POST',
             mode: 'same-origin',
             credentials: 'include',
@@ -61,7 +61,7 @@ class Timer extends Component {
           .then(response => response.text())
           .then(responseBody => {
               console.log(responseBody)
-          })
+          })*/
     }
     render() {
         if (this.state.timeRemaining < 0 && this.props.item.state === 'TO_AUCTION') {

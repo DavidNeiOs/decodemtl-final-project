@@ -30,20 +30,25 @@ class OrgHomeItemDisp extends Component {
                 type: 'itemFinished',
                 content: itemsAuctioned            
             })
-            itemsFiltred.forEach(function(item) {
-                setTimeout(function(item){
-                    //let newTA = this.state.toAuction.slice();
-                    //newTA = newTA.filter(itm => item.itemId !== itm.itemId)
+            itemsFiltred.forEach((x) => {
+                let item = x
+                setTimeout(() => {
+                    console.log(item)
+                    let newTA = this.state.toAuction.slice();
+                    newTA = newTA.filter(itm => item.itemId !== itm.itemId)
                     let newArr = this.props.fItems.slice();
                     newArr.push(item)
 
-                    this.setState({auctioned: newArr})
+                    this.setState({toAuction: newTA ,auctioned: newArr})
                     this.props.dispatch({
                         type: 'itemFinished',
                         content: itemsAuctioned
                     })
 
-                }, new Date(item.bidFinDate) - Date.now())
+                }, 
+               new Date(item.bidFinDate) - Date.now()
+                //5000
+            )
             });            
           })  
     }
