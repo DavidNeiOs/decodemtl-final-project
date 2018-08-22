@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button, Modal, Header, Form, Label, Input } from 'semantic-ui-react'
+import { Divider,Card, Icon, Image,Grid, Button, Modal, Header, Form, Label, Input } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import ConnectedSignUp from './signUp.js'
 import ConnectedLogIn from './LogIn.js'
-
+import BidLog from './bidLog.js'
+import Timer from './timer.js'
 
 class HomeItemDisp extends Component {
     constructor() {
@@ -41,12 +42,12 @@ class HomeItemDisp extends Component {
                     <Image src={'./images/' + i.images} />
                         <Card.Content>
                             <Card.Header>{i.title}</Card.Header>
-                            <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
-                            <Card.Description>{i.description}</Card.Description>
+                            <Card.Meta>{i.description}</Card.Meta>
+                            <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
-                            {i.lastPrice}
+                            Latest bid at : <Header><b>{i.lastPrice}</b></Header>
                         </Card.Content>
                         <Card.Content extra>
                         <Modal trigger={<Button>Bid Now</Button>} closeIcon>
@@ -54,10 +55,18 @@ class HomeItemDisp extends Component {
                                 <Modal.Content image>
                                     <Image wrapped size='medium' src={'./images/' + i.images}/>
                                     <Modal.Description>
-                                        <Header>Item ID : {i.itemId}</Header>
-                                        <p>{i.description}</p>
-                                        <h2>{i.bidFinDate}</h2>
-                                        <Form>
+                                        <Modal.Description>
+                                            <Header>Item ID : {i.itemId}</Header>
+                                            <h3>Category : {i.category}</h3>
+                                            <p>{i.description}</p>
+                                            <Divider/>
+                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <Divider/>
+                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <br/>
+                                            <br/>
+                                        </Modal.Description>
+                                       <Form>
                                         <Form.Field inline>
                                             <label>Amount:</label>
                                                 <Label as='a' basic>$</Label>
@@ -97,8 +106,7 @@ class HomeItemDisp extends Component {
         })
         let rItems = [];
         for (let i = 0; i < 5; i++) {
-            let index = Math.floor(Math.random() * filteredList.length);
-            rItems.push(<Grid.Column>{filteredList[index]}</Grid.Column>);
+            rItems.push(<Grid.Column> {filteredList[i]}</Grid.Column>);
         }
         return rItems;
     }

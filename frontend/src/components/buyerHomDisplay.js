@@ -92,10 +92,10 @@ class BuyerHomeDisplay extends Component {
                                             <Header>Item ID : {i.itemId}</Header>
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
-                                            <h2>Latest Bid at {i.lastPrice} $</h2>
-                                            <br />
+                                            <h2>Latest Bid at {i.lastPrice} $</h2>                                            
+                                            <Divider/>
                                             <h2><Timer endDate={i.bidFinDate}/></h2>
-                                            
+                                            <Divider/>                                            
                                             <Input type='number' onChange={this.handleChange}/>
                                             <Button.Group>
                                                 <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>

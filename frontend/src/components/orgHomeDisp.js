@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Card, Icon, Image,Grid, Button,Modal, Header } from 'semantic-ui-react'
+import { Segment, Divider, Card, Icon, Image,Grid, Button,Modal, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import Chat from './Chat.js'
 import BidLog from './bidLog.js'
 import Timer from './timer.js'
+import OrgCard from './orgCard.js'
 
 class OrgHomeItemDisp extends Component {
     constructor() {
@@ -84,12 +85,12 @@ class OrgHomeItemDisp extends Component {
                         <Image src={'/images/' + i.images} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
-                        <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
-                        <Card.Description>{i.description}</Card.Description>
+                            <Card.Meta>{i.description}</Card.Meta>
+                            <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
-                            {i.lastPrice}
+                            Latest bid at : <Header><b>{i.lastPrice}</b></Header>
                         </Card.Content>
                         <Card.Content extra>
                             <Modal size={'large'} trigger={<Button fluid> SEE DETAILS </Button>} closeIcon>
@@ -97,20 +98,30 @@ class OrgHomeItemDisp extends Component {
                                 <Modal.Content image scrolling>
                                     <Image wrapped size='medium' src={'/images/' + i.images}/>
                                     <Modal.Description>
-                                        <Header>Item ID : {i.itemId}</Header>
-                                        <h3>Category : {i.category}</h3>
-                                        <p>{i.description}</p>
-                                        <h2><Timer endDate={i.bidFinDate}/></h2>
+                                    <Header>Item ID : {i.itemId}</Header>
+                                            <h3>Category : {i.category}</h3>
+                                            <p>{i.description}</p>
+                                            <Divider/>
+                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <Divider/>
+                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <br/>
+                                            <br/>
                                         <Button.Group>
                                             <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
                                             <Button onClick={() => this.handleCloseClick(i)}>Close Auction</Button>
                                             <Button onClick={ () => {this.handleCancelClick(i)}}>Cancel Auction</Button>
                                         </Button.Group>
                                         
-                                        <BidLog itemId={i.itemId}/>
+                                        <BidLog itemId={i.itemId} bids={this.state.bids}/>
                                     </Modal.Description>
                                     <Modal.Description padded>
+                                        </Modal.Description >
+                                    <Modal.Description padded>
+                                    <Segment.Group padded >
+                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
                                         <Chat itemId={i.itemId} org={this.props.org} />
+                                    </Segment.Group>
                                     </Modal.Description>
 
                                 </Modal.Content>
@@ -134,12 +145,12 @@ class OrgHomeItemDisp extends Component {
                         <Image src={'/images/' + i.images} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
-                        <Card.Meta>Bid Ends: {i.bidFinDate}</Card.Meta>
-                        <Card.Description>{i.description}</Card.Description>
+                            <Card.Meta>{i.description}</Card.Meta>
+                            <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
-                            {i.lastPrice}
+                            Latest bid at : <Header><b>{i.lastPrice}</b></Header>
                         </Card.Content>
                         <Card.Content extra>
                             <Modal trigger={<Button fluid> See Details </Button>} closeIcon>
@@ -148,11 +159,16 @@ class OrgHomeItemDisp extends Component {
                                     <Image wrapped size='medium' src={'/images/' + i.images}/>
                                     <Modal.Description>
                                         <Header>Item ID : {i.itemId}</Header>
-                                        <h3>Category : {i.category}</h3>
-                                        <p>{i.description}</p>
-                                        <h2>{i.bidFinDate}</h2>
+                                            <h3>Category : {i.category}</h3>
+                                            <p>{i.description}</p>
+                                            <Divider/>
+                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <Divider/>
+                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <br/>
+                                            <br/>
                                         
-                                        <BidLog itemId={i.itemId}/>
+                                        <BidLog itemId={i.itemId} bids={this.state.bids}/>
                                     
                                     </Modal.Description>
                                     <Modal.Description>
@@ -181,13 +197,17 @@ class OrgHomeItemDisp extends Component {
         //{this.filterItemsByOrgId}
         return(
         <div>
-          <div>
+            <Grid>
+                <Grid.Column width={2}>
           
+            <OrgCard/>
           <br/>
-          <Header as='h2' icon='stopwatch' content='Products Currently in Auction' />
+                </Grid.Column>
+                <Grid.Column stretched width={12}>
+          <Header as='h2' icon='stopwatch' content='Unbidded Products' />
           <br/>
           <br/>
-          </div>
+
           
             <div>
                 <Grid relaxed='very' columns={4}>
@@ -210,7 +230,8 @@ class OrgHomeItemDisp extends Component {
                 {this.formatItems(2)}
                 </Grid>
             </div>
-          
+          </Grid.Column>
+          </Grid>
           <br/>
           <br/>
 
