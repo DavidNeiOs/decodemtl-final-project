@@ -56,6 +56,9 @@ const reducer = function(state, action) {
     case 'showBuyerProfile':
         return { ...state, showBuyerPage: false, showBuyerProfile: action.content}
     
+    case 'itemFinished': 
+        return { ...state, finishedItems: action.content}
+    
   }
   return state;
 }
@@ -76,7 +79,8 @@ let myStore = createStore(
     currentOrg: [],
     buyerId: "",
     currentBuyer: [],
-    item: {}
+    item: {},
+    finishedItems: []
   },
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )
