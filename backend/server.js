@@ -305,7 +305,7 @@ app.post('/updateInfo', (req, res) =>{
 
 })
 
-const stripe = require("stripe")("sk_test_NwiJRkMy2Neo8BjF9yV3oBLb");
+/*const stripe = require("stripe")("sk_test_NwiJRkMy2Neo8BjF9yV3oBLb");
 
 app.post("/stripeCharge", async (req, res) => {
     try {
@@ -320,7 +320,7 @@ app.post("/stripeCharge", async (req, res) => {
     } catch (err) {
       res.status(500).end();
     }
-  });
+  });*/
 
 /**
  * Endpoint to do log In 
