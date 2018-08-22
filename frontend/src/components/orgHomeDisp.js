@@ -86,7 +86,7 @@ class OrgHomeItemDisp extends Component {
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
-                            <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
+                            <Card.Description><Timer endDate={i.bidFinDate} item={i}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
@@ -104,7 +104,7 @@ class OrgHomeItemDisp extends Component {
                                             <Divider/>
                                             <h2>Latest Bid at {i.lastPrice} $</h2>
                                             <Divider/>
-                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <h2><Timer endDate={i.bidFinDate} item={i}/></h2>
                                             <br/>
                                             <br/>
                                         <Button.Group>
@@ -146,7 +146,7 @@ class OrgHomeItemDisp extends Component {
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
-                            <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
+                            <Card.Description><Timer endDate={i.bidFinDate} item={i}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
@@ -164,7 +164,7 @@ class OrgHomeItemDisp extends Component {
                                             <Divider/>
                                             <h2>Latest Bid at {i.lastPrice} $</h2>
                                             <Divider/>
-                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <h2><Timer endDate={i.bidFinDate} item={i}/></h2>
                                             <br/>
                                             <br/>
                                         

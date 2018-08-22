@@ -77,7 +77,7 @@ class BuyerHomeDisplay extends Component {
                             <Card.Content>
                                 <Card.Header>{i.title}</Card.Header>
                                 <Card.Meta>{i.description}</Card.Meta>
-                                <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
+                                <Card.Description><Timer endDate={i.bidFinDate} item={i}/></Card.Description>
                             </Card.Content>
                             <Card.Content extra>
                                 <Icon name='dollar sign' />
@@ -94,7 +94,7 @@ class BuyerHomeDisplay extends Component {
                                             <p>{i.description}</p>
                                             <h2>Latest Bid at {i.lastPrice} $</h2>                                            
                                             <Divider/>
-                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <h2><Timer endDate={i.bidFinDate} item={i}/></h2>
                                             <Divider/>                                            
                                             <Input type='number' onChange={this.handleChange}/>
                                             <Button.Group>
@@ -138,7 +138,7 @@ class BuyerHomeDisplay extends Component {
                             <Card.Content>
                                 <Card.Header>{i.title}</Card.Header>
                                 <Card.Meta>{i.description}</Card.Meta>
-                                <Card.Description><Timer endDate={i.bidFinDate}/></Card.Description>
+                                <Card.Description><Timer endDate={i.bidFinDate} item={i}/></Card.Description>
                             </Card.Content>
                             <Card.Content extra>
                                 <Icon name='dollar sign' />
@@ -155,7 +155,7 @@ class BuyerHomeDisplay extends Component {
                                             <p>{i.description}</p>
                                             <h2>Latest Bid at {i.lastPrice} $</h2>
                                             <br />
-                                            <h2><Timer endDate={i.bidFinDate}/></h2>
+                                            <h2><Timer endDate={i.bidFinDate} item={i}/></h2>
                                             <Input type='number' onChange={this.handleChange}/>
                                             <Button.Group>
                                             <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>
