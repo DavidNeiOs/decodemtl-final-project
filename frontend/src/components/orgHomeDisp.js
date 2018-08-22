@@ -213,8 +213,8 @@ class OrgHomeItemDisp extends Component {
                 </Grid.Column>
                 <Grid.Column stretched width={12}>
                 <Segment color='blue'>
-                <Header as='h2' color='blue' icon={<Icon loading size='big' name='stopwatch' color='blue' />} content='Your Products Currently Bidding' />
-                          
+                <Header as='h2' icon={<Icon loading size='big' name='stopwatch' color='blue' />} content='Your Products Currently Bidding' />
+                 <Divider/>         
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(1)}
@@ -224,8 +224,8 @@ class OrgHomeItemDisp extends Component {
           
           
           <Segment color='orange'>
-          <Header as='h2' icon='legal' content='Your Sold Products' color='orange'/>
-          
+          <Header as='h2' icon={<Icon loading size='big' name='legal' color='orange' />} content='Your Sold Products' />
+          <Divider/>
           
             <div>
                 <Grid relaxed='very' columns={4}>

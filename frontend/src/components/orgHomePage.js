@@ -3,7 +3,7 @@ import ConnectedOrgNavBar from './orgNavBar.js'
 import Footer from './footer.js'
 import OrgHomeItemDisp from './orgHomeDisp.js'
 import BuyerHomeDisplay from './buyerHomDisplay.js'
-import { Segment, Header ,Divider} from 'semantic-ui-react'
+import { Icon, Segment, Header ,Divider} from 'semantic-ui-react'
 
 
 class OrgHomePage extends Component {
@@ -24,7 +24,7 @@ class OrgHomePage extends Component {
         <div>
          
           <Segment>
-          <Header as='h2' icon='globe' content='Shop All Products' textAlign='center'/>
+          <Header as='h2' icon={<Icon loading size='big' name='globe' color='blue' />} content='Shop All Products' textAlign='center'/>
           </Segment>
           
 
