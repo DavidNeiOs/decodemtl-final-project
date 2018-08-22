@@ -25,7 +25,11 @@ class OrgCard extends Component {
                 <Card.Header>{this.props.liveOrg[0].orgName}</Card.Header>
                 <Card.Meta><a href={this.props.liveOrg[0].website}>{this.props.liveOrg[0].website}</a></Card.Meta>
                 <Card.Description>
+                    {this.props.liveOrg[0].description}
+                    <br/>
+                    <br/><br/>
                     Email : {this.props.liveOrg[0].email}
+                    <br/>
                     <br/>
                     <div>
                         <Button circular color='facebook' icon='facebook' />
