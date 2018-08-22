@@ -212,32 +212,27 @@ class OrgHomeItemDisp extends Component {
           <br/>
                 </Grid.Column>
                 <Grid.Column stretched width={12}>
-          <Header as='h2' icon='stopwatch' content='Your Products Currently Bidding' />
-          <br/>
-          <br/>
-
-          
+                <Segment color='blue'>
+                <Header as='h2' color='blue' icon={<Icon loading size='big' name='stopwatch' color='blue' />} content='Your Products Currently Bidding' />
+                          
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(1)}
                 </Grid>
             </div>
-            
-          <br/>
-          <br/>
-          <div>
+            </Segment>
           
-          <br/>
-          <Header as='h2' icon='legal' content='Your Sold Products' />
-          <br/>
-          <br/>
-          </div>
+          
+          <Segment color='orange'>
+          <Header as='h2' icon='legal' content='Your Sold Products' color='orange'/>
+          
           
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(2)}
                 </Grid>
             </div>
+            </Segment>
           </Grid.Column>
           </Grid>
           <br/>
