@@ -194,7 +194,7 @@ class OrgHomeItemDisp extends Component {
                 {this.formatItems(1)}
                 </Grid>
             </div>
-          
+            
           <br/>
           <br/>
           <div>
