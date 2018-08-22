@@ -167,7 +167,7 @@ class OrgHomeItemDisp extends Component {
                 return (
                     
                     <Card>
-                        <Image src={'/images/' + i.images} />
+                        <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}}/>
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
@@ -196,12 +196,6 @@ class OrgHomeItemDisp extends Component {
                                         <BidLog itemId={i.itemId} bids={this.state.bids}/>
                                     
                                     </Modal.Description>
-                                    <Modal.Description>
-                                        <Segment.Group raised>
-                                        <Segment inverted color='black' align='center'><Header>Chat</Header></Segment>
-                                        </Segment.Group>
-                                    </Modal.Description>
-
                                 </Modal.Content>
                             </Modal>
                         </Card.Content>
@@ -217,7 +211,9 @@ class OrgHomeItemDisp extends Component {
         }
        
     }
-    componentDidMount() {
+
+    longPoll = () => setInterval(this.fetchCurrentItems, 3000) 
+    fetchCurrentItems = () => {
         fetch('/getItems')
             .then(response => response.text())
             .then(responseBody => {
@@ -226,6 +222,13 @@ class OrgHomeItemDisp extends Component {
                 this.setState({myItems: items})
             })
         this.filterItemsByOrgId();
+    }
+    componentDidMount() {
+        this.longPoll()
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.longPoll)
     }
     render() {
         //{this.filterItemsByOrgId}

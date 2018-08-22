@@ -73,7 +73,7 @@ class Timer extends Component {
                     </Message>
                 </div>
             )
-        }else if(this.state.timeRemaining < 0 && this.props.item.state === 'AUCTIONED'){
+        }else if(this.state.timeRemaining < 0 || this.props.item.state === 'AUCTIONED'){
             return (
                 <div>
                     <Message warning color="red">
