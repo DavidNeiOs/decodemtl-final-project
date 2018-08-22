@@ -13,7 +13,8 @@ class BuyerHomeDisplay extends Component {
         this.state = {
             activeItem: '',
             orgNames: [],
-            currBid:0
+            currBid:0,
+            currItems: []
         }
 
         this.socket = socketIO("http://159.203.57.3:5000");
@@ -202,11 +203,25 @@ class BuyerHomeDisplay extends Component {
                 this.setState({ orgNames: names})
             })
     }
+
+    longPoll = () => setInterval(this.fetchCurrentItems, 3000) 
+    fetchCurrentItems = () => {
+        fetch('/getItems')
+            .then(response => response.text())
+            .then(responseBody => {
+                let body = JSON.parse(responseBody)
+                let items = body.items;
+                this.setState({currItems: items})
+            })
+    }
     
     componentDidMount () {
         this.getOrgNames();
+        this.longPoll();
     }
-
+    componentWillUnmount() {
+        clearInterval(this.longPoll)
+    }
     render() {
         
         return (
