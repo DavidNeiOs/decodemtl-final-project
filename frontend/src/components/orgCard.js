@@ -40,7 +40,7 @@ class OrgCard extends Component {
                 </Card.Description>
                 </Card.Content>
                 <Card.Content extra>
-                    <Button onClick={this.handleSettings}>Edit Profile</Button>
+                    <Button fluid onClick={this.handleSettings}>Edit Profile</Button>
                 </Card.Content>
             </Card>
           </div>

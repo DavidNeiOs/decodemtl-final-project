@@ -35,7 +35,7 @@ class NavBar extends Component {
     return (
         <div>
             <div>
-        <Menu secondary position="fixed" >
+        <Menu position="fixed" inverted>
         <Menu.Item>
           <img src='https://react.semantic-ui.com/logo.png' />
         </Menu.Item>
@@ -46,19 +46,19 @@ class NavBar extends Component {
           </Menu.Item>
         </Menu.Menu>
             
-            <Modal trigger={<Button secondary
+            <Modal trigger={<Menu.Item><Button color='green'
             active={activeItem === 'login'}
             onClick={this.show('mini')}
-            position='right'>Login</Button>} size={size} open={open} onClose={this.close}>
+            position='right'>Login</Button></Menu.Item>} size={size} open={open} onClose={this.close}>
               <Modal.Content>
                 <ConnectedLogIn onSubmit={this.close}/>
               </Modal.Content>
             </Modal>
 
-            <Modal trigger={<Button primary
+            <Modal trigger={<Menu.Item><Button primary
             active={activeItem === 'signup'}
             onClick={this.show2('mini')}
-            position='right'>Sign Up</Button>} size={size} open2={open} onClose={this.close}>
+            position='right'>Sign Up</Button></Menu.Item>} size={size} open2={open} onClose={this.close}>
               <Modal.Content>
                 <ConnectedSignUp/>
               </Modal.Content>

@@ -61,14 +61,16 @@ class Chat extends Component {
     render () {
         return (
             <div>
-                <Segment.Group color='green'>
+                
                 <div >
                     <div >
+                        <Segment inverted color='grey'>
                         {this.state.messages.map(msg => {
                             return (
                                 <div> {msg.username} : {msg.message} </div>
                             )
                         })}
+                        </Segment>
                     </div>
                     <div style={{align: 'center'}} >
                         <Input fluid
@@ -84,7 +86,7 @@ class Chat extends Component {
                         />
                     </div>
                 </div>
-                </Segment.Group>
+                
             </div>
         )
     }

@@ -143,9 +143,9 @@ class OrgHomeItemDisp extends Component {
                                     <Modal.Description padded>
                                         </Modal.Description >
                                     <Modal.Description padded>
-                                    <Segment.Group padded >
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
-                                        <Chat itemId={i.itemId} org={this.props.org} />
+                                    <Segment.Group raised >
+                                        <Segment inverted color='black' align='center'><Header>Chat</Header>
+                                        <Chat itemId={i.itemId} org={this.props.org} /></Segment>
                                     </Segment.Group>
                                     </Modal.Description>
 
@@ -162,7 +162,7 @@ class OrgHomeItemDisp extends Component {
             }
             return rItems;
         } else if (x===2) {
-            let firstList = this.props.fItems;
+            let firstList = this.state.auctioned
             let filteredList = firstList.map((i) => {
                 return (
                     
@@ -236,32 +236,27 @@ class OrgHomeItemDisp extends Component {
           <br/>
                 </Grid.Column>
                 <Grid.Column stretched width={12}>
-          <Header as='h2' icon='stopwatch' content='Your Products Currently Bidding' />
-          <br/>
-          <br/>
-
-          
+                <Segment color='blue'>
+                <Header as='h2' icon={<Icon loading size='big' name='stopwatch' color='blue' />} content='Your Products Currently Bidding' />
+                 <Divider/>         
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(1)}
                 </Grid>
             </div>
-            
-          <br/>
-          <br/>
-          <div>
+            </Segment>
           
-          <br/>
-          <Header as='h2' icon='legal' content='Your Sold Products' />
-          <br/>
-          <br/>
-          </div>
+          
+          <Segment color='orange'>
+          <Header as='h2' icon={<Icon loading size='big' name='legal' color='orange' />} content='Your Sold Products' />
+          <Divider/>
           
             <div>
                 <Grid relaxed='very' columns={4}>
                 {this.formatItems(2)}
                 </Grid>
             </div>
+            </Segment>
           </Grid.Column>
           </Grid>
           <br/>
@@ -278,7 +273,6 @@ function mapStateToProps(state) {
         items: state.items,
         currOrg : state.orgId,
         org: state.currentOrg,
-        fItems: state.finishedItems
     }
 }
 export default connect(mapStateToProps)(OrgHomeItemDisp);

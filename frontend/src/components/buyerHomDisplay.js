@@ -106,10 +106,10 @@ class BuyerHomeDisplay extends Component {
                                         <Modal.Description padded>
                                         </Modal.Description >
                                         <Modal.Description>
-                                        <Segment.Group padded>
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
+                                        <Segment.Group raised>
+                                        <Segment inverted color='black' align='center'><Header>Chat</Header>
     
-                                            <Chat itemId={i.itemId} buyer={this.props.usr} />
+                                            <Chat itemId={i.itemId} buyer={this.props.usr} /></Segment>
                                         </Segment.Group>
                                         </Modal.Description>
         
@@ -166,10 +166,10 @@ class BuyerHomeDisplay extends Component {
                                         <Modal.Description padded>
                                         </Modal.Description >
                                         <Modal.Description padded>
-                                        <Segment.Group padded >
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
+                                        <Segment.Group raised >
+                                        <Segment inveted color='black' align='center'><Header>Chat</Header>
     
-                                            <Chat itemId={i.itemId} buyer={this.props.usr} />
+                                            <Chat itemId={i.itemId} buyer={this.props.usr} /></Segment>
                                         </Segment.Group>
                                         </Modal.Description>
         
@@ -213,6 +213,7 @@ class BuyerHomeDisplay extends Component {
             <Grid>
                 <Grid.Column width={2}>
                     <Menu fluid vertical tabular>
+                        <Header as='h4' style={{paddingLeft: '15px'}}> Shop by Category</Header>
                         <Menu.Item
                             name='Electronics'
                             active={this.state.activeItem === 'Electronics'}
@@ -244,7 +245,7 @@ class BuyerHomeDisplay extends Component {
                             onClick={this.handleItemClick}
                         />
                         <Divider />
-                        <Header as='h4' style={{paddingLeft: '15px'}}> Non-Profits</Header>
+                        <Header as='h4' style={{paddingLeft: '15px'}}> Shop by Non-Profits</Header>
                         {this.state.orgNames.map(oName => {
                             return <Menu.Item
                                 name={oName.orgName}
@@ -257,9 +258,11 @@ class BuyerHomeDisplay extends Component {
                 </Grid.Column>
 
                 <Grid.Column stretched width={12}>
+                <Segment>
                     <Grid columns={4}>
                         {this.formatItems(this.state.activeItem)}
                     </Grid>
+                </Segment>
                 </Grid.Column>
             </Grid>
         );

@@ -3,7 +3,7 @@ import ConnectedOrgNavBar from './orgNavBar.js'
 import Footer from './footer.js'
 import OrgHomeItemDisp from './orgHomeDisp.js'
 import BuyerHomeDisplay from './buyerHomDisplay.js'
-import { Header ,Divider} from 'semantic-ui-react'
+import { Icon, Segment, Header ,Divider} from 'semantic-ui-react'
 
 
 class OrgHomePage extends Component {
@@ -12,19 +12,22 @@ class OrgHomePage extends Component {
       <div className="App">
         <div>
           <ConnectedOrgNavBar/>
-        </div>
+          </div>
+          
+        <Header as='h2' icon='smile' content='Welcome back !' textAlign='center'/>
+                <Divider/>
         <div>
           <OrgHomeItemDisp />
-          <br/>
-          <br/>
+
         </div>
         <div>
-          <Divider/>
-          <br/>
-        <Header as='h2' icon='globe' content='Shop All Products' />
-          <br/>
-          <Divider/>
-          <br />
+         
+          <Segment inverted color='teal'>
+          <Header as='h2' icon={<Icon loading size='big' name='globe' color='white' />} content='Shop All Products' textAlign='center'/>
+          </Segment>
+          
+
+          
           <BuyerHomeDisplay/>
         </div>
         <Footer/>
@@ -32,5 +35,11 @@ class OrgHomePage extends Component {
     );
   }
 }
-
+function mapStateToProps(state) {
+  return {
+      items: state.items,
+      currOrg : state.orgId,
+      org: state.currentOrg,
+  }
+}
 export default OrgHomePage;
