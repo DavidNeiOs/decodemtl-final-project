@@ -119,9 +119,9 @@ class OrgHomeItemDisp extends Component {
                                     <Modal.Description padded>
                                         </Modal.Description >
                                     <Modal.Description padded>
-                                    <Segment.Group padded >
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
-                                        <Chat itemId={i.itemId} org={this.props.org} />
+                                    <Segment.Group raised >
+                                        <Segment inverted color='black' align='center'><Header>Chat</Header>
+                                        <Chat itemId={i.itemId} org={this.props.org} /></Segment>
                                     </Segment.Group>
                                     </Modal.Description>
 

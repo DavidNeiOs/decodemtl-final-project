@@ -106,10 +106,10 @@ class BuyerHomeDisplay extends Component {
                                         <Modal.Description padded>
                                         </Modal.Description >
                                         <Modal.Description>
-                                        <Segment.Group padded>
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
+                                        <Segment.Group raised>
+                                        <Segment inverted color='black' align='center'><Header>Chat</Header>
     
-                                            <Chat itemId={i.itemId} buyer={this.props.usr} />
+                                            <Chat itemId={i.itemId} buyer={this.props.usr} /></Segment>
                                         </Segment.Group>
                                         </Modal.Description>
         
@@ -166,10 +166,10 @@ class BuyerHomeDisplay extends Component {
                                         <Modal.Description padded>
                                         </Modal.Description >
                                         <Modal.Description padded>
-                                        <Segment.Group padded >
-                                        <Segment color='green' align='center'><Header>Chat</Header></Segment>
+                                        <Segment.Group raised >
+                                        <Segment inveted color='black' align='center'><Header>Chat</Header>
     
-                                            <Chat itemId={i.itemId} buyer={this.props.usr} />
+                                            <Chat itemId={i.itemId} buyer={this.props.usr} /></Segment>
                                         </Segment.Group>
                                         </Modal.Description>
         
