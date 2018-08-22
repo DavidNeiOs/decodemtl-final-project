@@ -26,25 +26,6 @@ class OrgHomeItemDisp extends Component {
             let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
             let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
             this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });
-            this.props.dispatch({
-                type: 'itemFinished',
-                content: itemsAuctioned            
-            })
-            itemsFiltred.forEach(function(item) {
-                setTimeout(function(item){
-                    //let newTA = this.state.toAuction.slice();
-                    //newTA = newTA.filter(itm => item.itemId !== itm.itemId)
-                    let newArr = this.props.fItems.slice();
-                    newArr.push(item)
-
-                    this.setState({auctioned: newArr})
-                    this.props.dispatch({
-                        type: 'itemFinished',
-                        content: itemsAuctioned
-                    })
-
-                }, new Date(item.bidFinDate) - Date.now())
-            });            
           })  
     }
     
@@ -157,7 +138,7 @@ class OrgHomeItemDisp extends Component {
             }
             return rItems;
         } else if (x===2) {
-            let firstList = this.props.fItems;
+            let firstList = this.state.auctioned
             let filteredList = firstList.map((i) => {
                 return (
                     
@@ -273,7 +254,6 @@ function mapStateToProps(state) {
         items: state.items,
         currOrg : state.orgId,
         org: state.currentOrg,
-        fItems: state.finishedItems
     }
 }
 export default connect(mapStateToProps)(OrgHomeItemDisp);

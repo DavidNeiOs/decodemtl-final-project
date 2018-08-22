@@ -213,6 +213,7 @@ class BuyerHomeDisplay extends Component {
             <Grid>
                 <Grid.Column width={2}>
                     <Menu fluid vertical tabular>
+                        <Header as='h4' style={{paddingLeft: '15px'}}> Shop by Category</Header>
                         <Menu.Item
                             name='Electronics'
                             active={this.state.activeItem === 'Electronics'}
@@ -244,7 +245,7 @@ class BuyerHomeDisplay extends Component {
                             onClick={this.handleItemClick}
                         />
                         <Divider />
-                        <Header as='h4' style={{paddingLeft: '15px'}}> Non-Profits</Header>
+                        <Header as='h4' style={{paddingLeft: '15px'}}> Shop by Non-Profits</Header>
                         {this.state.orgNames.map(oName => {
                             return <Menu.Item
                                 name={oName.orgName}
