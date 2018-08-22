@@ -24,13 +24,17 @@ const reducer = function(state, action) {
     
     case 'showOrgPage':
       return { ...state, showLogIn: false, orgId: action.content, showOrgPage: true, 
-                  showCreateListing: false, showUpdateItemPage: false, showHomepage:false 
+                  showCreateListing: false, showUpdateItemPage: false, showHomepage:false,
+                  showOrgProfile: false
               };
+      
+    case 'cancelItem' :
+      return { ...state, items: action.content };
     
     case 'updateBid' :
       return  { ...state, items : action.content };
     
-      case 'setOrg':
+    case 'setOrg':
       return { ...state, currentOrg: action.content};
 
     case 'showCreateL':
@@ -39,7 +43,7 @@ const reducer = function(state, action) {
       case 'showBuyerPage':
       return { ...state, showLogIn: false, currentBuyer: action.content,
                     showBuyerPage: true, buyerId: action.content.userId, showHomepage: false};
-                    
+
     case 'setBuyer':
       return { ...state, currentBuyer: action.content}
     

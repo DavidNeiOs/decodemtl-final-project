@@ -20,10 +20,17 @@ class OrgHomeItemDisp extends Component {
                 type: 'getItems',
                 content: itemList
             })
+            
           }) 
         let itemsFiltred = this.props.items.filter(item => item.state === "TO_AUCTION" && item.orgId === this.props.currOrg);
         let itemsAuctioned = this.props.items.filter(item => item.state === "AUCTIONED" && item.orgId === this.props.currOrg)
         this.setState({ toAuction: itemsFiltred, auctioned: itemsAuctioned });  
+    }
+    
+    componentDidUpdate(prevProps,prevState){
+        if(this.state.toAuction!==prevState.toAuction){
+            this.forceUpdate(()=>console.log('remounted'))
+        }
     }
     
     handleEditClick = (item) => {
@@ -33,17 +40,39 @@ class OrgHomeItemDisp extends Component {
         })
     }
 
+    handleCloseClick = (item) => {
+        fetch('/closeItem', {
+            method: 'POST',
+            mode: 'same-origin',
+            credentials: 'include',
+            body:JSON.stringify({'username': this.props.org[0].username, 'itemId': item.itemId})
+        })
+          .then(response => response.text())
+          .then(responseBody => {
+              let body = JSON.parse(responseBody);
+              let winner = body.winner;
+              let taWithout = this.state.toAuction.filter(arrItem => item.itemId !== arrItem.itemId);
+              item.winnerUserId = winner.userId;
+              let newAuctioned = this.state.auctioned.slice()
+              newAuctioned.push(item)
+
+              this.setState({toAuction: taWithout, auctioned: newAuctioned})
+          })
+    }
     handleCancelClick = (item) => {
+        
+        let myItems = this.state.toAuction.filter(arrItem => item.itemId !== arrItem.itemId);
+        this.setState({toAuction: myItems})
         fetch('/cancelItem', {
             method: 'POST',
             mode: 'same-origin',
             credentials: 'include',
-            body: JSON.stringify({'itemId': item.itemId})
+            body: JSON.stringify({'username': this.props.org[0].username ,'itemId': item.itemId})
         })
-        this.props.dispatch({
-            type: 'showOrgPage',
-            content: this.props.currOrg
-        })
+          .then(response => response.text())
+          .then(responseBody => {
+              console.log(responseBody);
+          })
     }
     formatItems = (x) => {
         if (x === 1) {
@@ -74,8 +103,8 @@ class OrgHomeItemDisp extends Component {
                                         <h2><Timer endDate={i.bidFinDate}/></h2>
                                         <Button.Group>
                                             <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
-                                            <Button>Close Auction</Button>
-                                            <Button onClick={ () => this.handleCancelClick(i)}>Cancel Auction</Button>
+                                            <Button onClick={() => this.handleCloseClick(i)}>Close Auction</Button>
+                                            <Button onClick={ () => {this.handleCancelClick(i)}}>Cancel Auction</Button>
                                         </Button.Group>
                                         
                                         <BidLog itemId={i.itemId}/>
