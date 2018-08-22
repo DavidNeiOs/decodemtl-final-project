@@ -68,6 +68,29 @@ class OrgSignUp extends Component {
       postalCode: '',
       description: ''
     });
+    fetch('/logIn', 
+            {
+                method:'POST',
+                mode:'same-origin',
+                credentials:'include',
+                body: JSON.stringify({username: this.state.username, password: this.state.password})
+            })
+            .then(response => response.text())
+            .then(res => {
+              let body = JSON.parse(res);
+              console.log(body)
+              console.log(body.orgId)
+              this.props.dispatch({
+                // change the store variable that will 
+                // render personalized page of org
+                type: 'showOrgPage',
+                content: body.orgId
+              })
+            })
+            .catch(err => {
+                console.log(err)
+                alert('there was an error loging in, try again')
+            })
     this.props.onSubmit();
   }
 

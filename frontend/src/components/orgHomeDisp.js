@@ -100,7 +100,7 @@ class OrgHomeItemDisp extends Component {
                                         <Header>Item ID : {i.itemId}</Header>
                                         <h3>Category : {i.category}</h3>
                                         <p>{i.description}</p>
-                                        <h2><Timer endDate={i.bidFinDate}/></h2>
+                                        <h2><Timer endDate={i.bidFinDate} item={i} org={i.orgId}/></h2>
                                         <Button.Group>
                                             <Button onClick={ () => this.handleEditClick(i)}>Edit</Button>
                                             <Button onClick={() => this.handleCloseClick(i)}>Close Auction</Button>

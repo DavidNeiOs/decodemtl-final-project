@@ -51,8 +51,21 @@ class Timer extends Component {
         var days = Math.floor( t/(1000*60*60*24) );
         return days
     }
+    handleCloseItem = () => {
+        fetch('/closeItem', {
+            method: 'POST',
+            mode: 'same-origin',
+            credentials: 'include',
+            body:JSON.stringify({'username': 'unicef', 'itemId': this.props.item.itemId})
+        })
+          .then(response => response.text())
+          .then(responseBody => {
+              console.log(responseBody)
+          })
+    }
     render() {
         if (this.state.timeRemaining <= 0) {
+            this.handleCloseItem();
             return (
                 <div>
                     <Message warning color="red">
