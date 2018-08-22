@@ -265,6 +265,44 @@ app.post("/signUp", (req, res) => {
     }
 });
 
+
+app.post('/updateInfo', (req, res) =>{
+    const sanitize = ({orgId, userId, password, ...params}) => params
+    const params = JSON.parse(req.body.toString())
+    let datab = getDatabase()
+    if (!params.userId && ! params.orgId) return res.send(JSON.stringify({ status: 'No ID provided!' }))
+    const collection = params.orgId ? datab.collection(collOrganizations) : datab.collection(collBuyers)
+    const id = params.orgId ? {orgId: params.orgId} : {userId: params.userId}
+    const password = sha256(params.password)
+    collection.update({
+        ...id
+    }, {$set: {
+        ...sanitize(params),
+        password
+    }}, function (err, result) {
+        res.send(JSON.stringify({ status: !!(!err && result.result.nModified) }));
+    })    
+
+
+})
+
+const stripe = require("stripe")("sk_test_NwiJRkMy2Neo8BjF9yV3oBLb");
+
+app.post("/stripeCharge", async (req, res) => {
+    try {
+      let {status} = await stripe.charges.create({
+        amount: 2000,
+        currency: "usd",
+        description: "An example charge",
+        source: req.body
+      });
+  
+      res.json({status});
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+
 /**
  * Endpoint to do log In 
  */
