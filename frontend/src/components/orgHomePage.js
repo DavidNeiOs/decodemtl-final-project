@@ -18,13 +18,12 @@ class OrgHomePage extends Component {
                 <Divider/>
         <div>
           <OrgHomeItemDisp />
-          <br/>
-          <Divider/>
+
         </div>
         <div>
          
-          <Segment>
-          <Header as='h2' icon={<Icon loading size='big' name='globe' color='blue' />} content='Shop All Products' textAlign='center'/>
+          <Segment inverted color='teal'>
+          <Header as='h2' icon={<Icon loading size='big' name='globe' color='white' />} content='Shop All Products' textAlign='center'/>
           </Segment>
           
 

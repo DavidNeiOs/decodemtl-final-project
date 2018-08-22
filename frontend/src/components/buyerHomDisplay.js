@@ -258,9 +258,11 @@ class BuyerHomeDisplay extends Component {
                 </Grid.Column>
 
                 <Grid.Column stretched width={12}>
+                <Segment>
                     <Grid columns={4}>
                         {this.formatItems(this.state.activeItem)}
                     </Grid>
+                </Segment>
                 </Grid.Column>
             </Grid>
         );
