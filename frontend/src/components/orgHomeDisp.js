@@ -212,7 +212,7 @@ class OrgHomeItemDisp extends Component {
           <br/>
                 </Grid.Column>
                 <Grid.Column stretched width={12}>
-          <Header as='h2' icon='stopwatch' content='Unbidded Products' />
+          <Header as='h2' icon='stopwatch' content='Your Products Currently Bidding' />
           <br/>
           <br/>
 
@@ -228,7 +228,7 @@ class OrgHomeItemDisp extends Component {
           <div>
           
           <br/>
-          <Header as='h2' icon='legal' content='Sold Products' />
+          <Header as='h2' icon='legal' content='Your Sold Products' />
           <br/>
           <br/>
           </div>
