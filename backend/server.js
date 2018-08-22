@@ -580,7 +580,7 @@ app.post("/closeItem", (req, res) => {
 
     //check if user session exist
     let collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);    
+    let currentSession = getSessionIdFromCookie(req);        
 
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
@@ -589,6 +589,11 @@ app.post("/closeItem", (req, res) => {
         else if (result.length > 0) {
 
             let myquery = { itemId: bodyParam.itemId };
+
+            //verify item is not closed/auctioned
+            collItem.find({ itemId: bodyParam.itemId , state: "TO_AUCTION"}).toArray(function (err, result) {
+            if (err) { throw err }
+            if (result.length > 0) {   
 
             //search if there is a winner
             collBid.find({ itemId: bodyParam.itemId }).sort({ bid: -1 }).toArray(function (err, result) {
@@ -635,6 +640,9 @@ app.post("/closeItem", (req, res) => {
                 }
             });
 
+        } else {
+            res.send(JSON.stringify({ status: true, message: "" }));
+        }});   
 
         } else {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
