@@ -13,7 +13,8 @@ class BuyerHomeDisplay extends Component {
         this.state = {
             activeItem: '',
             orgNames: [],
-            currBid:0
+            currBid:0,
+            currItems: []
         }
 
         this.socket = socketIO("http://159.203.57.3:5000");
@@ -25,6 +26,7 @@ class BuyerHomeDisplay extends Component {
             })
         }
     }
+    handleUpdateBid = currBid => this.setState({currBid})
     handleBid = (amount,itemId,username) => {
         fetch('/bidItem', 
             {
@@ -101,7 +103,7 @@ class BuyerHomeDisplay extends Component {
                                                 <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>
                                             </Button.Group>
 
-                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username}/>
+                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username} onUpdateBid={this.handleUpdateBid}/>
                                         </Modal.Description>
                                         <Modal.Description padded>
                                         </Modal.Description >
@@ -153,7 +155,7 @@ class BuyerHomeDisplay extends Component {
                                             <Header>Item ID : {i.itemId}</Header>
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
-                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <h2>Latest Bid at {this.state.currBid || i.lastPrice} $</h2>
                                             <br />
                                             <h2><Timer endDate={i.bidFinDate} item={i}/></h2>
                                             <Input type='number' onChange={this.handleChange}/>
@@ -161,7 +163,7 @@ class BuyerHomeDisplay extends Component {
                                             <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>
                                             </Button.Group>
 
-                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username}/>
+                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username} onUpdateBid={this.handleUpdateBid}/>
                                         </Modal.Description>
                                         <Modal.Description padded>
                                         </Modal.Description >
@@ -202,11 +204,25 @@ class BuyerHomeDisplay extends Component {
                 this.setState({ orgNames: names})
             })
     }
+
+    longPoll = () => setInterval(this.fetchCurrentItems, 3000) 
+    fetchCurrentItems = () => {
+        fetch('/getItems')
+            .then(response => response.text())
+            .then(responseBody => {
+                let body = JSON.parse(responseBody)
+                let items = body.items;
+                this.setState({currItems: items})
+            })
+    }
     
     componentDidMount () {
         this.getOrgNames();
+        this.longPoll();
     }
-
+    componentWillUnmount() {
+        clearInterval(this.longPoll)
+    }
     render() {
         
         return (
