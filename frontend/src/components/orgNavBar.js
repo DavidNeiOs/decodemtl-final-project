@@ -75,7 +75,7 @@ class OrgNavBar extends Component {
     return (
         <div>
             <div>
-        <Menu secondary position="fixed" >
+        <Menu inverted position="fixed" >
         <Menu.Item>
           <img src='https://react.semantic-ui.com/logo.png' />
         </Menu.Item>

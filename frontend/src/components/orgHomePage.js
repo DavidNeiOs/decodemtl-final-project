@@ -12,11 +12,13 @@ class OrgHomePage extends Component {
       <div className="App">
         <div>
           <ConnectedOrgNavBar/>
-        </div>
+          </div>
+                
+                <Divider/>
         <div>
           <OrgHomeItemDisp />
           <br/>
-          <br/>
+          <Divider/>
         </div>
         <div>
           <Divider/>
@@ -24,7 +26,7 @@ class OrgHomePage extends Component {
         <Header as='h2' icon='globe' content='Shop All Products' />
           <br/>
           <Divider/>
-          <br />
+          
           <BuyerHomeDisplay/>
         </div>
         <Footer/>
