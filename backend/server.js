@@ -523,8 +523,8 @@ app.post("/bidItem", (req, res) => {
         if (err) { throw err; }
         else if (result.length > 0) {
 
-            //verify if item exist and available to auction , state: "TO_AUCTION"
-            collItm.find({ itemId: bodyParam.itemId }).toArray(function (err, result) {
+            //verify if item exist and available to auction
+            collItm.find({ itemId: bodyParam.itemId , state: "TO_AUCTION"}).toArray(function (err, result) {
                 if (err) { throw err }
 
                 else if (result.length > 0) {
