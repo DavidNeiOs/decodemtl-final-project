@@ -41,6 +41,7 @@ let serverState = {
     bidsItems: [] //temporary 
 }
 
+let dataInstance = null;
 //CONNECTION WITH MONGO DB WHEN APP INIT---------------------------------
 db.connect(url, function (err) {
     if (err) {
@@ -48,6 +49,7 @@ db.connect(url, function (err) {
         process.exit(1);
     } else {
         app.listen(4000, () => {
+            dataInstance = db.get().db(database);
             console.log("AUCTION backend project listening on port 4000");
         });
     }
@@ -55,9 +57,9 @@ db.connect(url, function (err) {
 
 
 
-function getDatabase() {
-    return db.get().db(database);
-}
+/*function getDatabase() {
+    return db.get().db(database);    
+}*/
 
 /**
  * Endpoint that return the initial info used as parameters of the website, like
@@ -68,6 +70,7 @@ function getDatabase() {
  */
 app.get("/getParams", (req, res) => {
 
+try {    
     if (!(serverState.categoriesList.length > 0
         && serverState.countriesList.length > 0
         && serverState.itemStateList.length > 0)) {
@@ -87,7 +90,7 @@ app.get("/getParams", (req, res) => {
             }
         };
 
-        let datab = getDatabase();
+        let datab = dataInstance;
 
         //get categories 
         var collCat = datab.collection(collCategories);
@@ -121,6 +124,9 @@ app.get("/getParams", (req, res) => {
             itemState: serverState.itemStateList
         }));
     }
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}
 
 });
 
@@ -128,8 +134,8 @@ app.get("/getParams", (req, res) => {
  * Endpoint that return the oraganizations registered
  */
 app.get("/getOrgs", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
 
     //get organizations 
     var collOrg = datab.collection(collOrganizations);
@@ -137,14 +143,17 @@ app.get("/getOrgs", (req, res) => {
         if (err) throw err;
         res.send(JSON.stringify({ status: true, message: "", orgs: result }));
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 /**
  * Endpoint that return the listing (items) 
  */
 app.get("/getItems", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
 
     //get items
     var collListing = datab.collection(collItems);
@@ -152,16 +161,19 @@ app.get("/getItems", (req, res) => {
         if (err) throw err;
         res.send(JSON.stringify({ status: true, message: "", items: result }));
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 /**
  * Endpoint that return the listing (items) 
  */
 app.get("/getItem", (req, res) => {
-
+try {
     let itemIdParam = req.query.itemId;
 
-    let datab = getDatabase();
+    let datab = dataInstance;
     let collItm = datab.collection(collItems);
 
     //get item
@@ -173,6 +185,9 @@ app.get("/getItem", (req, res) => {
             res.send(JSON.stringify({ status: false, message: "item not found", item: result }));
         }
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 
@@ -180,8 +195,8 @@ app.get("/getItem", (req, res) => {
  * Endpoint to do sign Up for orgs and buyers
  */
 app.post("/signUp", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
     var collOrg = datab.collection(collOrganizations);
     var collBuy = datab.collection(collBuyers);
 
@@ -263,16 +278,21 @@ app.post("/signUp", (req, res) => {
             }
         });
     }
+
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 /**
  * Endpoint to do log In 
  */
 app.post('/login', (req, res) => {
+try {    
     let bodyParam = JSON.parse(req.body.toString());
 
     //search if user exist in orgs
-    let datab = getDatabase();
+    let datab = dataInstance;
     var collOrg = datab.collection(collOrganizations);
     var collSess = datab.collection(collSessions);
     var collBuy = datab.collection(collBuyers);
@@ -317,14 +337,19 @@ app.post('/login', (req, res) => {
             });
         }
     });
+
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 
 app.post('/logout', (req, res) => {
+try {    
     let bodyParam = JSON.parse(req.body.toString());
     let currentSession = getSessionIdFromCookie(req);
 
-    let datab = getDatabase();
+    let datab = dataInstance;
     var collSess = datab.collection(collSessions);
     let query = { username: bodyParam.username, token: currentSession, active: true };
     let newValues = { $set: { username: bodyParam.username, token: currentSession, active: false } };
@@ -342,12 +367,16 @@ app.post('/logout', (req, res) => {
         }
 
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 app.get('/home', (req, res) => {
+try {    
     let currentSession = getSessionIdFromCookie(req);
 
-    let datab = getDatabase();
+    let datab = dataInstance;
     var collSess = datab.collection(collSessions);
     var collBuy = datab.collection(collBuyers);
 
@@ -378,6 +407,9 @@ app.get('/home', (req, res) => {
         }
 
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 
@@ -385,14 +417,16 @@ app.get('/home', (req, res) => {
  * Endpoint to create item 
  */
 app.post("/addItem", (req, res) => {
+try {
+    //let datab = dataInstance;
+    let datab = dataInstance;
 
-    let datab = getDatabase();
     var collItem = datab.collection(collItems);
     let bodyParam = JSON.parse(req.body.toString());
 
     var collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);
-
+    let currentSession = getSessionIdFromCookie(req);    
+    
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
     collSess.find(querySess).toArray(function (err, result) {
@@ -417,6 +451,17 @@ app.post("/addItem", (req, res) => {
                 //if insertion was ok, read and update item.
                 collItem.updateOne(myquery, newvalues, function (err, result) {
                     if (err) throw err;
+
+                    //settimeout to close auction item
+                    let period = new Date(bodyParam.bidFinDate).getTime() - new Date(bodyParam.bidStartDate).getTime();
+                    let startd = new Date(bodyParam.bidStartDate).getTime() - new Date().getTime();
+                    setTimeout(function() {
+                        setTimeout(function () {
+                            closeItemProcess(id);
+                        }, period);
+                    }, startd);
+    
+                    //send response
                     res.send(JSON.stringify({ status: true, message: "", itemId: id }));
                 });
 
@@ -427,6 +472,9 @@ app.post("/addItem", (req, res) => {
         }
 
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 
@@ -434,8 +482,8 @@ app.post("/addItem", (req, res) => {
  * Endpoint to create item 
  */
 app.put("/updateItem", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
     var collItem = datab.collection(collItems);
     let bodyParam = JSON.parse(req.body.toString());
 
@@ -464,14 +512,17 @@ app.put("/updateItem", (req, res) => {
         }
 
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 /**
  * Endpoint to cancel item 
  */
 app.post("/cancelItem", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
     var collItem = datab.collection(collItems);
     let bodyParam = JSON.parse(req.body.toString());
 
@@ -504,10 +555,14 @@ app.post("/cancelItem", (req, res) => {
         }
 
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 app.post("/bidItem", (req, res) => {
-    let datab = getDatabase();
+try {    
+    let datab = dataInstance;
     let collBid = datab.collection(collBidTran);
     let collItm = datab.collection(collItems);
 
@@ -524,7 +579,7 @@ app.post("/bidItem", (req, res) => {
         else if (result.length > 0) {
 
             //verify if item exist and available to auction
-            collItm.find({ itemId: bodyParam.itemId , state: "TO_AUCTION"}).toArray(function (err, result) {
+            collItm.find({ itemId: bodyParam.itemId, state: "TO_AUCTION" }).toArray(function (err, result) {
                 if (err) { throw err }
 
                 else if (result.length > 0) {
@@ -564,15 +619,17 @@ app.post("/bidItem", (req, res) => {
         }
     });
 
-
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}
 });
 
 /**
  * Endpoint to close item 
  */
 app.post("/closeItem", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
     let collItem = datab.collection(collItems);
     let collBid = datab.collection(collBidTran);
     let collBuy = datab.collection(collBuyers);
@@ -580,7 +637,7 @@ app.post("/closeItem", (req, res) => {
 
     //check if user session exist
     let collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);        
+    let currentSession = getSessionIdFromCookie(req);
 
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
@@ -591,64 +648,68 @@ app.post("/closeItem", (req, res) => {
             let myquery = { itemId: bodyParam.itemId };
 
             //verify item is not closed/auctioned
-            collItem.find({ itemId: bodyParam.itemId , state: "TO_AUCTION"}).toArray(function (err, result) {
-            if (err) { throw err }
-            if (result.length > 0) {   
-
-            //search if there is a winner
-            collBid.find({ itemId: bodyParam.itemId }).sort({ bid: -1 }).toArray(function (err, result) {
-                if (err) { throw err; }
+            collItem.find({ itemId: bodyParam.itemId, state: "TO_AUCTION" }).toArray(function (err, result) {
+                if (err) { throw err }
                 if (result.length > 0) {
 
-                    //update Item  
-                    let userWinner = result[0].userId;
-                    let bidPrice = result[0].bid;
-                    let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED, lastPrice: result[0].bid, winnerUserId: userWinner } };
-                    collItem.updateOne(myquery, newvalues, function (err, result) {
-                        if (err) {
-                            throw err;
-                        } else if (result.result.nModified > 0) {
+                    //search if there is a winner
+                    collBid.find({ itemId: bodyParam.itemId }).sort({ bid: -1 }).toArray(function (err, result) {
+                        if (err) { throw err; }
+                        if (result.length > 0) {
 
-                            //find info user winner
-                            collBuy.find({ userId: userWinner }).toArray(function (err, result) {
-                                if (err) { throw err; }
-                                if (result.length > 0) {
+                            //update Item  
+                            let userWinner = result[0].userId;
+                            let bidPrice = result[0].bid;
+                            let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED, lastPrice: result[0].bid, winnerUserId: userWinner } };
+                            collItem.updateOne(myquery, newvalues, function (err, result) {
+                                if (err) {
+                                    throw err;
+                                } else if (result.result.nModified > 0) {
 
-                                    let winnerObj = { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice, email: result[0].email };
-                                    notifyCloseWinner(bodyParam.itemId, winnerObj);
-                                    res.send(JSON.stringify({status: true, message: "",winner: winnerObj})); 
+                                    //find info user winner
+                                    collBuy.find({ userId: userWinner }).toArray(function (err, result) {
+                                        if (err) { throw err; }
+                                        if (result.length > 0) {
+
+                                            let winnerObj = { userId: userWinner, username: result[0].username, firstName: result[0].firstName, lastName: result[0].lastName, biddedPrice: bidPrice, email: result[0].email };
+                                            notifyCloseWinner(bodyParam.itemId, winnerObj);
+                                            res.send(JSON.stringify({ status: true, message: "", winner: winnerObj }));
+                                        }
+                                    });
+
+                                } else {
+                                    res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
                                 }
                             });
+                        } else {
+                            //if no winner,update Item                                     
+                            let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED } };
+                            collItem.updateOne(myquery, newvalues, function (err, result) {
+                                if (err) {
+                                    throw err;
+                                } else if (result.result.nModified > 0) {
+                                    notifyCloseNoWinner(bodyParam.itemId);
+                                    res.send(JSON.stringify({ status: true, message: "", winner: {} }));
+                                } else {
+                                    res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
+                                }
+                            });
+                        }
+                    });
 
-                        } else {
-                            res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
-                        }
-                    });
                 } else {
-                    //if no winner,update Item                                     
-                    let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED } };
-                    collItem.updateOne(myquery, newvalues, function (err, result) {
-                        if (err) {
-                            throw err;
-                        } else if (result.result.nModified > 0) {
-                            notifyCloseNoWinner(bodyParam.itemId);
-                            res.send(JSON.stringify({ status: true, message: "", winner: {} }));
-                        } else {
-                            res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
-                        }
-                    });
+                    res.send(JSON.stringify({ status: true, message: "" }));
                 }
             });
-
-        } else {
-            res.send(JSON.stringify({ status: true, message: "" }));
-        }});   
 
         } else {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
 
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 /*
@@ -656,12 +717,13 @@ app.post("/closeItem", (req, res) => {
 * for this case of notify end bid, is used to send several emails at the same time.
 */
 app.post("/sendEmail", (req, res) => {
+try {    
     let bodyParam = JSON.parse(req.body.toString());
     let adminEmail = "charitybidadm@gmail.com";
     let adminEmailPass = "decode123!";
 
     //check if user session exist
-    let datab = getDatabase();
+    let datab = dataInstance;
     let collSess = datab.collection(collSessions);
     let currentSession = getSessionIdFromCookie(req);
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
@@ -716,6 +778,10 @@ app.post("/sendEmail", (req, res) => {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
     });
+
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
 /*
@@ -723,8 +789,8 @@ app.post("/sendEmail", (req, res) => {
 * how many has lost.
 */
 app.post("/getUserProfile", (req, res) => {
-
-    let datab = getDatabase();
+try {
+    let datab = dataInstance;
     var collItem = datab.collection(collItems);
     let collBid = datab.collection(collBidTran);
     let bodyParam = JSON.parse(req.body.toString());
@@ -804,39 +870,90 @@ app.post("/getUserProfile", (req, res) => {
             res.send(JSON.stringify({ status: false, message: "user does not have any active session" }))
         }
     });
+}catch(error) {
+    res.status(500).json({ error: error.toString() });
+}    
 });
 
-function getSessionIdFromCookie(req) {
+function getSessionIdFromCookie(req) { 
+ try {      
     let sessionID = req.headers.cookie != undefined ? req.headers.cookie.split("=")[1] : "";
     return sessionID;
+}catch(error) {
+    console.log("error reading cookie");
+}   
 }
 
-function getItemLastPrice(itemIdParam) {
-    let lastPrice = 0;
-    /*let cb = () => {
-        return lastPrice;
-    };*/
 
-    let datab = getDatabase();
-    let collItm = datab.collection(collItems);
+function closeItemProcess(itemIdParam) {
+try {    
+    let datab = dataInstance;
 
-    collItm.find({ itemId: itemIdParam }).toArray(function (err, result) {
+    let collItem = datab.collection(collItems);
+    let collBid = datab.collection(collBidTran);
+    let collBuy = datab.collection(collBuyers);
+
+    let myquery = { itemId: itemIdParam };
+
+    //verify item is not closed/auctioned
+    collItem.find({ itemId: itemIdParam, state: "TO_AUCTION" }).toArray(function (err, result) {
         if (err) { throw err }
-        else if (result.length > 0) {
-            lastPrice = result[0].lastPrice;
-            //cb();
-            return lastPrice;
+        if (result.length > 0) {
+
+            //search if there is a winner
+            collBid.find({ itemId: itemIdParam }).sort({ bid: -1 }).toArray(function (err, result) {
+                if (err) { throw err; }
+                if (result.length > 0) {
+
+                    //update Item  
+                    let userWinner = result[0].userId;
+                    let bidPrice = result[0].bid;
+                    let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED, lastPrice: result[0].bid, winnerUserId: userWinner } };
+                    collItem.updateOne(myquery, newvalues, function (err, result) {
+                        if (err) {
+                            throw err;
+                        } else if (result.result.nModified > 0) {
+
+                            //find info user winner
+                            collBuy.find({ userId: userWinner }).toArray(function (err, result) {
+                                if (err) { throw err; }
+                                if (result.length > 0) {
+
+                                    let winnerObj = { userId: userWinner, username: result[0].username, firstName: result[0].firstName, lastName: result[0].lastName, biddedPrice: bidPrice, email: result[0].email };
+                                    notifyCloseWinner(itemIdParam, winnerObj);                                    
+                                }
+                            });
+                        } 
+                    });
+                } else {
+                    //if no winner,update Item                                     
+                    let newvalues = { $set: { bidClosedDate: new Date().toISOString(), state: ITEM_STATE_AUCTIONED } };
+                    collItem.updateOne(myquery, newvalues, function (err, result) {
+                        if (err) {
+                            throw err;
+                        } else if (result.result.nModified > 0) {
+                            notifyCloseNoWinner(itemIdParam);                            
+                        } 
+                    });
+                }
+            });
+
+        } else {
+            console.log("so weird....item already closed");
         }
     });
-    return lastPrice;
+}catch(error) {
+    console.log("error closeItemProcess: "+error);
+}
 }
 
 function notifyCloseWinner(itemIdParam, winner) {
-    let datab = getDatabase();
-    let mailData={};
+try {    
+    let datab = dataInstance;
+    let mailData = {};
 
     //get item info and its org
-    let collItm = datab.collection(collItems);    
+    let collItm = datab.collection(collItems);
 
     let aggregateJoin = [{
         $lookup:
@@ -853,35 +970,29 @@ function notifyCloseWinner(itemIdParam, winner) {
         else if (result.length > 0) {
 
             result.forEach(e => {
-                if(e.itemId === itemIdParam) {
+                if (e.itemId === itemIdParam) {
                     mailData.to = winner.email;
                     mailData.cc = e.orgDetail[0].email;
-                    mailData.subject = "Winner item "+e.title+ "!!!";          
+                    mailData.subject = "Winner item " + e.title + "!!!";
                     //mailData.html = "<p>Estimated <b>{{winner.firstname}} {{winner.lastname}} </b> you are the happy winner of the item {{result[0].title}} with a bid of  {{winner.biddedPrice}}. Please contact with the non-profit org responsible: <b>{{orgDetail.orgName}}</b>. Contact email: {{orgDetail.email}}</p>";
-                    mailData.html = "<p>Estimated <b>"+winner.firstname+" "+winner.lastname +"</b> the auction has finished and you are the happy winner of the item"+e.title+" with a bid of  "+winner.biddedPrice+". Please contact with the non-profit org responsible: <b>"+e.orgDetail[0].orgName+"</b>. Contact email:"+e.orgDetail[0].email+"</p>";
-                    sendEmailProcess(mailData); 
-                } 
-            }); 
-        } 
-    });
-
-    /*var collOrg = datab.collection(collOrganizations);
-    collOrg.find({orgId: orgIdParam}).toArray(function (err, result) {
-        if (err) {throw err}
-        else if (result.length >0) {
-            mailData.cc = result[0].email;
-            sendEmailProcess(mailData); 
+                    mailData.html = "<p>Estimated <b>" + winner.firstName + " " + winner.lastName + "</b> the auction has finished and you are the happy winner of the item" + e.title + " with a bid of  " + winner.biddedPrice + ". Please contact with the non-profit org responsible: <b>" + e.orgDetail[0].orgName + "</b>. Contact email:" + e.orgDetail[0].email + "</p>";
+                    sendEmailProcess(mailData);
+                }
+            });
         }
-    });*/
-
+    });
+}catch(error) {
+    console.log("error notifyCloseWinner: "+error);
+}    
 }
 
 function notifyCloseNoWinner(itemIdParam) {
-    let datab = getDatabase();
-    let mailData={};
+try {    
+    let datab = dataInstance;
+    let mailData = {};
 
     //get item info and its org
-    let collItm = datab.collection(collItems);    
+    let collItm = datab.collection(collItems);
 
     let aggregateJoin = [{
         $lookup:
@@ -890,7 +1001,7 @@ function notifyCloseNoWinner(itemIdParam) {
             localField: 'orgId',
             foreignField: 'orgId',
             as: 'orgDetail'
-        }        
+        }
     }];
     //find({ itemId: itemIdParam }). $match: { itemId: itemIdParam}
     collItm.aggregate(aggregateJoin).toArray(function (err, result) {
@@ -898,20 +1009,24 @@ function notifyCloseNoWinner(itemIdParam) {
         else if (result.length > 0) {
 
             result.forEach(e => {
-                if(e.itemId === itemIdParam) {
+                if (e.itemId === itemIdParam) {
                     mailData.to = e.orgDetail[0].email;
-                    mailData.subject = "No Winner for item "+e.title;          
+                    mailData.subject = "No Winner for item " + e.title;
                     //mailData.html = "<p>Estimated <b>{{e.orgDetail[0].orgName}}</b> the auction for the item {{e.title}} has been finished and there was no winner.</p>";
-                    mailData.html = "<p>Estimated <b>"+e.orgDetail[0].orgName+"</b> the auction for the item "+e.title+" has been finished and there was no winner.</p>";
-                    sendEmailProcess(mailData); 
-                } 
-            }); 
-        } 
+                    mailData.html = "<p>Estimated <b>" + e.orgDetail[0].orgName + "</b> the auction for the item " + e.title + " has been finished and there was no winner.</p>";
+                    sendEmailProcess(mailData);
+                }
+            });
+        }
     });
+
+}catch(error) {
+    console.log("error notifyCloseNoWinner: "+error)
+}    
 }
 
 function sendEmailProcess(mailData) {
-
+try {
     let adminEmail = "charitybidadm@gmail.com";
     let adminEmailPass = "decode123!";
 
@@ -937,9 +1052,12 @@ function sendEmailProcess(mailData) {
         if (error) {
             console.log(error);
         } else {
-            console.log('Email sent: ' + info.response);            
+            console.log('Email sent: ' + info.response);
         }
     });
+}catch(error) {
+    console.log("error sendEmailProcess: "+error)
+}     
 }
 
 //-----------------------------------------------------------------
@@ -949,7 +1067,7 @@ function sendEmailProcess(mailData) {
     console.log("connected !");
 })*/
 io.on('connection', function (socket) {
-    let datab = getDatabase();
+    let datab = dataInstance;
 
     //namespace used to receive and send messages for chat
     socket.on('sendMessage', function (content) {
@@ -989,9 +1107,22 @@ io.on('connection', function (socket) {
                 })
             }
             io.sockets.in(content.room).emit('receiveLastPrice', bidItemsArray);
-        });
-
+        });        
     });
+
+    //namespace used to receive and send messages status of the item
+    socket.on('sendStatusItem', function (content) {
+        socket.join(content.room);
+
+        let collItm = datab.collection(collItems);
+        collItm.find({ itemId: content.itemId }).toArray(function (err, result) {
+            if (err) { throw err }
+            else if (result.length > 0) {
+                io.sockets.in(content.room).emit('receiveStatusItem', result);
+            }            
+        });        
+    });
+
 });
 
 
