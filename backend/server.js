@@ -205,7 +205,8 @@ app.post("/signUp", (req, res) => {
                         //delete userType attribute
                         delete bodyParam['userType'];
                         //send to db to insert
-                        bodyParam.orgId = Math.floor(Math.random() * 1000) + "";
+                        //bodyParam.orgId = Math.floor(Math.random() * 1000) + "";
+                        bodyParam.orgId = '';
                         bodyParam.password = sha256(bodyParam.password);
 
                         collOrg.insertOne(bodyParam, function (err, result) {
@@ -213,7 +214,15 @@ app.post("/signUp", (req, res) => {
                                 res.send(JSON.stringify({ status: false, message: "error in account creation" }))
                                 throw err;
                             }
-                            res.send(JSON.stringify({ status: true, message: "successfully created account" }))
+                            let id = result.ops[0]._id.toString();
+                            var myquery = result.ops[0];
+                            var newvalues = { $set: { orgId: id } };
+                            //if insertion was ok, read and update to set user id.
+                            collOrg.updateOne(myquery, newvalues, function (err, result) {
+                                if (err) { throw err };
+                                res.send(JSON.stringify({ status: true, message: "successfully created account" }))
+                            });
+
                         });
                     }
                 });
@@ -514,12 +523,13 @@ app.post("/bidItem", (req, res) => {
         if (err) { throw err; }
         else if (result.length > 0) {
 
-            //verify if item exist and available to auction
-            collItm.find({ itemId: bodyParam.itemId, state: "TO_AUCTION" }).toArray(function (err, result) {
+            //verify if item exist and available to auction , state: "TO_AUCTION"
+            collItm.find({ itemId: bodyParam.itemId }).toArray(function (err, result) {
                 if (err) { throw err }
 
                 else if (result.length > 0) {
                     bodyParam.date = new Date().toISOString();
+                    bodyParam.bid = parseInt(bodyParam.bid);
                     collBid.insertOne(bodyParam, function (err, result) {
                         if (err) {
                             res.send(JSON.stringify({ status: false, message: "error processing bid to item" }))
@@ -570,7 +580,7 @@ app.post("/closeItem", (req, res) => {
 
     //check if user session exist
     let collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req);
+    let currentSession = getSessionIdFromCookie(req);    
 
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
@@ -581,7 +591,7 @@ app.post("/closeItem", (req, res) => {
             let myquery = { itemId: bodyParam.itemId };
 
             //search if there is a winner
-            collBid.find({ itemId: bodyParam.itemId }).sort({ bid: 1 }).toArray(function (err, result) {
+            collBid.find({ itemId: bodyParam.itemId }).sort({ bid: -1 }).toArray(function (err, result) {
                 if (err) { throw err; }
                 if (result.length > 0) {
 
@@ -598,10 +608,10 @@ app.post("/closeItem", (req, res) => {
                             collBuy.find({ userId: userWinner }).toArray(function (err, result) {
                                 if (err) { throw err; }
                                 if (result.length > 0) {
-                                    res.send(JSON.stringify({
-                                        status: true, message: "",
-                                        winner: { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice, email: result[0].email }
-                                    }));
+
+                                    let winnerObj = { userId: userWinner, username: result[0].username, firstname: result[0].firstname, lastname: result[0].lastname, biddedPrice: bidPrice, email: result[0].email };
+                                    notifyCloseWinner(bodyParam.itemId, winnerObj);
+                                    res.send(JSON.stringify({status: true, message: "",winner: winnerObj})); 
                                 }
                             });
 
@@ -616,6 +626,7 @@ app.post("/closeItem", (req, res) => {
                         if (err) {
                             throw err;
                         } else if (result.result.nModified > 0) {
+                            notifyCloseNoWinner(bodyParam.itemId);
                             res.send(JSON.stringify({ status: true, message: "", winner: {} }));
                         } else {
                             res.send(JSON.stringify({ status: false, message: "error trying to close the item" }));
@@ -644,7 +655,7 @@ app.post("/sendEmail", (req, res) => {
     //check if user session exist
     let datab = getDatabase();
     let collSess = datab.collection(collSessions);
-    let currentSession = getSessionIdFromCookie(req); 
+    let currentSession = getSessionIdFromCookie(req);
     let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
     collSess.find(querySess).toArray(function (err, result) {
@@ -812,6 +823,117 @@ function getItemLastPrice(itemIdParam) {
     return lastPrice;
 }
 
+function notifyCloseWinner(itemIdParam, winner) {
+    let datab = getDatabase();
+    let mailData={};
+
+    //get item info and its org
+    let collItm = datab.collection(collItems);    
+
+    let aggregateJoin = [{
+        $lookup:
+        {
+            from: 'organizations',
+            localField: 'orgId',
+            foreignField: 'orgId',
+            as: 'orgDetail'
+        }
+    }];
+    //.find({ itemId: itemIdParam }) $match: { itemId: itemIdParam}
+    collItm.aggregate(aggregateJoin).toArray(function (err, result) {
+        if (err) { throw err }
+        else if (result.length > 0) {
+
+            result.forEach(e => {
+                if(e.itemId === itemIdParam) {
+                    mailData.to = winner.email;
+                    mailData.cc = e.orgDetail[0].email;
+                    mailData.subject = "Winner item "+e.title+ "!!!";          
+                    //mailData.html = "<p>Estimated <b>{{winner.firstname}} {{winner.lastname}} </b> you are the happy winner of the item {{result[0].title}} with a bid of  {{winner.biddedPrice}}. Please contact with the non-profit org responsible: <b>{{orgDetail.orgName}}</b>. Contact email: {{orgDetail.email}}</p>";
+                    mailData.html = "<p>Estimated <b>"+winner.firstname+" "+winner.lastname +"</b> the auction has finished and you are the happy winner of the item"+e.title+" with a bid of  "+winner.biddedPrice+". Please contact with the non-profit org responsible: <b>"+e.orgDetail[0].orgName+"</b>. Contact email:"+e.orgDetail[0].email+"</p>";
+                    sendEmailProcess(mailData); 
+                } 
+            }); 
+        } 
+    });
+
+    /*var collOrg = datab.collection(collOrganizations);
+    collOrg.find({orgId: orgIdParam}).toArray(function (err, result) {
+        if (err) {throw err}
+        else if (result.length >0) {
+            mailData.cc = result[0].email;
+            sendEmailProcess(mailData); 
+        }
+    });*/
+
+}
+
+function notifyCloseNoWinner(itemIdParam) {
+    let datab = getDatabase();
+    let mailData={};
+
+    //get item info and its org
+    let collItm = datab.collection(collItems);    
+
+    let aggregateJoin = [{
+        $lookup:
+        {
+            from: 'organizations',
+            localField: 'orgId',
+            foreignField: 'orgId',
+            as: 'orgDetail'
+        }        
+    }];
+    //find({ itemId: itemIdParam }). $match: { itemId: itemIdParam}
+    collItm.aggregate(aggregateJoin).toArray(function (err, result) {
+        if (err) { throw err }
+        else if (result.length > 0) {
+
+            result.forEach(e => {
+                if(e.itemId === itemIdParam) {
+                    mailData.to = e.orgDetail[0].email;
+                    mailData.subject = "No Winner for item "+e.title;          
+                    //mailData.html = "<p>Estimated <b>{{e.orgDetail[0].orgName}}</b> the auction for the item {{e.title}} has been finished and there was no winner.</p>";
+                    mailData.html = "<p>Estimated <b>"+e.orgDetail[0].orgName+"</b> the auction for the item "+e.title+" has been finished and there was no winner.</p>";
+                    sendEmailProcess(mailData); 
+                } 
+            }); 
+        } 
+    });
+}
+
+function sendEmailProcess(mailData) {
+
+    let adminEmail = "charitybidadm@gmail.com";
+    let adminEmailPass = "decode123!";
+
+    //check if user session exist
+    var mailOptions = {
+        from: adminEmail,
+        to: mailData.to,
+        cc: mailData.cc,
+        subject: mailData.subject,
+        html: mailData.html
+    };
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: adminEmail,
+            pass: adminEmailPass
+        }
+    });
+
+    //send email
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);            
+        }
+    });
+}
+
 //-----------------------------------------------------------------
 //SOCKET IO--------------------------------------------------------
 //io.origins([allowedOrigins]);
@@ -848,24 +970,8 @@ io.on('connection', function (socket) {
     socket.on('sendLastPrice', function (content) {
         socket.join(content.room);
 
-        /*let lastPri = getItemLastPrice(content.itemId);
-        //let objLastPrice = { itemId: content.itemId, room: content.room, lastPrice: lastPri, username: content.username }
-        let objLastPrice = [...content];
-        objLastPrice.lastPrice = lastPri;
-        objLastPrice.date = new Date().toISOString();
-        serverState.bidsItems.push(content);*/
-
         let bidItemsArray = [];
         let collBid = datab.collection(collBidTran);
-        /*let aggregateJoin = [{ $lookup:
-            {
-              from: 'buyers',
-              localField: 'userId',
-              foreignField: 'userId',
-              as: 'userDetail'
-            }
-          }];
-        collBid.find({itemId : content.itemId}).aggregate(aggregateJoin).toArray(function (err, result) {*/
         collBid.find({ itemId: content.itemId }).sort({ bid: -1 }).toArray(function (err, result) {
             if (err) { throw err }
             else if (result.length > 0) {
