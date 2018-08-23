@@ -41,8 +41,7 @@ class BuyerNavBar extends Component {
   }
   render() {
     const options = [
-        { key: 1, text: 'Settings', value: 1, onClick: this.handleSettings },
-        { key: 2, text: 'Logout', value: 2, onClick: this.handleLogOut},
+        { key: 1, text: 'Logout', value: 2, onClick: this.handleLogOut},
     ]
     const { activeItem } = this.state
     return (
