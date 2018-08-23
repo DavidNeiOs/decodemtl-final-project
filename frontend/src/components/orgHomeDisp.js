@@ -116,7 +116,7 @@ class OrgHomeItemDisp extends Component {
                 return (
                     
                     <Card>
-                        <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}} />
+                        <Image src={'/images/' + i.images} style={{height: '250px', width: '280px'}}/>
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
@@ -176,7 +176,7 @@ class OrgHomeItemDisp extends Component {
                 return (
                     
                     <Card>
-                        <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}}/>
+                        <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}} fluid/>
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
