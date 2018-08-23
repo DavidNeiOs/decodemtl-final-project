@@ -305,7 +305,7 @@ app.post('/updateInfo', (req, res) =>{
 
 })
 
-const stripe = require("stripe")("sk_test_NwiJRkMy2Neo8BjF9yV3oBLb");
+/*const stripe = require("stripe")("sk_test_NwiJRkMy2Neo8BjF9yV3oBLb");
 
 app.post("/stripeCharge", async (req, res) => {
     try {
@@ -320,7 +320,7 @@ app.post("/stripeCharge", async (req, res) => {
     } catch (err) {
       res.status(500).end();
     }
-  });
+  });*/
 
 /**
  * Endpoint to do log In 
@@ -491,13 +491,13 @@ app.post("/addItem", (req, res) => {
                         if (err) throw err;
 
                         //settimeout to close auction item
-                        let period = new Date(bodyParam.bidFinDate).getTime() - new Date(bodyParam.bidStartDate).getTime();
+                        /*let period = new Date(bodyParam.bidFinDate).getTime() - new Date(bodyParam.bidStartDate).getTime();
                         let startd = new Date(bodyParam.bidStartDate).getTime() - new Date().getTime();
                         setTimeout(function () {
                             setTimeout(function () {
                                 closeItemProcess(id);
                             }, period);
-                        }, startd);
+                        }, startd);*/
 
                         //send response
                         res.send(JSON.stringify({ status: true, message: "", itemId: id }));

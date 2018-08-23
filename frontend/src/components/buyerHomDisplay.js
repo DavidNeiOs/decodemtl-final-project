@@ -26,6 +26,7 @@ class BuyerHomeDisplay extends Component {
             })
         }
     }
+    handleUpdateBid = currBid => this.setState({currBid})
     handleBid = (amount,itemId,username) => {
         fetch('/bidItem', 
             {
@@ -102,7 +103,7 @@ class BuyerHomeDisplay extends Component {
                                                 <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>
                                             </Button.Group>
 
-                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username}/>
+                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username} onUpdateBid={this.handleUpdateBid}/>
                                         </Modal.Description>
                                         <Modal.Description padded>
                                         </Modal.Description >
@@ -154,7 +155,7 @@ class BuyerHomeDisplay extends Component {
                                             <Header>Item ID : {i.itemId}</Header>
                                             <h3>Category : {i.category}</h3>
                                             <p>{i.description}</p>
-                                            <h2>Latest Bid at {i.lastPrice} $</h2>
+                                            <h2>Latest Bid at {this.state.currBid || i.lastPrice} $</h2>
                                             <br />
                                             <h2><Timer endDate={i.bidFinDate} item={i}/></h2>
                                             <Input type='number' onChange={this.handleChange}/>
@@ -162,7 +163,7 @@ class BuyerHomeDisplay extends Component {
                                             <Button onClick={() => this.handleBid(this.state.currBid,i.itemId,this.props.usr.username)}>Bid</Button>
                                             </Button.Group>
 
-                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username}/>
+                                            <BidLog itemId={i.itemId} userBid={this.props.usr.username} onUpdateBid={this.handleUpdateBid}/>
                                         </Modal.Description>
                                         <Modal.Description padded>
                                         </Modal.Description >
