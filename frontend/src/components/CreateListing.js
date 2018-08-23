@@ -19,6 +19,7 @@ class CreateListing extends Component {
             bidPeriod: '',
             bidTypePeriod: '',
             options: [
+                {key: 'minutes', text: 'minutes', value: 'minutes'},
                 {key: 'hours', text: 'hours', value: 'hours'},
                 {key: 'days', text: 'days', value: 'days'}
             ],            
@@ -31,6 +32,26 @@ class CreateListing extends Component {
     showEndTime(bidTypePeriod){
         // split the date in calendar and hours
         let dateArr = this.state.bidStartDate.split('T')
+        if(bidTypePeriod === 'minutes') {
+            let timeArr = dateArr[1].split(':');
+            let minutes = parseInt(timeArr[1]);
+            minutes = minutes + parseInt(this.state.bidPeriod);
+            
+            if(minutes >= 60) {
+                minutes -= 60
+                timeArr[0] = parseInt(timeArr[0]) + 1
+                timeArr[0] = timeArr[0] + ''
+                timeArr[1] = minutes + ''
+                dateArr[1] = timeArr.join(':')
+                console.log(dateArr.join('T'))
+                return dateArr.join('T')
+            } else {
+                timeArr[1] = minutes + ''
+                dateArr[1] = timeArr.join(':')
+                console.log(dateArr.join('T'))
+                return dateArr.join('T')
+            } 
+        }
         // if the user wants to use hours
         if(bidTypePeriod === 'hours'){
             let timeArr = dateArr[1].split(':');

@@ -32,10 +32,15 @@ class OrgHomeItemDisp extends Component {
             })
             itemsFiltred.forEach((x) => {
                 let item = x
+                console.log(
+                    new Date(item.bidFinDate).getTime() - Date.now())
                 setTimeout(() => {
                     console.log(item)
+                    console.log(new Date(item.bidFinDate) - Date.now());
                     let newTA = this.state.toAuction.slice();
-                    newTA = newTA.filter(itm => item.itemId !== itm.itemId)
+                    newTA = newTA.filter(itm => {
+                        console.log(item.itemId, itm.itemId)                        
+                        return item.itemId !== itm.itemId})
                     let newArr = this.props.fItems.slice();
                     newArr.push(item)
 
@@ -46,8 +51,12 @@ class OrgHomeItemDisp extends Component {
                     })
 
                 }, 
-               new Date(item.bidFinDate) - Date.now()
-                //5000
+               new Date(item.bidFinDate).getTime() - Date.now() < 2000000000 ?
+
+               new Date(item.bidFinDate).getTime() - Date.now() :
+
+               2000000000
+                
             )
             });            
           })  
@@ -107,7 +116,7 @@ class OrgHomeItemDisp extends Component {
                 return (
                     
                     <Card>
-                        <Image src={'/images/' + i.images} />
+                        <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}} />
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
@@ -181,7 +190,7 @@ class OrgHomeItemDisp extends Component {
                             <Modal trigger={<Button fluid> See Details </Button>} closeIcon>
                                 <Modal.Header>{i.title}</Modal.Header>
                                 <Modal.Content image>
-                                    <Image wrapped size='medium' src={'/images/' + i.images}/>
+                                    <Image wrapped size='medium' src={'/images/' + i.images} />
                                     <Modal.Description>
                                         <Header>Item ID : {i.itemId}</Header>
                                             <h3>Category : {i.category}</h3>
@@ -224,7 +233,8 @@ class OrgHomeItemDisp extends Component {
         this.filterItemsByOrgId();
     }
     componentDidMount() {
-        this.longPoll()
+       this.longPoll()
+       this.filterItemsByOrgId();
     }
 
     componentWillUnmount() {
@@ -278,6 +288,7 @@ function mapStateToProps(state) {
         items: state.items,
         currOrg : state.orgId,
         org: state.currentOrg,
+        fItems : state.finishedItems
     }
 }
 export default connect(mapStateToProps)(OrgHomeItemDisp);

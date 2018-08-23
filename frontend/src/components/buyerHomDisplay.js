@@ -45,7 +45,7 @@ class BuyerHomeDisplay extends Component {
             .then(response => {
                 console.log(response)
                 this.sendBid(itemId, username);
-                let updatedItems = this.props.myItems.map(item => {
+                let updatedItems = this.state.currItems.map(item => {
                     if (item.itemId === itemId) {
                         item.lastPrice = amount
                     }
@@ -71,10 +71,10 @@ class BuyerHomeDisplay extends Component {
 
     formatItems = (name) => {
         if (name === '') {
-            let filteredList = this.props.myItems.filter(item => item.state === 'TO_AUCTION').map((i) => {
+            let filteredList = this.state.currItems.filter(item => item.state === 'TO_AUCTION').map((i) => {
                     return (
                         <Card>
-                            <Image src={'/images/' + i.images} />
+                            <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}} />
                             <Card.Content>
                                 <Card.Header>{i.title}</Card.Header>
                                 <Card.Meta>{i.description}</Card.Meta>
@@ -121,21 +121,21 @@ class BuyerHomeDisplay extends Component {
                     )
             })
             let rItems = [];
-            for (let i = 0; i < this.props.myItems.length; i++) {
+            for (let i = 0; i < this.state.currItems.length; i++) {
                 rItems.push(<Grid.Column> {filteredList[i]}</Grid.Column>);
             }
             return this.state.activeItem ? rItems.filter(item => item.category === this.state.activeItem) : rItems;
     
         } else {
             let category = this.state.activeItem;
-            let filteredList = this.props.myItems.filter( item => 
+            let filteredList = this.state.currItems.filter( item => 
                 (item.state === 'TO_AUCTION' && item.category === category) ||
                     (item.state === 'TO_AUCTION' && item.orgId === category)).map((i) => {
                 
                     return (
     
                         <Card>
-                            <Image src={'/images/' + i.images} />
+                            <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}} />
                             <Card.Content>
                                 <Card.Header>{i.title}</Card.Header>
                                 <Card.Meta>{i.description}</Card.Meta>
@@ -182,7 +182,7 @@ class BuyerHomeDisplay extends Component {
                     )
             })
             let rItems = [];
-            for (let i = 0; i < this.props.myItems.length  ; i++) {
+            for (let i = 0; i < this.state.currItems.length  ; i++) {
                 rItems.push(<Grid.Column> {filteredList[i]}</Grid.Column>);
             }
             return rItems;
@@ -200,11 +200,11 @@ class BuyerHomeDisplay extends Component {
                         orgId: org.orgId
                     }
                 })
-                this.setState({ orgNames: names})
+                this.setState({ orgNames: names, currItems: this.props.myItems})
             })
     }
 
-    longPoll = () => setInterval(this.fetchCurrentItems, 3000) 
+    longPoll = () => setInterval(this.fetchCurrentItems, 10000) 
     fetchCurrentItems = () => {
         fetch('/getItems')
             .then(response => response.text())
