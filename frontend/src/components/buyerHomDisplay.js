@@ -135,7 +135,7 @@ class BuyerHomeDisplay extends Component {
                 
                     return (
     
-                        <Card>
+                        <Card >
                             <Image src={'/images/' + i.images} style={{height: '250px', width: '275px'}} />
                             <Card.Content>
                                 <Card.Header>{i.title}</Card.Header>
