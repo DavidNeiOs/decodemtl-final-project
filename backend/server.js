@@ -288,7 +288,7 @@ app.post("/signUp", (req, res) => {
 app.post('/updateInfo', (req, res) =>{
     const sanitize = ({orgId, userId, password, ...params}) => params
     const params = JSON.parse(req.body.toString())
-    let datab = getDatabase()
+    let datab = dataInstance;
     if (!params.userId && ! params.orgId) return res.send(JSON.stringify({ status: 'No ID provided!' }))
     const collection = params.orgId ? datab.collection(collOrganizations) : datab.collection(collBuyers)
     const id = params.orgId ? {orgId: params.orgId} : {userId: params.userId}

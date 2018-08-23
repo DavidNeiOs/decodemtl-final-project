@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Menu, Button, Dropdown } from 'semantic-ui-react'
+import { Image, Input, Menu, Button, Dropdown } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 
@@ -75,9 +75,9 @@ class OrgNavBar extends Component {
     return (
         <div>
             <div>
-        <Menu inverted position="fixed" >
+            <Menu inverted position="fixed" borderless>
         <Menu.Item>
-          <img src='https://react.semantic-ui.com/logo.png' />
+        <Image src='./images/charibidlogo.png' size="small"/>
         </Menu.Item>
         <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick} />
         <Menu.Menu position='right'>

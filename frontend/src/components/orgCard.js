@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Card, Image, Button } from 'semantic-ui-react'
+import { List, Card, Image, Button } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 
@@ -28,7 +28,24 @@ class OrgCard extends Component {
                     {this.props.liveOrg[0].description}
                     <br/>
                     <br/><br/>
-                    Email : {this.props.liveOrg[0].email}
+                    <List>
+                        <List.Item>
+                        <List.Icon name='marker' />
+                        <List.Content>{this.props.liveOrg[0].postalCode}, {this.props.liveOrg[0].country}</List.Content>
+                        </List.Item>
+                        <List.Item>
+                        <List.Icon name='mail' />
+                        <List.Content>
+                            <a href={'mailto:'+this.props.liveOrg[0].email}>{this.props.liveOrg[0].email}</a>
+                        </List.Content>
+                        </List.Item>
+                        <List.Item>
+                        <List.Icon name='linkify' />
+                        <List.Content>
+                            <a href={this.props.liveOrg[0].website}>{this.props.liveOrg[0].website}</a>
+                        </List.Content>
+                        </List.Item>
+                    </List>
                     <br/>
                     <br/>
                     <div>

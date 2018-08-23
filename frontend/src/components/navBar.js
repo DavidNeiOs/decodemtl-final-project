@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Menu, Button, Modal } from 'semantic-ui-react'
+import { Image, Input, Menu, Button, Modal } from 'semantic-ui-react'
 import ConnectedSignUp from './signUp.js'
 import ConnectedLogIn from './LogIn.js'
 import { connect } from 'react-redux'
@@ -35,9 +35,9 @@ class NavBar extends Component {
     return (
         <div>
             <div>
-        <Menu position="fixed" inverted>
+            <Menu inverted position="fixed" borderless>
         <Menu.Item>
-          <img src='https://react.semantic-ui.com/logo.png' />
+        <Image src='./images/charibidlogo.png' size="small"/>
         </Menu.Item>
         <Menu.Item name='home' active={activeItem === 'home'} onClick={this.handleItemClick} />
         <Menu.Menu position='right'>
