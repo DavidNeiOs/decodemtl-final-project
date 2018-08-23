@@ -20,7 +20,7 @@ class BidLog extends Component {
         const addBid = data => {
             console.log(data);
             this.setState({bids: data});
-            this.props.onUpdateBid(data.bid)
+            this.props.onUpdateBid && this.props.onUpdateBid(data.bid)
         };
     }
     componentDidMount() {
