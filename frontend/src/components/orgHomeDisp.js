@@ -120,7 +120,7 @@ class OrgHomeItemDisp extends Component {
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
-                            <Card.Description><Timer endDate={i.bidFinDate} item={i}/></Card.Description>
+                            <Card.Description><Timer key={i.itemId} endDate={i.bidFinDate} item={i}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
@@ -180,7 +180,7 @@ class OrgHomeItemDisp extends Component {
                         <Card.Content>
                         <Card.Header>{i.title}</Card.Header>
                             <Card.Meta>{i.description}</Card.Meta>
-                            <Card.Description><Timer endDate={i.bidFinDate} item={i}/></Card.Description>
+                            <Card.Description><Timer key={i.itemId} endDate={i.bidFinDate} item={i}/></Card.Description>
                         </Card.Content>
                         <Card.Content extra>
                             <Icon name='dollar sign' />
@@ -221,7 +221,7 @@ class OrgHomeItemDisp extends Component {
        
     }
 
-    longPoll = () => setInterval(this.fetchCurrentItems, 1000) 
+    longPoll = () => setInterval(this.fetchCurrentItems, 10000) 
     fetchCurrentItems = () => {
         fetch('/getItems')
             .then(response => response.text())
