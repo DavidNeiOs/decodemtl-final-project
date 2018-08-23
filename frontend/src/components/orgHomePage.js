@@ -22,7 +22,7 @@ class OrgHomePage extends Component {
         </div>
         <div>
          
-          <Segment inverted color='teal'>
+          <Segment inverted>
           <Header as='h2' icon={<Icon loading size='big' name='globe' color='white' />} content='Shop All Products' textAlign='center'/>
           </Segment>
           

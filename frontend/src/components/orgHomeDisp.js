@@ -221,7 +221,7 @@ class OrgHomeItemDisp extends Component {
        
     }
 
-    longPoll = () => setInterval(this.fetchCurrentItems, 3000) 
+    longPoll = () => setInterval(this.fetchCurrentItems, 1000) 
     fetchCurrentItems = () => {
         fetch('/getItems')
             .then(response => response.text())
@@ -245,6 +245,7 @@ class OrgHomeItemDisp extends Component {
         return(
         <div>
             <Grid>
+            <Grid.Column></Grid.Column>
                 <Grid.Column width={2}>
           
             <OrgCard/>

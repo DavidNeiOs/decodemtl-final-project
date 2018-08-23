@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Grid, Icon, Image } from "semantic-ui-react";
+import { Segment, Header, Form, Grid, Icon, Image } from "semantic-ui-react";
 import ConnectedOrgNavBar from './orgNavBar.js'
 import Footer from './footer.js'
 import { connect } from 'react-redux'
@@ -16,7 +16,8 @@ class OrgProfile extends Component {
             country: '',
             postalCode: '',
             description: '',
-            userType: 'org'
+            userType: 'org',
+            orgId: ''
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -32,7 +33,6 @@ class OrgProfile extends Component {
     }
 
     handleSubmit() {
-        this.props.onSubmit()
         if (this.state.password !== this.state.confirmPassword) {
             this.setState({ password: '', confirmPassword: '' });
             alert(`passwords do not match`);
@@ -40,7 +40,7 @@ class OrgProfile extends Component {
         }
         const state = Object.assign({}, this.state);
         delete state['confirmPassword'];
-        fetch('/signUp', {
+        fetch('/updateInfo', {
             method: 'POST',
             body: JSON.stringify(state)
         })
@@ -48,24 +48,17 @@ class OrgProfile extends Component {
             .then(responseBody => {
                 let result = JSON.parse(responseBody)
                 console.log(result);
+                this.props.dispatch({
+                    // change the store variable that will 
+                    // render personalized page of org
+                    type: 'showOrgPage',
+                    content: this.props.orgId
+                  })
             })
             .catch(err => {
                 console.log(err)
                 alert('there was an error, try again')
             })
-
-        // set The state back to empty
-        this.setState({
-            orgName: '',
-            website: '',
-            logo: '',
-            email: '',
-            username: '',
-            country: '',
-            postalCode: '',
-            description: ''
-        });
-        this.props.onSubmit();
     }
     componentDidMount(){
         this.setState({
@@ -75,24 +68,29 @@ class OrgProfile extends Component {
             username: this.props.org[0].username,
             country: this.props.org[0].country,
             postalCode: this.props.org[0].postalCode,
-            description: this.props.org[0].description
+            description: this.props.org[0].description,
+            orgId: this.props.orgId
         })
     }
     render() {
         return (
             <div>
+                <Segment inverted>
                 <ConnectedOrgNavBar />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
+                <Header as='h1' style={{textAlign: 'center'}}>Edit Your Organization's Profile</Header>
+                <Segment inverted>
                 <Grid>
-                    <Grid.Column width={3}>
-                    <Image wrapped size='medium' src={'/images/' + this.props.org[0].logo}/>
+                    <Grid.Column>
                     </Grid.Column>
+                    <Grid.Column width={3}>
+                    <Segment color='blue'>
+                    <Image wrapped size='medium' src={'/images/' + this.props.org[0].logo}/>
+                    </Segment>
+                    </Grid.Column>
+                    
                     <Grid.Column width={12}>
-                    <Form centered size='large'>
+                    <Segment inverted>
+                    <Form centered inverted size='large' onSubmit={this.handleSubmit}>
                         <Grid>
                             <Grid.Row centered columns={1}>
                                 <Grid.Column centered>
@@ -185,21 +183,18 @@ class OrgProfile extends Component {
                                     </Form.Group>
 
                                 </Grid.Column>
+                                <Form.Button  content='submit' />
                             </Grid.Row>
+
                         </Grid>
 
                     </Form>
+                    </Segment>
                     </Grid.Column>
                 </Grid>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
+                </Segment>
                 <Footer />
+                </Segment>
             </div>
         );
     }
@@ -207,7 +202,8 @@ class OrgProfile extends Component {
 }
 function mapStateToProps(state) {
     return {
-        org: state.currentOrg
+        org: state.currentOrg,
+        orgId : state.orgId
     }
     
 }

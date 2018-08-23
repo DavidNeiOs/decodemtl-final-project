@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import Chat from './Chat.js'
 import BidLog from './bidLog.js'
 import Timer from './timer.js'
+import ItemOrgCard from './itemOrgCard.js'
 
 class BuyerHomeDisplay extends Component {
 
@@ -59,6 +60,7 @@ class BuyerHomeDisplay extends Component {
                 console.log(err)
                 alert('there was an error, try again')
             })
+            
     }
     handleChange = (evt) => {
         this.setState({ currBid: evt.target.value})
@@ -107,11 +109,14 @@ class BuyerHomeDisplay extends Component {
                                         </Modal.Description>
                                         <Modal.Description padded>
                                         </Modal.Description >
-                                        <Modal.Description>
+                                        <Modal.Description align='center'>
+                                        <ItemOrgCard chosenOrgId={i.orgId}/>
                                         <Segment.Group raised>
+                                        
                                         <Segment inverted color='black' align='center'><Header>Chat</Header>
     
                                             <Chat itemId={i.itemId} buyer={this.props.usr} /></Segment>
+                                            
                                         </Segment.Group>
                                         </Modal.Description>
         
@@ -167,11 +172,14 @@ class BuyerHomeDisplay extends Component {
                                         </Modal.Description>
                                         <Modal.Description padded>
                                         </Modal.Description >
-                                        <Modal.Description padded>
+                                        <Modal.Description align='center'>
+                                        <ItemOrgCard chosenOrgId={i.orgId}/>
                                         <Segment.Group raised >
+                                        
                                         <Segment inveted color='black' align='center'><Header>Chat</Header>
     
                                             <Chat itemId={i.itemId} buyer={this.props.usr} /></Segment>
+                                        
                                         </Segment.Group>
                                         </Modal.Description>
         
@@ -205,7 +213,7 @@ class BuyerHomeDisplay extends Component {
             })
     }
 
-    longPoll = () => setInterval(this.fetchCurrentItems, 10000) 
+    longPoll = () => setInterval(this.fetchCurrentItems, 1000) 
     fetchCurrentItems = () => {
         fetch('/getItems')
             .then(response => response.text())
@@ -275,7 +283,7 @@ class BuyerHomeDisplay extends Component {
 
                 <Grid.Column stretched width={12}>
                 <Segment>
-                    <Grid columns={4}>
+                    <Grid columns={5}>
                         {this.formatItems(this.state.activeItem)}
                     </Grid>
                 </Segment>

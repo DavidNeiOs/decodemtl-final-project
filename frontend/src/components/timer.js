@@ -84,9 +84,9 @@ class Timer extends Component {
         } else {
             return (
                 <div>
-                  <Header sub>Time Left to Auction</Header>
+                  <Header sub>Time Left to Auction : </Header>
                   <span>
-                    {this.state.dayRemaining} Day {this.state.hourRemaining} Hr {this.state.minRemaining} : {this.state.secondsRemaining}
+                    <b>{this.state.dayRemaining}</b>d <b>{this.state.hourRemaining}</b>hr <b>{this.state.minRemaining}</b>min <b>{this.state.secondsRemaining}</b>sec
                   </span>
                 </div>
             )

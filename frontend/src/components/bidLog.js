@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import socketIO from 'socket.io-client';
-import { Segment, Divider } from 'semantic-ui-react'
+import { List, Segment, Divider } from 'semantic-ui-react'
 
 class BidLog extends Component {
     constructor(props) {
@@ -40,18 +40,26 @@ class BidLog extends Component {
                 <div style={{textAlign: 'center'}}>
                     <h3>Bids Log</h3>
                 </div>
-                <Divider/>
                 <div>
                     <Segment vertical>
+                    <List celled>
+                    
                         {this.state.bids
                         .sort(function (a, b) {
                             return b.bid - a.bid;
                           })
                         .map(log => {
                             return (
-                                <div> <i>{new Date(log.date).toDateString()}</i> :      <b>{log.username}</b> just bidded for <b>{log.bid} $</b>  </div>
+                                <List.Item>
+                                    <List.Content>
+                                    <List.Header>{log.username}</List.Header>
+                                    just bidded for {log.bid} (<i>{new Date(log.date).toDateString()}</i>)
+                                    </List.Content>
+                                </List.Item>
                             )
                         })}
+                    
+                    </List>
                     </Segment>
                 </div>
                 </Segment.Group >
