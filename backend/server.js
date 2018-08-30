@@ -4,10 +4,10 @@ const sha256 = require('sha256');
 const app = express();
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-var db = require('./db');
+const db = require('./db');
 
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 app.use(cors());
 app.use(bodyParser.raw({ type: "*/*" }));
@@ -93,7 +93,7 @@ app.get("/getParams", (req, res) => {
             let datab = dataInstance;
 
             //get categories 
-            var collCat = datab.collection(collCategories);
+            let collCat = datab.collection(collCategories);
             collCat.find({}).toArray(function (err, result) {
                 if (err) throw err;
                 serverState.categoriesList = result;
@@ -101,7 +101,7 @@ app.get("/getParams", (req, res) => {
             });
 
             //get countries
-            var collCo = datab.collection(collCountries);
+            let collCo = datab.collection(collCountries);
             collCo.find({}).toArray(function (err, result) {
                 if (err) throw err;
                 serverState.countriesList = result;
@@ -109,7 +109,7 @@ app.get("/getParams", (req, res) => {
             });
 
             //get itemStates
-            var collItemStates = datab.collection(collItemState);
+            let collItemStates = datab.collection(collItemState);
             collItemStates.find({}).toArray(function (err, result) {
                 if (err) throw err;
                 serverState.itemStateList = result;
@@ -138,7 +138,7 @@ app.get("/getOrgs", (req, res) => {
         let datab = dataInstance;
 
         //get organizations 
-        var collOrg = datab.collection(collOrganizations);
+        let collOrg = datab.collection(collOrganizations);
         collOrg.find({}).toArray(function (err, result) {
             if (err) throw err;
             res.send(JSON.stringify({ status: true, message: "", orgs: result }));
@@ -156,7 +156,7 @@ app.get("/getItems", (req, res) => {
         let datab = dataInstance;
 
         //get items
-        var collListing = datab.collection(collItems);
+        let collListing = datab.collection(collItems);
         collListing.find({}).toArray(function (err, result) {
             if (err) throw err;
             res.send(JSON.stringify({ status: true, message: "", items: result }));
@@ -197,8 +197,8 @@ app.get("/getItem", (req, res) => {
 app.post("/signUp", (req, res) => {
     try {
         let datab = dataInstance;
-        var collOrg = datab.collection(collOrganizations);
-        var collBuy = datab.collection(collBuyers);
+        let collOrg = datab.collection(collOrganizations);
+        let collBuy = datab.collection(collBuyers);
 
         bodyParam = JSON.parse(req.body.toString());
 
@@ -230,8 +230,8 @@ app.post("/signUp", (req, res) => {
                                     throw err;
                                 }
                                 let id = result.ops[0]._id.toString();
-                                var myquery = result.ops[0];
-                                var newvalues = { $set: { orgId: id } };
+                                let myquery = result.ops[0];
+                                let newvalues = { $set: { orgId: id } };
                                 //if insertion was ok, read and update to set user id.
                                 collOrg.updateOne(myquery, newvalues, function (err, result) {
                                     if (err) { throw err };
@@ -266,8 +266,8 @@ app.post("/signUp", (req, res) => {
                         }
 
                         let id = result.ops[0]._id.toString();
-                        var myquery = result.ops[0];
-                        var newvalues = { $set: { userId: id } };
+                        let myquery = result.ops[0];
+                        let newvalues = { $set: { userId: id } };
                         //if insertion was ok, read and update to set user id.
                         collBuy.updateOne(myquery, newvalues, function (err, result) {
                             if (err) { throw err };
@@ -331,9 +331,9 @@ app.post('/login', (req, res) => {
 
         //search if user exist in orgs
         let datab = dataInstance;
-        var collOrg = datab.collection(collOrganizations);
-        var collSess = datab.collection(collSessions);
-        var collBuy = datab.collection(collBuyers);
+        let collOrg = datab.collection(collOrganizations);
+        let collSess = datab.collection(collSessions);
+        let collBuy = datab.collection(collBuyers);
 
         let token = Math.floor(Math.random() * 100000000000) + "";
 
@@ -388,7 +388,7 @@ app.post('/logout', (req, res) => {
         let currentSession = getSessionIdFromCookie(req);
 
         let datab = dataInstance;
-        var collSess = datab.collection(collSessions);
+        let collSess = datab.collection(collSessions);
         let query = { username: bodyParam.username, token: currentSession, active: true };
         let newValues = { $set: { username: bodyParam.username, token: currentSession, active: false } };
 
@@ -415,8 +415,8 @@ app.get('/home', (req, res) => {
         let currentSession = getSessionIdFromCookie(req);
 
         let datab = dataInstance;
-        var collSess = datab.collection(collSessions);
-        var collBuy = datab.collection(collBuyers);
+        let collSess = datab.collection(collSessions);
+        let collBuy = datab.collection(collBuyers);
 
         let query = { token: currentSession, active: true };
 
@@ -459,10 +459,10 @@ app.post("/addItem", (req, res) => {
         //let datab = dataInstance;
         let datab = dataInstance;
 
-        var collItem = datab.collection(collItems);
+        let collItem = datab.collection(collItems);
         let bodyParam = JSON.parse(req.body.toString());
 
-        var collSess = datab.collection(collSessions);
+        let collSess = datab.collection(collSessions);
         let currentSession = getSessionIdFromCookie(req);
 
         let querySess = { username: bodyParam.username, token: currentSession, active: true };
@@ -484,8 +484,8 @@ app.post("/addItem", (req, res) => {
                     if (err) throw err;
 
                     let id = result.ops[0]._id.toString();
-                    var myquery = result.ops[0];
-                    var newvalues = { $set: { itemId: id } };
+                    let myquery = result.ops[0];
+                    let newvalues = { $set: { itemId: id } };
                     //if insertion was ok, read and update item.
                     collItem.updateOne(myquery, newvalues, function (err, result) {
                         if (err) throw err;
@@ -522,11 +522,11 @@ app.post("/addItem", (req, res) => {
 app.put("/updateItem", (req, res) => {
     try {
         let datab = dataInstance;
-        var collItem = datab.collection(collItems);
+        let collItem = datab.collection(collItems);
         let bodyParam = JSON.parse(req.body.toString());
 
         //check if user 
-        var collSess = datab.collection(collSessions);
+        let collSess = datab.collection(collSessions);
         let currentSession = getSessionIdFromCookie(req);
 
         let querySess = { username: bodyParam.username, token: currentSession, active: true };
@@ -536,9 +536,9 @@ app.put("/updateItem", (req, res) => {
             else if (result.length > 0) {
 
                 //if session exist and is active create item
-                var myquery = { itemId: bodyParam.itemId };
+                let myquery = { itemId: bodyParam.itemId };
                 bodyParam.updateDate = new Date().toISOString();
-                var newvalues = { $set: bodyParam };
+                let newvalues = { $set: bodyParam };
                 //update Item
                 collItem.updateOne(myquery, newvalues, function (err, result) {
                     if (err) throw err;
@@ -561,11 +561,11 @@ app.put("/updateItem", (req, res) => {
 app.post("/cancelItem", (req, res) => {
     try {
         let datab = dataInstance;
-        var collItem = datab.collection(collItems);
+        let collItem = datab.collection(collItems);
         let bodyParam = JSON.parse(req.body.toString());
 
         //check if user session exist
-        var collSess = datab.collection(collSessions);
+        let collSess = datab.collection(collSessions);
         let currentSession = getSessionIdFromCookie(req);
 
         let querySess = { username: bodyParam.username, token: currentSession, active: true };
@@ -575,8 +575,8 @@ app.post("/cancelItem", (req, res) => {
             else if (result.length > 0) {
 
                 //if session exist and is active create item
-                var myquery = { itemId: bodyParam.itemId };
-                var newvalues = { $set: { bidCancelDate: new Date().toISOString(), state: ITEM_STATE_CANCELED } };
+                let myquery = { itemId: bodyParam.itemId };
+                let newvalues = { $set: { bidCancelDate: new Date().toISOString(), state: ITEM_STATE_CANCELED } };
                 //update Item
                 collItem.updateOne(myquery, newvalues, function (err, result) {
                     if (err) {
@@ -629,8 +629,8 @@ app.post("/bidItem", (req, res) => {
                                 throw err;
                             }
                             let id = result.ops[0]._id.toString();
-                            var myquery = result.ops[0];
-                            var newvalues = { $set: { transactionId: id } };
+                            let myquery = result.ops[0];
+                            let newvalues = { $set: { transactionId: id } };
                             //if insertion was ok, read and update to set transaction id.
                             collBid.updateOne(myquery, newvalues, function (err, result) {
                                 if (err) { throw err }
@@ -770,21 +770,21 @@ app.post("/sendEmail", (req, res) => {
             if (err) { throw err; }
             else if (result.length > 0) {
 
-                var mailOptionsUser = {
+                let mailOptionsUser = {
                     from: adminEmail,
                     to: bodyParam.userEmail,
                     subject: bodyParam.userEmailSubject,
                     text: bodyParam.userEmailText
                 };
 
-                var mailOptionsOrg = {
+                let mailOptionsOrg = {
                     from: adminEmail,
                     to: bodyParam.orgEmail,
                     subject: bodyParam.orgEmailSubject,
                     text: bodyParam.orgEmailText
                 };
 
-                var transporter = nodemailer.createTransport({
+                let transporter = nodemailer.createTransport({
                     service: 'gmail',
                     auth: {
                         user: adminEmail,
@@ -829,12 +829,12 @@ app.post("/sendEmail", (req, res) => {
 app.post("/getUserProfile", (req, res) => {
     try {
         let datab = dataInstance;
-        var collItem = datab.collection(collItems);
+        let collItem = datab.collection(collItems);
         let collBid = datab.collection(collBidTran);
         let bodyParam = JSON.parse(req.body.toString());
 
         //session data
-        var collSess = datab.collection(collSessions);
+        let collSess = datab.collection(collSessions);
         let currentSession = getSessionIdFromCookie(req);
         let querySess = { username: bodyParam.username, token: currentSession, active: true };
 
@@ -1089,7 +1089,7 @@ function sendEmailProcess(mailData) {
         let adminEmailPass = "decode123!";
 
         //check if user session exist
-        var mailOptions = {
+        let mailOptions = {
             from: adminEmail,
             to: mailData.to,
             cc: mailData.cc,
@@ -1097,7 +1097,7 @@ function sendEmailProcess(mailData) {
             html: mailData.html
         };
 
-        var transporter = nodemailer.createTransport({
+        let transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: adminEmail,
