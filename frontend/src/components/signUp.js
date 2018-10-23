@@ -1,59 +1,81 @@
-import React, { Component } from 'react'
-import { Segment, Button, Divider, Modal, Header } from 'semantic-ui-react'
-import { connect } from 'react-redux'
-import OrgSignUp from './OrgSignUp.js'
-import UserSignUp from './UserSignUp.js'
+import React, { Component } from "react";
+import { Segment, Button, Divider, Modal, Header } from "semantic-ui-react";
+import { connect } from "react-redux";
+import OrgSignUp from "./OrgSignUp.js";
+import UserSignUp from "./UserSignUp.js";
 
 class SignUp extends Component {
-  constructor () {
+  // *** modal when user clicks sign up on homepage ***
+  constructor() {
     super();
-    this.state = {open: false}
-    this.handleNP = this.handleNP.bind(this)
-    this.handleBuyer = this.handleBuyer.bind(this)
-
+    this.state = { open: false };
+    this.handleNP = this.handleNP.bind(this);
+    this.handleBuyer = this.handleBuyer.bind(this);
   }
-  show = size => () => this.setState({ size, open: true })
-  close = () => this.setState({ open: false })
-  handleNP () {
+  show = size => () => this.setState({ size, open: true });
+  close = () => this.setState({ open: false });
+  // *** show non-profit log in if button clicked ***
+  handleNP() {
     this.props.dispatch({
-      type: 'orgSignUp',
+      type: "orgSignUp",
       content: true
-    })
+    });
   }
-
+  // *** show buyer log in if button clicked ***
   handleBuyer() {
     this.props.dispatch({
-      type: 'buyerSignUp',
+      type: "buyerSignUp",
       content: true
-    })
+    });
   }
   render() {
-    const { open, size } = this.state
+    const { open, size } = this.state;
     return (
       <Segment padded>
-        
-        <Modal trigger={<Button fluid primary onClick={this.show('tiny')}
-        size={size} open={open} onClose={this.close}>
-          User Sign Up
-        </Button>}>
-        <Modal.Header><Header as='h2' style={{textAlign: 'center'}}>User Sign Up</Header></Modal.Header>
-              <Modal.Content>
-                <UserSignUp />
-              </Modal.Content>
+        <Modal
+          trigger={
+            <Button
+              fluid
+              primary
+              onClick={this.show("tiny")}
+              size={size}
+              open={open}
+              onClose={this.close}
+            >
+              User Sign Up
+            </Button>
+          }
+        >
+          <Modal.Header>
+            <Header as="h2" style={{ textAlign: "center" }}>
+              User Sign Up
+            </Header>
+          </Modal.Header>
+          <Modal.Content>
+            <UserSignUp />
+          </Modal.Content>
         </Modal>
         <Divider horizontal>Or</Divider>
-        <Modal trigger={<Button fluid secondary>
-          Non-Profit Sign Up
-        </Button>}>
-        <Modal.Header><Header as='h2' style={{textAlign: 'center'}}>Non-Profit Sign Up</Header></Modal.Header>
-              <Modal.Content>
-                <OrgSignUp />
-              </Modal.Content>
+        <Modal
+          trigger={
+            <Button fluid secondary>
+              Non-Profit Sign Up
+            </Button>
+          }
+        >
+          <Modal.Header>
+            <Header as="h2" style={{ textAlign: "center" }}>
+              Non-Profit Sign Up
+            </Header>
+          </Modal.Header>
+          <Modal.Content>
+            <OrgSignUp />
+          </Modal.Content>
         </Modal>
       </Segment>
     );
   }
- }
+}
 
-let ConnectedSignUp = connect()(SignUp)
+let ConnectedSignUp = connect()(SignUp);
 export default ConnectedSignUp;
