@@ -274,6 +274,7 @@ class OrgHomeItemDisp extends Component {
   };
 
   longPoll = () => setInterval(this.fetchCurrentItems, 10000);
+  //every 10 seconds the long poll will check for new items in the databas
   fetchCurrentItems = () => {
     fetch("/getItems")
       .then(response => response.text())
