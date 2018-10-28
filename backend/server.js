@@ -215,7 +215,7 @@ app.post("/signUp", (req, res) => {
     let collBuy = datab.collection(collBuyers);
 
     bodyParam = JSON.parse(req.body.toString());
-
+    // if entity signing up is an org
     if (
       bodyParam.userType !== undefined &&
       bodyParam.userType === USER_TYPE_ORG
@@ -294,6 +294,7 @@ app.post("/signUp", (req, res) => {
           }
         });
     } else if (
+      // if it is an user singin up
       bodyParam.userType !== undefined &&
       bodyParam.userType === USER_TYPE_BUYER
     ) {
